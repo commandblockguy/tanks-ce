@@ -6,7 +6,7 @@
 # ----------------------------
 
 NAME        ?= TANKS
-COMPRESSED  ?= NO
+COMPRESSED  ?= YES
 ICON        ?= iconc.png
 DESCRIPTION ?= "Tanks! CE"
 

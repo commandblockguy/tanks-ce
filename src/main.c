@@ -18,6 +18,8 @@
 #include <string.h>
 
 #include <graphx.h>
+#include <keypadc.h>
+#include <decompress.h>
 
 #include "constants.h"
 #include "objects.h"
@@ -56,6 +58,8 @@ void processCollisions(void); //Process collisions between all entities that cou
 void stablizeFPS(uint8_t target);
 
 void resetFPSCounter(void); //Start the tick and reset the tick time counter
+
+void handleInput(); //Handles inputs from the keypad
 
 void memView(uint8_t* pointer);
 
@@ -106,8 +110,6 @@ void main(void) {
         
         //Display the mission start screen
         startMission(true);
-        
-        lay_mine(&tanks[0]); //TEMP
 
         game.inProgress = true;
         //Game loop
@@ -119,8 +121,11 @@ void main(void) {
             for(i = 0; i < game.level.num_tanks; i++) {
             	processTank(&tanks[i]);
             }
+
+            handleInput();
+
+            processCollisions();
             
-            game.inProgress = !os_GetCSC(); //TEMP exit game loop if key pressed
             render();
         }
 
@@ -184,19 +189,27 @@ void render(void) {
 	tilemap.y_loc		= 0;
 	tilemap.x_loc		= MAP_OFFSET_X;
 
+	gfx_FillScreen(gfx_white);
+
 	//Render level tiles
 	gfx_Tilemap(&tilemap, 0, 0);
 
 	for(i = 0; i < game.level.num_tanks; i++) {
 		//Render tanks
 		int j;
+		uint16_t center_x;
+		uint16_t center_y;
 		AABB bb;
 		Tank* tank = &tanks[i];
 		gfx_SetTextXY((uint16_t)tank->pos_x, (uint8_t)tank->pos_y);
 		gfx_PrintUInt(tank->type, 1);
 		bb = getTankAABB(tank);
 		renderAABB(bb);
+		center_x = tank->pos_x + TANK_SIZE / 2;
+		center_y = tank->pos_y + TANK_SIZE / 2;
+		gfx_Line(center_x, center_y, center_x + tank->bullet_spawn_x, center_y + tank->bullet_spawn_y);
 
+		//draw shell hitboxes until I can get sprites
 		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
 			Shell* shell = &tank->shells[j];
 			AABB bb;
@@ -204,10 +217,17 @@ void render(void) {
 			bb = getShellAABB(shell);
 			renderAABB(bb);
 		}
+		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
+			Mine* mine = &tank->mines[j];
+			AABB bb;
+			if(!(mine->alive)) continue;
+			bb = getMineAABB(mine);
+			renderAABB(bb);
+		}
 	}
 
 	gfx_SetTextXY(0,0);
-	gfx_PrintUInt(32768 / timer_1_Counter,4);
+	gfx_PrintUInt(timer_1_Counter / 32.768 , 4);
 
 	gfx_BlitBuffer();
 
@@ -245,14 +265,80 @@ void renderAABB(AABB bb) {
 //Process tank physics
 void processTank(Tank* tank) {
 	int i;
+	//Loop through all shells
 	for(i = max_shells[tank->type] - 1; i >= 0; i--) {
 		Shell* shell = &tank->shells[i];
+		//Ignore dead shells
+		if(!shell->alive) continue;
+		//Add velocity
 		shell->pos_x += shell->vel_x;
 		shell->pos_y += shell->vel_y;
+		//This will eventually be part of the collision bit
+		if(	shell->pos_x < MAP_OFFSET_X ||
+			shell->pos_x > MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X ||
+			shell->pos_y < 0 ||
+			shell->pos_y > TILE_SIZE * LEVEL_SIZE_Y ) shell->alive = false;
+	}
+	if(!max_mines[tank->type]) return;
+	for(i = max_mines[tank->type] - 1; i >= 0; i--) {
+		Mine* mine = &tank->mines[i];
+		//Ignore dead shells
+		if(!mine->alive) continue;
+		//TODO: check for nearby enemy tanks and set counter if necessary
+		if(--mine->countdown == 0) {
+			//TODO: kill things
+			//TODO: explosions
+			//TODO: sound effects for explosions
+			//TODO: USB drivers for sound effects for explosions
+			//TODO: be realistic abouot USB drivers for sound effects for explosions
+			mine->alive = false;
+		}
 	}
 }
 
+void handleInput() {
+	Tank* player = &tanks[0];
+
+	kb_Scan();
+
+	//TODO: Replace with fancy roatation stuff if necessary
+	if(kb_Data[7] & kb_Down) {
+		player->pos_y += TANK_SPEED_NORMAL;
+	}
+	if(kb_Data[7] & kb_Left) {
+		player->pos_x -= TANK_SPEED_NORMAL;
+	}
+	if(kb_Data[7] & kb_Right) {
+		player->pos_x += TANK_SPEED_NORMAL;
+	}
+	if(kb_Data[7] & kb_Up) {
+		player->pos_y -= TANK_SPEED_NORMAL;
+	}
+	if(kb_Data[1] & kb_2nd) {
+		fire_shell(player);
+	}
+	if(kb_Data[2] & kb_Alpha) {
+		lay_mine(player);
+	}
+	if(kb_Data[1] & kb_Mode) {
+		player->barrel_rot -= PLAYER_BARREL_ROTATION;
+		calc_bullet_spawn(player);
+	}
+	if(kb_Data[3] & kb_GraphVar) {
+		player->barrel_rot += PLAYER_BARREL_ROTATION;
+		calc_bullet_spawn(player);
+	}
+	if(kb_Data[1] & kb_Del) {
+		game.inProgress = false;
+	}
+}
+
+//TODO: make this work
+//TODO: make this work faster
+void processCollisions() {
+	
+}
+
 //TODO: compress sprites
-//TODO: player input
 //TODO: basic physics
 //TODO: tank sprites

@@ -56,7 +56,9 @@ typedef struct {
 	uint8_t start_x; //Tile the tank starts on
 	uint8_t start_y;
 	uint8_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
-	uint8_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in;
+	uint8_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
+	int8_t bullet_spawn_x; //Position relative to center that bullets will spawn from
+	int8_t bullet_spawn_y;
 	Shell shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
 	Mine mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
 } Tank;
@@ -64,5 +66,7 @@ typedef struct {
 uint8_t fire_shell(Tank* tank); //PEW PEW PEW
 
 uint8_t lay_mine(Tank* tank); //Lay a mine under the tank
+
+void calc_bullet_spawn(Tank* tank);
 
 #endif /* H_OBJECTS */

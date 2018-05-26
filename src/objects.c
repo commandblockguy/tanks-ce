@@ -42,12 +42,17 @@ bool lay_mine(Tank* tank) {
 	if(!max_mines[tank->type]) return false;
 	for(i = max_mines[tank->type] - 1; i >= 0; i--) {
 		Mine* mine = &tank->mines[i];
-		while(!os_GetCSC);
 		if(mine->alive) continue;
 		mine->alive = true;
+		mine->countdown = MINE_COUNTDOWN;
 		mine->pos_x = tank->pos_x + (TANK_SIZE - MINE_SIZE) / 2;
 		mine->pos_y = tank->pos_y + (TANK_SIZE - MINE_SIZE) / 2;
 		return true;
 	}
 	return false;
+}
+
+void calc_bullet_spawn(Tank* tank) {
+	tank->bullet_spawn_x = BARREL_LENGTH * cos(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
+	tank->bullet_spawn_y = BARREL_LENGTH * sin(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
 }

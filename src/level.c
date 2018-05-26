@@ -29,7 +29,7 @@ void createLevels(void) {
 	Level lvls[] = {{25, 2}, {22, 2}, {29, 4}};
 	SerializedTank* ser_tanks;
 	SerializedTank ser_tanks1[] = {{PLAYER, 2, 6}, {IMMOBILE, 19, 6}};
-	SerializedTank ser_tanks2[] = {{MISSILE, 2, 13}, {BASIC, 19, 3}};
+	SerializedTank ser_tanks2[] = {{PLAYER, 2, 13}, {BASIC, 19, 3}};
 	SerializedTank ser_tanks3[] = {{PLAYER, 2, 8}, {BASIC, 5, 1}, {BASIC, 18, 15}, {IMMOBILE, 19, 8}};
 	ti_var_t appVar;
 	int i;
@@ -72,11 +72,14 @@ void createLevels(void) {
 }
 
 Tank deserializeTank(SerializedTank ser_tank) {
-	Tank result;
+	Tank result = {0};
 	result.type = ser_tank.type;
 	result.start_x = ser_tank.start_x;
 	result.start_y = ser_tank.start_y;
 	result.pos_x = (float)tileToXPixel(ser_tank.start_x);
 	result.pos_y = (float)tileToYPixel(ser_tank.start_y);
+	result.barrel_rot = 0;
+	result.tread_rot = 0;
+	calc_bullet_spawn(&result);
 	return result;
 }

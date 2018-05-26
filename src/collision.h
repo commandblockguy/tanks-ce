@@ -11,6 +11,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+} Direction;
+
+struct reflection {
+	bool colliding;
+	uint8_t distance;
+	Direction dir;
+};
+
 typedef struct {
     //Axis-aligned bounding box
     uint16_t x1;
@@ -30,6 +43,6 @@ bool detectCollision(AABB bb1, AABB bb2);
 
 //Distance "into" one BB the other is.
 //This shouldn't need to handle cases where one bounding box is fully inside the other because of the low speed of bullets and tanks.
-uint8_t reflectionDistance(AABB bb1, AABB bb2); 
+struct reflection getReflection(AABB bb1, AABB bb2); 
 
 #endif /* H_COLLISION */
