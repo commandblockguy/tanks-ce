@@ -25,33 +25,12 @@
 #include "objects.h"
 #include "collision.h"
 #include "level.h"
+#include "graphics.h"
 #include "gfx/tiles_gfx.h"
-
-typedef struct {
-    Level level; //level currently being played
-	uint8_t mission; //The mission number, always displayed 1 higher than stored. Also used as an index for levels.
-	uint8_t lives; //Number of remaining tanks. This includes the tank that is currently in use, so a value of 1 means that the game will end the next time the tank is hit.
-	uint8_t kills; //Number of enemy tanks destroyed.
-	uint24_t timer; //Game time, probably used for physics stuff.
-	uint16_t cursor_x; //If I decide to implement a cursor mode, this will represent the position of the crosshairs on the screen.
-	uint8_t cursor_y;  //Otherwise, this will be removed
-	uint24_t lastCycle; //Time the last physics cycle started
-	bool inProgress; //Whether a mission is in progress
-} Game;
-
-void displayScores(void); //Display high scores
 
 void startMission(bool initial); //Start a mission and reset various tank things.
 
-void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
-
 void processTank(Tank* tank); //Process tank physics, along with that tank's shells and mines
-
-void render(void); //Render tilemap, tanks, and UI
-
-void renderAABB(AABB bb);
-
-void displayUI(void); //Display UI during a mission
 
 void processCollisions(void); //Process collisions between all entities that could reasonably intersect.
 
@@ -59,11 +38,9 @@ void stablizeFPS(uint8_t target);
 
 void resetFPSCounter(void); //Start the tick and reset the tick time counter
 
-void handleInput(); //Handles inputs from the keypad
+void handleInput(void); //Handles inputs from the keypad
 
-void memView(uint8_t* pointer);
-
-Game game; //Game global, so I can reuse those names elsewhere
+Game game; //Game global, so I can reuse those names elsewhere if needed
 
 Tank* tanks; //List of all active tanks. 
 uint8_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y]; //Currently active tilemap data
@@ -84,72 +61,97 @@ void main(void) {
 
 	timer_1_MatchValue_1 = 32768 / TARGET_FPS; //Something with timers, I think.
 
-    displayScores();
-    appVar = ti_Open("TANKSLPK", "r");
-    ti_Read(&lvl_pack, sizeof(LevelPack), 1, appVar);
-    for(game.mission = 0; game.mission < lvl_pack.num_levels; game.mission++) {
-        //Level loop
-        uint8_t* comp_tiles; //Compressed tile data
-        SerializedTank* ser_tanks;
-        
-        //Read level from appvar
-        ti_Read(&game.level, sizeof(Level), 1, appVar);
-        comp_tiles = malloc(game.level.compressed_tile_size);
-        ti_Read(comp_tiles, sizeof(uint8_t), game.level.compressed_tile_size, appVar); //Load tiles
-        ser_tanks = malloc(game.level.num_tanks * sizeof(SerializedTank));
-        tanks = malloc(game.level.num_tanks * sizeof(Tank));
-        ti_Read(ser_tanks, sizeof(SerializedTank), game.level.num_tanks, appVar);
-        for(i = 0; i < game.level.num_tanks; i++) {
-        	tanks[i] = deserializeTank(ser_tanks[i]);
-        }
+	game.lives = 3;
 
-        //Decompress tile data
-        dzx7_Turbo(comp_tiles, tiles);
+	displayScores();
+	appVar = ti_Open("TANKSLPK", "r");
+	ti_Read(&lvl_pack, sizeof(LevelPack), 1, appVar);
+	for(game.mission = 0; game.mission < lvl_pack.num_levels; game.mission++) {
+		//Level loop
+		uint8_t* comp_tiles; //Compressed tile data
+		SerializedTank* ser_tanks;
+		
+		//Read level from appvar
+		ti_Read(&game.level, sizeof(Level), 1, appVar);
+		comp_tiles = malloc(game.level.compressed_tile_size);
+		ti_Read(comp_tiles, sizeof(uint8_t), game.level.compressed_tile_size, appVar); //Load tiles
+		ser_tanks = malloc(game.level.num_tanks * sizeof(SerializedTank));
+		tanks = malloc(game.level.num_tanks * sizeof(Tank));
+		ti_Read(ser_tanks, sizeof(SerializedTank), game.level.num_tanks, appVar);
+		for(i = 0; i < game.level.num_tanks; i++) {
+			tanks[i] = deserializeTank(ser_tanks[i]);
+		}
 
-        gfx_FillScreen(gfx_white);
-        
-        //Display the mission start screen
-        startMission(true);
+		//Decompress tile data
+		dzx7_Turbo(comp_tiles, tiles);
 
-        game.inProgress = true;
-        //Game loop
-        while(game.inProgress) {
-        	int i;
-        	resetFPSCounter();
-        	//handle player input
-            //process physics
-            for(i = 0; i < game.level.num_tanks; i++) {
-            	processTank(&tanks[i]);
-            }
+		gfx_FillScreen(gfx_white);
+		
+		//Display the mission start screen
+		startMission(true);
 
-            handleInput();
+		game.inProgress = true;
+		//Game loop
+		while(game.inProgress) {
+			int i, alive_tanks = 0;
+			if(!tanks[0].alive) {
+				if(!--game.lives) {
+					displayScores();
+					gfx_End();
+					return;
+				}
+				startMission(false);
+			}
+			resetFPSCounter();
 
-            processCollisions();
-            
-            render();
-        }
+			if(game.shotCooldown) {
+				game.shotCooldown--;
+			}
+			if(game.mineCooldown) {
+				game.mineCooldown--;
+			}
 
-        free(ser_tanks); //Free memory so that we don't have issues
-        free(tanks);    //(hopefully this does not cause issues)
-        free(comp_tiles); 
-        
-    }
+			//handle player input
+			handleInput();
+			//process physics
 
-    gfx_End();
+			for(i = 0; i < game.level.num_tanks; i++) {
+				processTank(&tanks[i]);
+				if(i && tanks[i].alive) {
+					alive_tanks++;
+				}
+			}
+			if(!alive_tanks) {
+				game.inProgress = 0;
+			}
+
+			processCollisions();
+
+			render(tiles, &game.level, tanks);
+		}
+
+		free(ser_tanks); //Free memory so that we don't have issues
+		free(tanks);    //(hopefully this does not cause issues)
+		free(comp_tiles); 
+		
+	}
+
+	gfx_End();
 
 	ti_CloseAll();
 }
 
 void startMission(bool initial) {
 	int i;
-	int remaining_tanks = 0;
+	int remaining_tanks = -1; //Don't count the player tank
+	tanks[0].alive = true;
 	for(i = 0; i < game.level.num_tanks; i++) {
 		Tank* tank = &tanks[i];
 		int j;
 		if(initial) tank->alive = true;
 		if(tank->alive) remaining_tanks++;
-		tank->pos_x = (float)(tileToXPixel(tank->start_x));
-		tank->pos_y = (float)(tileToYPixel(tank->start_y));
+		tank->phys.position_x = tileToXPixel(tank->start_x) << SHIFT_AMOUNT;
+		tank->phys.position_y = tileToYPixel(tank->start_y) << SHIFT_AMOUNT;
 		tank->barrel_rot = 0;
 		tank->tread_rot = 191;
 		for(j = 0; j < 5; j++) {
@@ -164,102 +166,15 @@ void startMission(bool initial) {
 	missionStart(game.mission, game.lives, remaining_tanks);
 }
 
-void displayScores(void) {
-
-}
-
-void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
-
-}
-
-void render(void) {
-	int i = 0;
-	gfx_tilemap_t tilemap; //Tilemap config struct
-
-	tilemap.map 		= tiles;
-	tilemap.tiles 		= tileset_tiles;
-	tilemap.type_width 	= gfx_tile_no_pow2;
-	tilemap.type_height = gfx_tile_no_pow2;
-	tilemap.tile_height = TILE_SIZE;
-	tilemap.tile_width	= TILE_SIZE;
-	tilemap.draw_height	= LEVEL_SIZE_Y;
-	tilemap.draw_width 	= LEVEL_SIZE_X;
-	tilemap.height 		= LEVEL_SIZE_Y;
-	tilemap.width		= LEVEL_SIZE_X;
-	tilemap.y_loc		= 0;
-	tilemap.x_loc		= MAP_OFFSET_X;
-
-	gfx_FillScreen(gfx_white);
-
-	//Render level tiles
-	gfx_Tilemap(&tilemap, 0, 0);
-
-	for(i = 0; i < game.level.num_tanks; i++) {
-		//Render tanks
-		int j;
-		uint16_t center_x;
-		uint16_t center_y;
-		AABB bb;
-		Tank* tank = &tanks[i];
-		gfx_SetTextXY((uint16_t)tank->pos_x, (uint8_t)tank->pos_y);
-		gfx_PrintUInt(tank->type, 1);
-		bb = getTankAABB(tank);
-		renderAABB(bb);
-		center_x = tank->pos_x + TANK_SIZE / 2;
-		center_y = tank->pos_y + TANK_SIZE / 2;
-		gfx_Line(center_x, center_y, center_x + tank->bullet_spawn_x, center_y + tank->bullet_spawn_y);
-
-		//draw shell hitboxes until I can get sprites
-		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
-			Shell* shell = &tank->shells[j];
-			AABB bb;
-			if(!(shell->alive)) continue;
-			bb = getShellAABB(shell);
-			renderAABB(bb);
-		}
-		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
-			Mine* mine = &tank->mines[j];
-			AABB bb;
-			if(!(mine->alive)) continue;
-			bb = getMineAABB(mine);
-			renderAABB(bb);
-		}
-	}
-
-	gfx_SetTextXY(0,0);
-	gfx_PrintUInt(timer_1_Counter / 32.768 , 4);
-
-	gfx_BlitBuffer();
-
-	while(!os_GetCSC);
-
-}
-
 void resetFPSCounter() {
 	//woo copypaste!
 	/* Disable the timer so it doesn't run when we don't want it to be running */
-    timer_Control = TIMER1_DISABLE;
+	timer_Control = TIMER1_DISABLE;
 
-    timer_1_Counter = 0;
+	timer_1_Counter = 0;
 
-    /* Enable the timer, set it to the 32768 kHz clock, enable an interrupt once it reaches 0, and make it count down */
+	/* Enable the timer, set it to the 32768 kHz clock, enable an interrupt once it reaches 0, and make it count down */
 	timer_Control = TIMER1_ENABLE | TIMER1_32K | TIMER1_NOINT | TIMER1_UP;
-}
-
-void memView(uint8_t* pointer) {
-	int i, j;
-	for(i = 0; i < 12; i++) {
-		for(j = 0; j < 8; j++) {
-			gfx_SetTextXY(40 * j, 20 * i);
-			gfx_PrintUInt(pointer[8 * i + j], 3);
-		}
-	}
-	gfx_BlitBuffer();
-}
-
-void renderAABB(AABB bb) {
-	gfx_SetColor(7);
-	gfx_Rectangle(bb.x1, bb.y1, bb.x2 - bb.x1, bb.y2 - bb.y1);
 }
 
 //Process tank physics
@@ -267,17 +182,49 @@ void processTank(Tank* tank) {
 	int i;
 	//Loop through all shells
 	for(i = max_shells[tank->type] - 1; i >= 0; i--) {
+		int j;
 		Shell* shell = &tank->shells[i];
+		struct reflection reflect;
 		//Ignore dead shells
 		if(!shell->alive) continue;
 		//Add velocity
-		shell->pos_x += shell->vel_x;
-		shell->pos_y += shell->vel_y;
+		shell->phys.position_x += (uint24_t)(shell->phys.velocity_x * (1 << SHIFT_AMOUNT));
+		shell->phys.position_y += (uint24_t)(shell->phys.velocity_y * (1 << SHIFT_AMOUNT));
+
 		//This will eventually be part of the collision bit
-		if(	shell->pos_x < MAP_OFFSET_X ||
-			shell->pos_x > MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X ||
-			shell->pos_y < 0 ||
-			shell->pos_y > TILE_SIZE * LEVEL_SIZE_Y ) shell->alive = false;
+		for(j = 0; j < game.level.num_tanks; j++) {
+			AABB bb1 = getAABB(&shell->phys);
+			AABB bb2 = getAABB(&tanks[j].phys);
+			if(!tanks[j].alive) continue;
+			if(shell->left_tank_hitbox) {
+				if(detectCollision(bb1, bb2)) {
+					tanks[j].alive = false;
+					shell->alive = false;
+				}
+			} else {
+				if(j == 0 && !detectCollision(bb1, bb2)) {
+					shell->left_tank_hitbox = true;
+				}
+			}
+		}
+
+		if(shell->phys.position_x >> SHIFT_AMOUNT < MAP_OFFSET_X) {
+			shell_ricochet(shell, LEFT, MAP_OFFSET_X - (shell->phys.position_x >> SHIFT_AMOUNT));
+		} else if(shell->phys.position_x >> SHIFT_AMOUNT > MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X) {
+			shell_ricochet(shell, RIGHT, (shell->phys.position_x >> SHIFT_AMOUNT) - MAP_OFFSET_X - TILE_SIZE * LEVEL_SIZE_X);
+		}
+		if((shell->phys.position_y >> SHIFT_AMOUNT) + 30 < 30) {
+			shell_ricochet(shell, UP, 0 - (shell->phys.position_y >> SHIFT_AMOUNT));
+		} else if(shell->phys.position_y >> SHIFT_AMOUNT > TILE_SIZE * LEVEL_SIZE_Y) {
+			shell_ricochet(shell, DOWN, (shell->phys.position_y >> SHIFT_AMOUNT) - TILE_SIZE * LEVEL_SIZE_Y);
+		}
+		reflect = getTileReflect(&shell->oldPhys, &shell->phys, false, tiles);
+		if(reflect.colliding) {
+			shell_ricochet(shell, reflect.dir, 0);
+		}
+
+		shell->oldPhys = shell->phys;
+		
 	}
 	if(!max_mines[tank->type]) return;
 	for(i = max_mines[tank->type] - 1; i >= 0; i--) {
@@ -286,14 +233,12 @@ void processTank(Tank* tank) {
 		if(!mine->alive) continue;
 		//TODO: check for nearby enemy tanks and set counter if necessary
 		if(--mine->countdown == 0) {
-			//TODO: kill things
-			//TODO: explosions
-			//TODO: sound effects for explosions
-			//TODO: USB drivers for sound effects for explosions
-			//TODO: be realistic abouot USB drivers for sound effects for explosions
-			mine->alive = false;
+			detonate(mine, tiles);
 		}
+		mine->oldPhys = mine->phys;
 	}
+
+	tank->oldPhys = tank->phys;
 }
 
 void handleInput() {
@@ -303,22 +248,24 @@ void handleInput() {
 
 	//TODO: Replace with fancy roatation stuff if necessary
 	if(kb_Data[7] & kb_Down) {
-		player->pos_y += TANK_SPEED_NORMAL;
+		player->phys.position_y += TANK_SPEED_NORMAL << SHIFT_AMOUNT;
 	}
 	if(kb_Data[7] & kb_Left) {
-		player->pos_x -= TANK_SPEED_NORMAL;
+		player->phys.position_x -= TANK_SPEED_NORMAL << SHIFT_AMOUNT;
 	}
 	if(kb_Data[7] & kb_Right) {
-		player->pos_x += TANK_SPEED_NORMAL;
+		player->phys.position_x += TANK_SPEED_NORMAL << SHIFT_AMOUNT;
 	}
 	if(kb_Data[7] & kb_Up) {
-		player->pos_y -= TANK_SPEED_NORMAL;
+		player->phys.position_y -= TANK_SPEED_NORMAL << SHIFT_AMOUNT;
 	}
-	if(kb_Data[1] & kb_2nd) {
+	if(kb_Data[1] & kb_2nd && !game.shotCooldown) {
 		fire_shell(player);
+		game.shotCooldown = SHOT_COOLDOWN;
 	}
-	if(kb_Data[2] & kb_Alpha) {
+	if(kb_Data[2] & kb_Alpha && !game.mineCooldown) {
 		lay_mine(player);
+		game.mineCooldown = MINE_COOLDOWN;
 	}
 	if(kb_Data[1] & kb_Mode) {
 		player->barrel_rot -= PLAYER_BARREL_ROTATION;
@@ -339,6 +286,8 @@ void processCollisions() {
 	
 }
 
+//TODO: moar levels
 //TODO: compress sprites
 //TODO: basic physics
 //TODO: tank sprites
+//TODO: crosshair / direction indicator

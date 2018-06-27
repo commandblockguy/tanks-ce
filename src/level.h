@@ -14,10 +14,6 @@
 #include "constants.h"
 #include "objects.h"
 
-//Size of the gameplay area in tiles
-#define LEVEL_SIZE_X 22
-#define LEVEL_SIZE_Y 17
-
 enum {
 	EMPTY = 0, //Empty space
 	BLOCK, //Block that can be neither shot nor moved through
@@ -48,6 +44,9 @@ void createLevels(void); //Temporary function to make a level pack
 
 uint16_t tileToXPixel(uint8_t tile_x);
 uint8_t tileToYPixel(uint8_t tile_y);
+
+uint8_t pixelToXTile(uint24_t pix_x);
+uint8_t pixelToYTile(uint8_t pix_x);
 
 Tank deserializeTank(SerializedTank ser_tank); //Convert a serialized tank into an actual one
 
