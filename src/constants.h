@@ -33,25 +33,55 @@
 #define MINE_SIZE 13
 
 //Shifted by 6 bits
-typedef uint16_t ufix;
-typedef int16_t fix;
+typedef uint24_t ufix_t;
+typedef int24_t fix_t;
 #define SHIFT_AMOUNT 6
 #define SHIFT_MASK ((1 << SHIFT_AMOUNT) - 1)
+#define float_to_ufix(x)   ((uint24_t)(x * (1 << SHIFT_AMOUNT)))
+#define float_to_fix(x)    (( int24_t)(x * (1 << SHIFT_AMOUNT)))
+#define float_from_ufix(x) ((float)x / (1 << SHIFT_AMOUNT))
+#define to_ufix(x) (x << SHIFT_AMOUNT)
+#define from_ufix(x) (x >> SHIFT_AMOUNT)
+#define multiply_ufix(a, b) (from_ufix(a * b))
+#define divide_ufix(a, b) (to_ufix(a)/b)
 
 //Distance from center of tank new bullets appear
 #define BARREL_LENGTH 5
 
-//TODO: Driving speed of tanks
-#define TANK_SPEED_NORMAL 2
-#define TANK_SPEED_FAST 5
+//148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
+#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) //TODO
+#define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_FPS)
+#define TANK_SPEED_BLACK 5 //TODO
 
 //Speed of bullets in pixels per tick
-#define SHELL_SPEED_STANDARD 0.351083438 * TARGET_FPS / TILE_SIZE
-#define SHELL_SPEED_MISSILE 0.587418544 * TARGET_FPS / TILE_SIZE
+//Standard:
+//434 px X / 48 px/tile = 11.4210526316 tiles
+//157 px Y / 32 px/tile = 4.90625 tiles
+//d = 12.4302748271 tile
+//123 frames=2.05 seconds
+//6.06354869615 tiles/second
+#define SHELL_SPEED_STANDARD (6.06354869615 * TILE_SIZE / TARGET_FPS)
+//Fast
+//238 px X / 48 px/tile = 4.95833333333 tiles
+//37  px Y / 32 px/tile = 1.15625 tiles
+//d = 5.09136361959 tiles
+//30 frames = 1/2 second
+//10.1827272392 tiles/second
+#define SHELL_SPEED_MISSILE (10.1827272392 * TILE_SIZE / TARGET_FPS)
 
-//TODO: Time till mine detonation
-#define MINE_COUNTDOWN 100
-#define MINE_TRIGGERED 10
+//10 seconds until detonation
+#define MINE_COUNTDOWN (10 * TARGET_FPS + EXPLOSION_ANIM)
+//2 seconds spent pulsing
+#define MINE_WARNING (2 * TARGET_FPS + EXPLOSION_ANIM)
+//TODO: better data for this
+//time after a enemy enters the range of a mine
+#define MINE_TRIGGERED (TARGET_FPS * 2 / 5 + EXPLOSION_ANIM)
+//2/15ths of a second per pulse
+#define PULSE_TIME ((uint8_t)(2 * TARGET_FPS / 15))
+
+//Amount of time the explosion takes
+//1/2 second in the original, may reduce to save sprite size
+#define EXPLOSION_ANIM (TARGET_FPS / 2)
 
 //Player action cooldown
 #define SHOT_COOLDOWN 5
@@ -59,30 +89,43 @@ typedef int16_t fix;
 
 //TODO: Radius in pixels that enemy tanks will cause mines to explode
 #define MINE_DETECT_RANGE 20
-//TODO: Radius in pixels that the centers of objects must be inside to be blown up by mines
-//I know this is inaccurate but mines are so rarely used it really doesn't matter
-#define MINE_EXPLOSION_RADIUS 20
 
-//TODO: rate at which things turn
-#define PLAYER_BARREL_ROTATION 4
-#define PLAYER_TREAD_ROTATION 0
+//120 pixels / 48 px/tile = 2.5 tiles
+#define MINE_EXPLOSION_RADIUS (2.5 * TILE_SIZE)
 
-//TODO: amount of time in milliseconds the mission start screen displays
-#define MISSION_START_TIME 2000
+#define PLAYER_BARREL_ROTATION 8
+//1/3 of a second for 90 degree rotation
+#define PLAYER_TREAD_ROTATION (64 / (TARGET_FPS / 3))
+
+//amount of time in milliseconds the mission start screen displays
+#define MISSION_START_TIME 3000
 //Font size
 #define MISSION_NUMBER_TEXT 3
 #define ENEMY_TANK_TEXT 2
 
-#define BLACK 7
-#define WHITE gfx_black
-
-//Number and pixel size of subregions to be used in collision detection
-#define COLLISION_SUBREGIONS_X 4
-#define COLLISION_SUBREGIONS_Y 4
-#define SUBREGION_SIZE_X (TILE_SIZE << SHIFT_AMOUNT) * LEVEL_SIZE_X / COLLISION_SUBREGIONS_X 
-#define SUBREGION_SIZE_Y (TILE_SIZE << SHIFT_AMOUNT) * LEVEL_SIZE_Y / COLLISION_SUBREGIONS_Y
+#define WHITE      1
+#define BLACK      2
+#define RED        3
+#define BG_COL     4
+#define RHOM_1     5
+#define RHOM_2     6
+#define RIB_SHADOW 7
+#define GOLD       8
+#define TXT_SHADOW 9
+#define LIVES_TXT  10
 
 #define ROT_UNITS_TO_RADIANS M_PI / 128
+
+#define SQRT_2 1.41421356237
+
+// Game status
+enum {
+	IN_PROGRESS,
+	QUIT,
+	NEXT_LEVEL,
+	WIN,
+	LOSE
+};
 
 typedef struct {
     Level level; //level currently being played
@@ -91,9 +134,9 @@ typedef struct {
 	uint8_t kills; //Number of enemy tanks destroyed.
 	uint24_t timer; //Game time, probably used for physics stuff.
 	uint16_t cursor_x; //If I decide to implement a cursor mode, this will represent the position of the crosshairs on the screen.
-	uint8_t cursor_y;  //Otherwise, this will be removed
+	uint8_t cursor_y;  //TODO: Otherwise, this will be removed
 	uint24_t lastCycle; //Time the last physics cycle started
-	bool inProgress; //Whether a mission is in progress
+	uint8_t status; //Game status enum
 	uint8_t shotCooldown; //How many more ticks before we can fire another shot
 	uint8_t mineCooldown;
 } Game;

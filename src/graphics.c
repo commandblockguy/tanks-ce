@@ -24,39 +24,92 @@ void displayScores(void) {
 
 }
 
+//Screen is 700 (240) pixels tall
+//Background is (228,230,173)
+//140 (48) pixels between the top and banner
+//294 (?) pixel tall red banner
+//Red banner has checkerboard with 38x52 (12x15) pixel rhombi
+//Colors of rhombi are (174,49,48) and (164,45,46)
+//16 (5) pixel shadow underneath (183,185,139)
+//10 (3) pixel gap on top, 12 (4) on bottom
+//12 (4) pixel tall gold (193,162,43) band on top and bottom
+//40 (14) (12) pixels between band and text
+//60 (21) (24) pixel tall mission number text w/ shadow
+//50 (17) (16) pixels between
+//44 (15) (16) pixel tall Enemies Remaining text w/ shadow
+//50 (17) (16) pixels between text and bottom band
+//Text shadow (134,36,37) has 8px (3px) offset
+//# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
 void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
-	gfx_FillScreen(gfx_white);
+	int x, y;
+	gfx_FillScreen(BG_COL);
 
-	gfx_SetColor(gfx_red);
-	//TODO: get proper values for this
-	gfx_FillRectangle_NoClip(0, 60, LCD_WIDTH, 80);
+	gfx_SetColor(RHOM_1);
+	
+	gfx_FillRectangle_NoClip(0, 48, LCD_WIDTH, 100);
+	gfx_SetColor(RHOM_2);
+	for(x = 0; x < LCD_WIDTH / 12; x++) {
+		for(y = 0; y < 6; y++) {
+			gfx_FillTriangle_NoClip(x * 12 + 6, 55 + y * 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
+			gfx_FillTriangle_NoClip(x * 12 + 6, 55 + y * 15 + 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
+		}
+	}
+
+	gfx_SetColor(RIB_SHADOW);
+	gfx_FillRectangle_NoClip(0, 148, LCD_WIDTH, 4);
+
+	gfx_SetColor(GOLD);
+	gfx_FillRectangle_NoClip(0, 51, LCD_WIDTH, 4);
+	gfx_FillRectangle_NoClip(0, 140, LCD_WIDTH, 4);
 
 	//Print mission number
 	gfx_SetTextScale(MISSION_NUMBER_TEXT, MISSION_NUMBER_TEXT);
-	gfx_SetTextFGColor(WHITE);
+	gfx_SetTextFGColor(TXT_SHADOW);
+	gfx_SetTextXY((LCD_WIDTH - 60 * MISSION_NUMBER_TEXT) / 2 + 3, 70 + 3);
+	gfx_PrintString("Mission ");
+	gfx_PrintUInt(mission + 1, 1 + (mission >= 9) + (mission >= 99));
+
+	gfx_SetTextFGColor(BG_COL);
 	gfx_SetTextXY((LCD_WIDTH - 60 * MISSION_NUMBER_TEXT) / 2, 70);
 	gfx_PrintString("Mission ");
 	gfx_PrintUInt(mission + 1, 1 + (mission >= 9) + (mission >= 99));
+
+
 	gfx_SetTextScale(ENEMY_TANK_TEXT, ENEMY_TANK_TEXT);
-	gfx_SetTextXY((LCD_WIDTH - 97 * ENEMY_TANK_TEXT) / 2, 110);
+	gfx_SetTextFGColor(TXT_SHADOW);
+	gfx_SetTextXY((LCD_WIDTH - 97 * ENEMY_TANK_TEXT) / 2 + 3, 110 + 3);
 	gfx_PrintString("Enemy Tanks: ");
 	gfx_PrintUInt(num_tanks, 1);
 	gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2, 150);
-	gfx_SetTextFGColor(BLACK); // Will be blue once I get pallettes working
+
+	gfx_SetTextFGColor(BG_COL);
+	gfx_SetTextXY((LCD_WIDTH - 97 * ENEMY_TANK_TEXT) / 2, 110);
+	gfx_PrintString("Enemy Tanks: ");
+	gfx_PrintUInt(num_tanks, 1);
+
+
+	gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2 + 2, 186 + 2);
+	gfx_SetTextFGColor(RIB_SHADOW);
 	gfx_PrintString("x   ");
 	gfx_PrintUInt(lives, 1);
+
+	gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2, 186);
+	gfx_SetTextFGColor(LIVES_TXT);
+	gfx_PrintString("x   ");
+	gfx_PrintUInt(lives, 1);
+
+
 	gfx_SetTextFGColor(BLACK);
 	gfx_SetTextScale(1, 1);
-	//Print number of tanks
-	//Print number of lives
+
+	//TODO: tank sprite
 
 	gfx_BlitBuffer();
 
 	delay(MISSION_START_TIME);
 }
 
-void render(uint8_t* tiles, Level* level, Tank* tanks) {
-	int i = 0;
+void redraw(uint8_t* tiles, Level* level) {
 	gfx_tilemap_t tilemap; //Tilemap config struct
 
 	tilemap.map 		= tiles;
@@ -72,10 +125,17 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 	tilemap.y_loc		= 0;
 	tilemap.x_loc		= MAP_OFFSET_X;
 
-	gfx_FillScreen(gfx_white);
+	gfx_FillScreen(WHITE);
 
 	//Render level tiles
 	gfx_Tilemap_NoClip(&tilemap, 0, 0);
+}
+
+void render(uint8_t* tiles, Level* level, Tank* tanks) {
+	int i = 0;
+	
+	//Eventually, this will only be called once
+	redraw(tiles, level);
 
 	for(i = 0; i < level->num_tanks; i++) {
 		//Render tanks
@@ -83,11 +143,13 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 		AABB bb;
 		Tank* tank = &tanks[i];
 		if(tank->alive) {
-			gfx_SetTextXY(tank->phys.position_x >> SHIFT_AMOUNT, tank->phys.position_y >> SHIFT_AMOUNT);
-			gfx_PrintUInt(tank->type, 1);
 			bb = getAABB(&tank->phys);
+			gfx_SetColor(BLACK);
 			renderAABB(bb);
-			gfx_Line(center_x(bb), center_y(bb), center_x(bb) + tank->bullet_spawn_x, center_y(bb) + tank->bullet_spawn_y);
+			gfx_Line(from_ufix(center_x(&tank->phys)), from_ufix(center_y(&tank->phys)), from_ufix(center_x(&tank->phys)) + tank->bullet_spawn_x, from_ufix(center_y(&tank->phys)) + tank->bullet_spawn_y);
+			gfx_SetTextFGColor(RED);
+			gfx_SetTextXY(from_ufix(tank->phys.position_x) + 1, from_ufix(tank->phys.position_y) + 1);
+			gfx_PrintUInt(tank->type, 1);
 		}
 
 		//draw shell hitboxes until I can get sprites
@@ -96,12 +158,16 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 			AABB bb;
 			if(!(shell->alive)) continue;
 			bb = getAABB(&shell->phys);
+			gfx_SetColor(BLACK);
 			renderAABB(bb);
 		}
+		//draw mine hitboxes
 		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
 			Mine* mine = &tank->mines[j];
 			AABB bb;
-			if(!(mine->alive)) continue;
+			if(!mine->countdown) continue;
+			gfx_SetColor(RED);
+			if(mine->alive) gfx_SetColor(BLACK);
 			bb = getAABB(&mine->phys);
 			renderAABB(bb);
 		}
@@ -117,7 +183,7 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 }
 
 void renderAABB(AABB bb) {
-	gfx_SetColor(7);
 	gfx_Rectangle(bb.x1, bb.y1, bb.x2 - bb.x1, bb.y2 - bb.y1);
-	gfx_SetPixel(center_x(bb), center_y(bb));
 }
+
+//TODO: UI stuff

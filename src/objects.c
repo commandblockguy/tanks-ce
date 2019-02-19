@@ -12,6 +12,8 @@
 #include "objects.h"
 #include "level.h"
 #include "collision.h"
+#include "util.h"
+#include "debug.h"
 
 extern Game game;
 extern Tank* tanks;
@@ -24,15 +26,20 @@ bool fire_shell(Tank* tank) {
 	int i;
 	for(i = max_shells[tank->type] - 1; i >= 0; i--) {
 		Shell* shell = &tank->shells[i];
-		float vector_x, vector_y;
+		fix_t vector_x, vector_y;
+
 		if(shell->alive) continue;
+		
 		shell->alive = true;
 		shell->left_tank_hitbox = false;
 		shell->bounces = max_bounces[tank->type];
-		vector_x = cos(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
-		vector_y = sin(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
-		shell->phys.position_x = tank->phys.position_x + (TANK_SIZE / 2 + BARREL_LENGTH * vector_x) * (1 << SHIFT_AMOUNT);
-		shell->phys.position_y = tank->phys.position_y + (TANK_SIZE / 2 + BARREL_LENGTH * vector_y) * (1 << SHIFT_AMOUNT);
+
+		vector_x = fast_cos(tank->barrel_rot);
+		vector_y = fast_sin(tank->barrel_rot);
+
+		shell->phys.position_x = center_x(&tank->phys) + BARREL_LENGTH * vector_x;
+		shell->phys.position_y = center_y(&tank->phys) + BARREL_LENGTH * vector_y;
+		
 		shell->phys.width = shell->phys.height = SHELL_SIZE;
 		shell->phys.type = ShellPhysics;
 		if(tank->type == MISSILE || tank->type == IMMOB_MISSILE) {
@@ -55,8 +62,8 @@ bool lay_mine(Tank* tank) {
 		if(mine->alive) continue;
 		mine->alive = true;
 		mine->countdown = MINE_COUNTDOWN;
-		mine->phys.position_x = tank->phys.position_x + ((TANK_SIZE - MINE_SIZE) << SHIFT_AMOUNT) / 2;
-		mine->phys.position_y = tank->phys.position_y + ((TANK_SIZE - MINE_SIZE) << SHIFT_AMOUNT) / 2;
+		mine->phys.position_x = tank->phys.position_x + to_ufix(TANK_SIZE - MINE_SIZE) / 2;
+		mine->phys.position_y = tank->phys.position_y + to_ufix(TANK_SIZE - MINE_SIZE) / 2;
 		mine->phys.width = mine->phys.height = MINE_SIZE;
 		return true;
 	}
@@ -64,69 +71,61 @@ bool lay_mine(Tank* tank) {
 }
 
 void calc_bullet_spawn(Tank* tank) {
-	tank->bullet_spawn_x = BARREL_LENGTH * cos(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
-	tank->bullet_spawn_y = BARREL_LENGTH * sin(tank->barrel_rot * ROT_UNITS_TO_RADIANS);
+	tank->bullet_spawn_x = from_ufix(BARREL_LENGTH * fast_cos(tank->barrel_rot));
+	tank->bullet_spawn_y = from_ufix(BARREL_LENGTH * fast_sin(tank->barrel_rot));
 }
 
-//TODO: fix this ugly mess
 void detonate(Mine* mine, uint8_t* tiles) {
 	int j, k;
-	//TODO: explosions
+	
 	mine->alive = false;
-	//Mines and tiles must be the same size for this to work
-	//(this is Bad Code)
-	for(j = ((mine->phys.position_x >> SHIFT_AMOUNT) - MINE_EXPLOSION_RADIUS - MAP_OFFSET_X) / TILE_SIZE; j <= ((mine->phys.position_x >> SHIFT_AMOUNT) + MINE_EXPLOSION_RADIUS - MAP_OFFSET_X) / TILE_SIZE; j++) {
-		for(k = ((mine->phys.position_y >> SHIFT_AMOUNT) - MINE_EXPLOSION_RADIUS) / TILE_SIZE; k <= ((mine->phys.position_y >> SHIFT_AMOUNT) + MINE_EXPLOSION_RADIUS) / TILE_SIZE; k++) {
+	mine->countdown = EXPLOSION_ANIM - 1;
+
+	//The original game uses a radius, not a square
+	//Don't tell anyone.
+
+	for(j  = ptToXTile(center_x(&mine->phys) - float_to_ufix(MINE_EXPLOSION_RADIUS));
+		j <= ptToXTile(center_x(&mine->phys) + float_to_ufix(MINE_EXPLOSION_RADIUS)); j++)
+	{
+		if(j < 0 || j > LEVEL_SIZE_X) continue;
+		for(k  = ptToYTile(center_y(&mine->phys) - float_to_ufix(MINE_EXPLOSION_RADIUS));
+			k <= ptToYTile(center_y(&mine->phys) + float_to_ufix(MINE_EXPLOSION_RADIUS)); k++)
+		{
+			if(k < 0 || k > LEVEL_SIZE_Y) continue;
 			if(tiles[j + LEVEL_SIZE_X * k] == DESTRUCTIBLE) tiles[j + LEVEL_SIZE_X * k] = DESTROYED;
 		}
 	}
+
 	for(j = 0; j < game.level.num_tanks; j++) {
 		Tank* tank = &tanks[j];
-		AABB bb1 = getAABB(&mine->phys);
-		AABB bb2 = getAABB(&tank->phys);
-		if(!tank->alive) continue;
-		if(center_distance(bb1, bb2) < MINE_EXPLOSION_RADIUS) {
+		if(tank->alive && center_distance_lt(&mine->phys, &tank->phys, float_to_ufix(MINE_EXPLOSION_RADIUS))) {
 			tank->alive = false;
 		}
 		for(k = 0; k < max_shells[tank->type]; k++) {
 			Shell* shell = &tank->shells[k];
-			if(shell->alive && center_distance(getAABB(&mine->phys), getAABB(&shell->phys)) < MINE_EXPLOSION_RADIUS) {
+			if(shell->alive && center_distance_lt(&mine->phys, &shell->phys, float_to_ufix(MINE_EXPLOSION_RADIUS))) {
 				shell->alive = false;
 			}
 		}
 		for(k = 0; k < max_mines[tank->type]; k++) {
 			Mine* mine2 = &tank->mines[k];
-			if(mine2->alive && center_distance(getAABB(&mine->phys), getAABB(&mine2->phys)) < MINE_EXPLOSION_RADIUS) {
+			if(mine2->alive && center_distance_lt(&mine->phys, &mine2->phys, float_to_ufix(MINE_EXPLOSION_RADIUS))) {
 				detonate(mine2, tiles);
 			}
 		}
 	}
 }
 
-bool shell_ricochet(Shell* shell, Direction dir, uint8_t distance) {
+bool shell_ricochet(Shell* shell, Direction dir) {
 	//Determine if shell explodes here, and subtracts 1 from the bounces left
 	if(!shell->bounces--) {
 		shell->alive = false;
 		return false;
 	}
 	//Shell is still alive
-	switch(dir) {
-		case UP:
-			shell->phys.position_y += 2 * distance << SHIFT_AMOUNT; //Reflect the position of the shell
-			shell->phys.velocity_y *= -1; //Invert the velocity of the shell
-			break;
-		case DOWN:
-			shell->phys.position_y -= 2 * distance << SHIFT_AMOUNT;
-			shell->phys.velocity_y *= -1;
-			break;
-		case LEFT:
-			shell->phys.position_x += 2 * distance << SHIFT_AMOUNT;
-			shell->phys.velocity_x *= -1;
-			break;
-		case RIGHT:
-			shell->phys.position_x -= 2 * distance << SHIFT_AMOUNT;
-			shell->phys.velocity_x *= -1;
-			break;
-	}
+	if(dir & UP || dir & DOWN)
+		shell->phys.velocity_y *= -1;
+	if(dir & LEFT || dir & RIGHT)
+		shell->phys.velocity_x *= -1;
 	return true;
 }

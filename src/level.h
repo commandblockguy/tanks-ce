@@ -14,12 +14,23 @@
 #include "constants.h"
 #include "objects.h"
 
+typedef uint8_t tile_t;
+//TODO: change formatting to the following:
+/*
+//Bits 2-0: Block height in half-blocks. 0 for no tile
+//Bits 4-3:
 enum {
-	EMPTY = 0, //Empty space
-	BLOCK, //Block that can be neither shot nor moved through
-	DESTRUCTIBLE, //Blocks that can be exploded with mines
-	HOLE, //Hole that can be shot over but not moved through
-	DESTROYED //DESTRUCTIBLE blocks that have been removed using mines
+	BLOCK = 0, //Block that can be neither shot nor moved through
+	DESTRUCTIBLE = 8, //Blocks that can be exploded with mines
+	HOLE = 16, //Hole that can be shot over but not moved through
+	DESTROYED = 24//DESTRUCTIBLE blocks that have been removed using mines
+};*/
+enum {
+	EMPTY = 0,
+	BLOCK,
+	DESTRUCTIBLE,
+	HOLE,
+	DESTROYED
 };
 
 typedef struct {
@@ -45,8 +56,14 @@ void createLevels(void); //Temporary function to make a level pack
 uint16_t tileToXPixel(uint8_t tile_x);
 uint8_t tileToYPixel(uint8_t tile_y);
 
+ufix_t tileToXPt(uint8_t x);
+ufix_t tileToYPt(uint8_t y);
+
 uint8_t pixelToXTile(uint24_t pix_x);
 uint8_t pixelToYTile(uint8_t pix_x);
+
+uint8_t ptToXTile(ufix_t x);
+uint8_t ptToYTile(ufix_t y);
 
 Tank deserializeTank(SerializedTank ser_tank); //Convert a serialized tank into an actual one
 

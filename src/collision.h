@@ -30,7 +30,6 @@ typedef uint8_t PhysicsType;
 
 struct reflection {
 	bool colliding;
-	uint8_t distance;
 	Direction dir;
 };
 
@@ -42,13 +41,15 @@ typedef struct {
     uint8_t y2;
 } AABB;
 
+typedef uint24_t ufix_t;
+typedef int24_t fix_t;
+
 typedef struct {
 	PhysicsType type;
-	uint8_t rotation;
-	uint16_t position_x; //this is ufix, but gives compiler errors for some reason
-	uint16_t position_y;
-	float velocity_x;
-	float velocity_y;
+	ufix_t position_x; //this is ufix, but gives compiler errors for some reason
+	ufix_t position_y;
+	fix_t velocity_x;
+	fix_t velocity_y;
 	uint8_t width;
 	uint8_t height;
 	uint32_t updateTime;
@@ -57,18 +58,21 @@ typedef struct {
 AABB getAABB(PhysicsBody* phys);
 AABB getBlockAABB(uint8_t x, uint8_t y); //Get the AABB of a tile
 
-uint24_t center_x(AABB bb); //Get the center coords of a AABB
-uint8_t center_y(AABB bb);
+ufix_t center_x(PhysicsBody* p); //Get the center coords of a AABB
+ufix_t center_y(PhysicsBody* p);
 
 //Determine if two bounding boxes are intersecting
-bool detectCollision(AABB bb1, AABB bb2); 
+bool detectCollision(PhysicsBody* p1, PhysicsBody* p2); 
+
+//Check if a point is inside a bounding box
+bool pointInsideBody(PhysicsBody* p, ufix_t x, ufix_t y);
 
 //Determine if a collision occurs with the tilemap
-struct reflection getTileReflect(PhysicsBody* state1, PhysicsBody* state2, bool respectHoles, uint8_t* tiles);
+struct reflection getTileReflect(PhysicsBody* state2, bool respectHoles, uint8_t* tiles);
 
-//This shouldn't need to handle cases where one bounding box is fully inside the other because of the low speed of bullets and tanks.
-struct reflection getReflection(AABB bb1, AABB bb2); 
+//if colliding, push bodies an equal distance apart and return true
+bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2);
 
-bool center_distance(AABB bb1, AABB bb2);
+bool center_distance_lt(PhysicsBody* p1, PhysicsBody* p2, ufix_t dis);
 
 #endif /* H_COLLISION */

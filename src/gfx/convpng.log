@@ -1,20 +1,20 @@
-Opened convpng.ini
+opened convpng.ini
 
---- Global Palette palette ---
-Building palette with [256] available indices ...
-Built palette with [92] indices.
-Palette quality : 100.00%
-Wrote palette image (palette)
+--- palette palette ---
+building palette with [256] available indices ...
+built palette with [256] indices.
+palette quality : 99.98%
+wrote palette image (palette)
 
---- Group tiles_gfx (C) ---
-Using defined palette palette ...
+--- tiles_gfx (C) ---
+using defined palette palette ...
 1:
  tileset : converted!
 
-Converted in 1 s
+converted in 0 s
 
 [warning] image quality might be too low.
 please try grouping similar images, reducing image colors, 
 or selecting a better palette if conversion is not ideal.
 
-Finished!
+finished!

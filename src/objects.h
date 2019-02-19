@@ -29,7 +29,6 @@ typedef enum {
 typedef struct {
 	bool alive; //Whether this bullet is processed
 	PhysicsBody phys;
-	PhysicsBody oldPhys;
 	uint8_t bounces; //Number of times the bullet can bounce off a wall without exploding
 	bool left_tank_hitbox; //Whether the shell has exited the tank hitbox yet. Used to stop bullets from blowing up the tank that fired them.
 } Shell;
@@ -42,8 +41,7 @@ extern const uint8_t max_bounces[];
 typedef struct {
 	bool alive; //Whether this mine is processed
 	PhysicsBody phys;
-	PhysicsBody oldPhys;
-	uint8_t countdown; //Number of physics loops until explosions occur
+	uint24_t countdown; //Number of physics loops until explosions occur
 } Mine;
 
 //Numer of mines each type of tank can have on-screen at any one time
@@ -56,7 +54,6 @@ typedef struct {
 	uint8_t start_x;
 	uint8_t start_y;
 	PhysicsBody phys;
-	PhysicsBody oldPhys;
 	uint8_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
 	uint8_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
 	int8_t bullet_spawn_x; //Position relative to center that bullets will spawn from
@@ -75,6 +72,6 @@ void calc_bullet_spawn(Tank* tank);
 
 //Bounce a shell off a wall
 //Returns whether or not the shell is still alive
-bool shell_ricochet(Shell* shell, Direction dir, uint8_t distance);
+bool shell_ricochet(Shell* shell, Direction dir);
 
 #endif /* H_OBJECTS */
