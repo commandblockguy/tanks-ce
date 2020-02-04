@@ -7,12 +7,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fileioc.h>
 
 #include "constants.h"
 #include "objects.h"
 #include "level.h"
+#include "util.h"
 #ifdef CREATE_LEVEL_APPVAR
-#include "tiles/tilemaps.h"
+#include "tiles/lvlpack.h"
 #endif
 
 uint16_t tileToXPixel(uint8_t tile_x) {
@@ -192,6 +194,48 @@ Tank deserializeTank(SerializedTank ser_tank) {
 	result.phys.width = TANK_SIZE;
 	result.barrel_rot = 0;
 	result.tread_rot = 0;
-	calc_bullet_spawn(&result);
+	//allocate AI
+	switch(result.type) {
+		default:
+		case(PLAYER):
+			result.ai_move = NULL;
+			result.ai_fire = NULL;
+			break;
+		case(IMMOBILE):
+			result.ai_move = NULL;
+			result.ai_fire = calloc(sizeof(struct ai_fire_random), 1);
+			break;
+		case(BASIC):
+			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			break;
+		case(MISSILE):
+			result.ai_move = calloc(sizeof(struct ai_move_away), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_current), 1);
+			break;
+		case(MINE):
+			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			break;
+		case(RED):
+			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			break;
+		case(IMMOB_MISSILE):
+			result.ai_move = NULL;
+			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			break;
+		case(FAST):
+			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			break;
+		case(INVISIBLE):
+			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			break;
+		case(BLACK):
+			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+	}
 	return result;
 }

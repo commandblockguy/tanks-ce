@@ -70,11 +70,6 @@ bool lay_mine(Tank* tank) {
 	return false;
 }
 
-void calc_bullet_spawn(Tank* tank) {
-	tank->bullet_spawn_x = from_ufix(BARREL_LENGTH * fast_cos(tank->barrel_rot));
-	tank->bullet_spawn_y = from_ufix(BARREL_LENGTH * fast_sin(tank->barrel_rot));
-}
-
 void detonate(Mine* mine, uint8_t* tiles) {
 	int j, k;
 	
@@ -128,4 +123,14 @@ bool shell_ricochet(Shell* shell, Direction dir) {
 	if(dir & LEFT || dir & RIGHT)
 		shell->phys.velocity_x *= -1;
 	return true;
+}
+
+bool canShoot(Tank* tank) {
+	int i;
+	for(i = max_shells[tank->type] - 1; i >= 0; i--) {
+		if(!tank->shells[i].alive) {
+			return true;
+		}
+	}
+	return false;
 }

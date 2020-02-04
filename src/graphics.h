@@ -29,4 +29,6 @@ void renderAABB(AABB bb);
 
 void displayUI(void); //Display UI during a mission
 
+void draw_line(LineSeg* ls);
+
 #endif

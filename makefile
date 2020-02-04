@@ -1,15 +1,16 @@
-# ----------------------------
-# Set NAME to the program name
-# Set ICON to the png icon file name
-# Set DESCRIPTION to display within a compatible shell
-# Set COMPRESSED to "YES" to create a compressed program
-# ----------------------------
 
 NAME        ?= TANKS
 COMPRESSED  ?= YES
-ICON        ?= iconc.png
+ICONSRC     ?= iconc.png
 DESCRIPTION ?= "Tanks! CE"
 
 # ----------------------------
 
 include $(CEDEV)/include/.makefile
+
+# ----------------------------
+
+tiles:
+	@$(MAKE) -C src/tiles --no-print-directory
+
+.PHONY: tiles

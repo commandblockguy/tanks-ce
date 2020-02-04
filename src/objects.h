@@ -12,19 +12,22 @@
 #include <string.h>
 
 #include "collision.h"
+#include "ai_data.h"
 
 typedef enum {
 	PLAYER = 0, //blue
-	IMMOBILE, //brown
-	BASIC, //grey
-	MISSILE, //turquoise
-	MINE, //yellow
-	RED,
-	IMMOB_MISSILE, //green
-	FAST, //purple
-	INVISIBLE, //white
-	BLACK
-} TankType;
+	IMMOBILE = 1, //brown
+	BASIC = 2, //grey
+	MISSILE = 3, //turquoise
+	MINE = 4, //yellow
+	RED = 5,
+	IMMOB_MISSILE = 6, //green
+	FAST = 7, //purple
+	INVISIBLE = 8, //white
+	BLACK = 9
+};
+
+typedef uint8_t TankType;
 
 typedef struct {
 	bool alive; //Whether this bullet is processed
@@ -56,22 +59,23 @@ typedef struct {
 	PhysicsBody phys;
 	uint8_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
 	uint8_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
-	int8_t bullet_spawn_x; //Position relative to center that bullets will spawn from
-	int8_t bullet_spawn_y;
 	Shell shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
 	Mine mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
+	union ai_move* ai_move;
+	union ai_fire* ai_fire;
 } Tank;
 
-uint8_t fire_shell(Tank* tank); //PEW PEW PEW
+bool fire_shell(Tank* tank); //PEW PEW PEW
 
-uint8_t lay_mine(Tank* tank); //Lay a mine under the tank
+bool lay_mine(Tank* tank); //Lay a mine under the tank
 
 void detonate(Mine* mine, uint8_t* tiles);
-
-void calc_bullet_spawn(Tank* tank);
 
 //Bounce a shell off a wall
 //Returns whether or not the shell is still alive
 bool shell_ricochet(Shell* shell, Direction dir);
+
+//true if a tank has a slot for a bullet
+bool canShoot(Tank* tank);
 
 #endif /* H_OBJECTS */

@@ -16,22 +16,28 @@
 
 typedef uint8_t tile_t;
 //TODO: change formatting to the following:
-/*
-//Bits 2-0: Block height in half-blocks. 0 for no tile
+//Bits 2-0: Block height in half-blocks, skipping height 0.5
+//0 for no tile, 1 for full block, 3 for 1.5 blocks, 4 for 2 blocks
 //Bits 4-3:
 enum {
 	BLOCK = 0, //Block that can be neither shot nor moved through
 	DESTRUCTIBLE = 8, //Blocks that can be exploded with mines
 	HOLE = 16, //Hole that can be shot over but not moved through
 	DESTROYED = 24//DESTRUCTIBLE blocks that have been removed using mines
-};*/
+};
+/*
 enum {
 	EMPTY = 0,
 	BLOCK,
 	DESTRUCTIBLE,
 	HOLE,
 	DESTROYED
-};
+};*/
+
+//0 = no block
+//1 = full block, as above
+#define tileHeight(tile) (tile & 7)
+#define tileType(tile) (tile & DESTROYED)
 
 typedef struct {
 	//A tank as stored in the level file

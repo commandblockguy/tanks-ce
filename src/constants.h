@@ -16,6 +16,9 @@
 //Comment this out to stop the levels from being bundled with the program
 #define CREATE_LEVEL_APPVAR
 
+//Comment this out to remove the debug overdraws
+#define DBG_DRAW
+
 //Target frame rate
 #define TARGET_FPS 30
 
@@ -31,19 +34,6 @@
 #define TANK_SIZE 13
 #define SHELL_SIZE 3
 #define MINE_SIZE 13
-
-//Shifted by 6 bits
-typedef uint24_t ufix_t;
-typedef int24_t fix_t;
-#define SHIFT_AMOUNT 6
-#define SHIFT_MASK ((1 << SHIFT_AMOUNT) - 1)
-#define float_to_ufix(x)   ((uint24_t)(x * (1 << SHIFT_AMOUNT)))
-#define float_to_fix(x)    (( int24_t)(x * (1 << SHIFT_AMOUNT)))
-#define float_from_ufix(x) ((float)x / (1 << SHIFT_AMOUNT))
-#define to_ufix(x) (x << SHIFT_AMOUNT)
-#define from_ufix(x) (x >> SHIFT_AMOUNT)
-#define multiply_ufix(a, b) (from_ufix(a * b))
-#define divide_ufix(a, b) (to_ufix(a)/b)
 
 //Distance from center of tank new bullets appear
 #define BARREL_LENGTH 5
@@ -103,18 +93,19 @@ typedef int24_t fix_t;
 #define MISSION_NUMBER_TEXT 3
 #define ENEMY_TANK_TEXT 2
 
-#define WHITE      1
-#define BLACK      2
-#define RED        3
-#define BG_COL     4
-#define RHOM_1     5
-#define RHOM_2     6
-#define RIB_SHADOW 7
-#define GOLD       8
-#define TXT_SHADOW 9
-#define LIVES_TXT  10
+#define COL_WHITE      1
+#define COL_BLACK      2
+#define COL_RED        3
+#define COL_BG         4
+#define COL_RHOM_1     5
+#define COL_RHOM_2     6
+#define COL_RIB_SHADOW 7
+#define COL_GOLD       8
+#define COL_TXT_SHADOW 9
+#define COL_LIVES_TXT  10
 
-#define ROT_UNITS_TO_RADIANS M_PI / 128
+#define ROT_UNITS_TO_RADIANS (M_PI / 128.0f)
+#define RADIANS_TO_ROT_UNITS (128.0f / M_PI)
 
 #define SQRT_2 1.41421356237
 
@@ -140,5 +131,8 @@ typedef struct {
 	uint8_t shotCooldown; //How many more ticks before we can fire another shot
 	uint8_t mineCooldown;
 } Game;
+
+extern Tank* tanks;
+extern tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y];
 
 #endif /* H_CONSTANTS */

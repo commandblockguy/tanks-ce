@@ -12,6 +12,14 @@
 #include <string.h>
 
 #include "constants.h"
+#include "util.h"
+
+typedef struct {
+	fix_t x1;
+	fix_t y1;
+	fix_t x2;
+	fix_t y2;
+} LineSeg;
 
 typedef enum {
 	UP    = 1,
@@ -74,5 +82,11 @@ struct reflection getTileReflect(PhysicsBody* state2, bool respectHoles, uint8_t
 bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2);
 
 bool center_distance_lt(PhysicsBody* p1, PhysicsBody* p2, ufix_t dis);
+
+bool seg_collides_bb(LineSeg* ls, PhysicsBody* phys);
+bool seg_collides_seg(LineSeg* line1, LineSeg* line2, fix_t* i_x, fix_t* i_y);
+
+fix_t y_intercept(LineSeg* line, fix_t xPos);
+fix_t x_intercept(LineSeg* line, fix_t yPos);
 
 #endif /* H_COLLISION */

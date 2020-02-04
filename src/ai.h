@@ -11,6 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "constants.h"
 #include "level.h"
+#include "objects.h"
+
+void ai_process_move(Tank* tank);
+void ai_process_fire(Tank* tank);
 
 #endif /* H_AI */

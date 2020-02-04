@@ -3,7 +3,7 @@ opened convpng.ini
 --- palette palette ---
 building palette with [256] available indices ...
 built palette with [256] indices.
-palette quality : 99.98%
+palette quality : 99.97%
 wrote palette image (palette)
 
 --- tiles_gfx (C) ---
