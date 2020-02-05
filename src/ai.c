@@ -93,9 +93,9 @@ void aim_random(Tank* tank) {
 	int8_t i = 0;
 	if(!randInt(0, TARGET_FPS - 1)) tank->ai_fire->random.clockwise = !tank->ai_fire->random.clockwise;
 	if(tank->ai_fire->random.clockwise) {
-		tank->barrel_rot++;
+		tank->barrel_rot += 0x010000;
 	} else {
-		tank->barrel_rot--;
+		tank->barrel_rot -= 0x010000;
 	}
 	if(!canShoot(tank)) return;
 	if(pointingAtTarget(tank, &tanks[0].phys, 1, false)) {

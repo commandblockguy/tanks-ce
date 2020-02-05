@@ -9,6 +9,8 @@
 #include <string.h>
 
 #include <graphx.h>
+#undef NDEBUG
+#include <debug.h>
 
 #include "constants.h"
 #include "objects.h"

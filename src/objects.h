@@ -57,8 +57,8 @@ typedef struct {
 	uint8_t start_x;
 	uint8_t start_y;
 	PhysicsBody phys;
-	uint8_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
-	uint8_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
+	angle_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
+	angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
 	Shell shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
 	Mine mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
 	union ai_move* ai_move;

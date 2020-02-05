@@ -86,9 +86,9 @@
 //120 pixels / 48 px/tile = 2.5 tiles
 #define MINE_EXPLOSION_RADIUS (2.5 * TILE_SIZE)
 
-#define PLAYER_BARREL_ROTATION 8
+#define PLAYER_BARREL_ROTATION DEGREES_TO_ANGLE(5)
 //1/3 of a second for 90 degree rotation
-#define PLAYER_TREAD_ROTATION (64 / (TARGET_FPS / 3))
+#define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_FPS / 3))
 
 //amount of time in milliseconds the mission start screen displays
 #define MISSION_START_TIME 3000
@@ -107,10 +107,8 @@
 #define COL_TXT_SHADOW 9
 #define COL_LIVES_TXT  10
 
-#define ROT_UNITS_TO_RADIANS (M_PI / 128.0f)
-#define RADIANS_TO_ROT_UNITS (128.0f / M_PI)
-
-#define SQRT_2 1.41421356237
+#define ROT_UNITS_TO_RADIANS (M_PI / 8388608.0f)
+#define RADIANS_TO_ROT_UNITS (8388608.0f / M_PI)
 
 // Game status
 enum {

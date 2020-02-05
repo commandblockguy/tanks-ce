@@ -322,7 +322,7 @@ void processShell(Shell* shell, Tank* tank) {
 void handleInput() {
 	Tank* player = &tanks[0];
 	bool moving = true;
-	uint8_t target_rot = 0;
+	angle_t target_rot = 0;
 	uint8_t keys = 0;
 
 	kb_Scan();
@@ -339,47 +339,47 @@ void handleInput() {
 			moving = false;
 			break;
 		case UP:
-			target_rot = 192;
+			target_rot = DEGREES_TO_ANGLE(270);
 			break;
 		case DOWN:
-			target_rot = 64;
+			target_rot = DEGREES_TO_ANGLE(90);
 			break;
 		case LEFT:
-			target_rot = 128;
+			target_rot = DEGREES_TO_ANGLE(180);
 			break;
 		case RIGHT:
-			target_rot = 0;
+			target_rot = DEGREES_TO_ANGLE(0);
 			break;
 		case UP|RIGHT:
-			target_rot = 224;
+			target_rot = DEGREES_TO_ANGLE(315);
 			break;
 		case DOWN|RIGHT:
-			target_rot = 32;
+			target_rot = DEGREES_TO_ANGLE(45);
 			break;
 		case UP|LEFT:
-			target_rot = 160;
+			target_rot = DEGREES_TO_ANGLE(225);
 			break;
 		case DOWN|LEFT:
-			target_rot = 96;
+			target_rot = DEGREES_TO_ANGLE(135);
 	}
 
 	if(moving) {
-		int8_t diff = (int8_t)(player->tread_rot - target_rot);
-		if(diff > 64 || diff < -64) {
-			player->tread_rot += 128;
-			diff = (int8_t)(player->tread_rot - target_rot);
+		int24_t diff = player->tread_rot - target_rot;
+		if(abs(diff) > DEGREES_TO_ANGLE(90)) {
+			player->tread_rot += DEGREES_TO_ANGLE(180);
+			diff = (int24_t)(player->tread_rot - target_rot);
 		}
-		if(diff < -PLAYER_TREAD_ROTATION) {
+		if(diff < -(int24_t)PLAYER_TREAD_ROTATION) {
 			player->tread_rot += PLAYER_TREAD_ROTATION;
-		} else if(diff > PLAYER_TREAD_ROTATION) {
+		} else if(diff > (int24_t)PLAYER_TREAD_ROTATION) {
 			player->tread_rot -= PLAYER_TREAD_ROTATION;
 		} else {
 			player->tread_rot = target_rot;
 		}
 
-		if(diff <= 32 && diff >=-32) {
-			player->phys.position_x += TANK_SPEED_NORMAL * fast_cos(player->tread_rot) / TRIG_SCALE;
-			player->phys.position_y += TANK_SPEED_NORMAL * fast_sin(player->tread_rot) / TRIG_SCALE;
+		if(abs(diff) <= DEGREES_TO_ANGLE(45)) {
+			player->phys.position_x += (int24_t)TANK_SPEED_NORMAL * fast_cos(player->tread_rot) / TRIG_SCALE;
+			player->phys.position_y += (int24_t)TANK_SPEED_NORMAL * fast_sin(player->tread_rot) / TRIG_SCALE;
 		}
 	}
 

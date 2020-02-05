@@ -9,7 +9,8 @@
 #include <string.h>
 
 #include "constants.h"
-#include "debug.h"
+#undef NDEBUG
+#include <debug.h>
 #include "util.h"
 #include "graphx.h"
 
@@ -22,19 +23,21 @@ bool lookups_set = false;
 void gen_lookups(void) {
 	uint8_t i;
 	for(i = 0; i < 64; i++) {
-		sin_table[i] = sin(i * ROT_UNITS_TO_RADIANS) * 256;
+		sin_table[i] = sin(i * M_PI / 128) * 256;
 	}
 	lookups_set = true;
 }
 
-int24_t fast_sin(uint8_t rot) {
+int24_t fast_sin(angle_t angle) {
+    //todo: fix angle
+    angle = angle >> 16;
 	if(!lookups_set) gen_lookups();
-	if(rot <  64 ) return sin_table[rot];
-	if(rot == 64 ) return 256;
-	if(rot <  128) return sin_table[128 - rot];
-	if(rot <  192) return -sin_table[rot - 128];
-	if(rot == 192) return -256;
-				  return -sin_table[256 - rot];
+	if(angle < 64) return sin_table[angle];
+	if(angle == 64) return 256;
+	if(angle < 128) return sin_table[128 - angle];
+	if(angle < 192) return -sin_table[angle - 128];
+	if(angle == 192) return -256;
+				  return -sin_table[256 - angle];
 }
 
 //credit: https://www.dsprelated.com/showarticle/1052.php
@@ -78,7 +81,7 @@ float fast_atan2(float y, float x)
 	{
 		result = -M_PI_2;
 	}
-	return result;
+	return result * (1 << 16);
 }
 
 //ms since last function call
