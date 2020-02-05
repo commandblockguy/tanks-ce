@@ -42,14 +42,6 @@ struct reflection {
 };
 
 typedef struct {
-    //Axis-aligned bounding box
-    uint24_t x1;
-    uint24_t x2; 
-    uint24_t y1;
-    uint24_t y2;
-} AABB;
-
-typedef struct {
 	PhysicsType type;
 	uint24_t position_x; //this is ufix, but gives compiler errors for some reason
 	uint24_t position_y;
@@ -59,9 +51,6 @@ typedef struct {
 	uint24_t height;
 	uint32_t updateTime;
 } PhysicsBody;
-
-AABB getAABB(PhysicsBody* phys);
-AABB getBlockAABB(uint8_t x, uint8_t y); //Get the AABB of a tile
 
 uint24_t center_x(PhysicsBody* p); //Get the center coords of a AABB
 uint24_t center_y(PhysicsBody* p);

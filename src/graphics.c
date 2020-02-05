@@ -160,12 +160,10 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 	for(i = 0; i < level->num_tanks; i++) {
 		//Render tanks
 		int j;
-		AABB bb;
 		Tank* tank = &tanks[i];
 		if(tank->alive) {
-			bb = getAABB(&tank->phys);
 			gfx_SetColor(COL_BLACK);
-			renderAABB(bb);
+            renderPhysicsBody(&tank->phys);
 			gfx_Line(
 				center_x(&tank->phys) / PIXEL_SCALE,
 				center_y(&tank->phys) / PIXEL_SCALE,
@@ -179,21 +177,17 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 		//draw shell hitboxes until I can get sprites
 		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
 			Shell* shell = &tank->shells[j];
-			AABB bb;
 			if(!(shell->alive)) continue;
-			bb = getAABB(&shell->phys);
 			gfx_SetColor(COL_BLACK);
-			renderAABB(bb);
+            renderPhysicsBody(&shell->phys);
 		}
 		//draw mine hitboxes
 		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
 			Mine* mine = &tank->mines[j];
-			AABB bb;
 			if(!mine->countdown) continue;
 			gfx_SetColor(COL_RED);
 			if(mine->alive) gfx_SetColor(COL_BLACK);
-			bb = getAABB(&mine->phys);
-			renderAABB(bb);
+            renderPhysicsBody(&mine->phys);
 		}
 	}
 
@@ -206,8 +200,9 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 
 }
 
-void renderAABB(AABB bb) {
-	gfx_Rectangle(bb.x1 / PIXEL_SCALE, bb.y1 / PIXEL_SCALE, (bb.x2 - bb.x1) / PIXEL_SCALE, (bb.y2 - bb.y1) / PIXEL_SCALE);
+void renderPhysicsBody(PhysicsBody *phys) {
+	gfx_Rectangle(phys->position_x / PIXEL_SCALE, phys->position_y / PIXEL_SCALE,
+	        phys->width / PIXEL_SCALE, phys->height / PIXEL_SCALE);
 }
 
 void draw_line(LineSeg* ls) {

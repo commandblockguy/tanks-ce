@@ -25,7 +25,7 @@ void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display 
 
 void render(uint8_t* tiles, Level* level, Tank* tanks); //Render tilemap, tanks, and UI during the game loop
 
-void renderAABB(AABB bb);
+void renderPhysicsBody(PhysicsBody *phys);
 
 void displayUI(void); //Display UI during a mission
 

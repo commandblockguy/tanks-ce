@@ -19,38 +19,6 @@
 #undef NDEBUG
 #include <debug.h>
 
-AABB getAABB(PhysicsBody* phys) {
-	AABB result;
-	result.x1 = phys->position_x;
-	result.y1 = phys->position_y;
-	result.x2 = phys->position_x + phys->width;
-	result.y2 = phys->position_y + phys->height;
-	return result;
-}
-
-AABB getDetectionAABB(Mine* mine) {
-	AABB result;
-
-	uint24_t center_x = mine->phys.position_x + MINE_SIZE / 2;
-	uint24_t center_y = mine->phys.position_y + MINE_SIZE / 2;
-
-	result.x1 = center_x - MINE_DETECT_RANGE;
-	result.y1 = center_y - MINE_DETECT_RANGE;
-	result.x2 = center_x + MINE_DETECT_RANGE;
-	result.y2 = center_y + MINE_DETECT_RANGE;
-
-	return result;
-}
-
-AABB getBlockAABB(uint8_t x, uint8_t y) {
-	AABB result;
-	result.x1 = tileToXPt(x);
-	result.y1 = tileToYPt(y);
-	result.x2 = tileToXPt(x + 1) - 1;
-	result.y2 = tileToYPt(y + 1) - 1;
-	return result;
-}
-
 uint24_t center_x(PhysicsBody* p) {
 	return p->position_x + p->width / 2;
 }
