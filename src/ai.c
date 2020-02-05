@@ -21,7 +21,7 @@ void move_random(Tank* tank);
 void move_away(Tank* tank);
 void move_toward(Tank* tank);
 
-bool raycast(ufix_t startX, ufix_t startY, uint8_t angle, LineSeg* result);
+bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result);
 bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool future);
 void pointAtPlayer(Tank *tank, PhysicsBody *target);
 
@@ -110,11 +110,11 @@ void aim_reflect(Tank* tank) {
 	if(!canShoot(tank)) return;
 	//Loop through all X values, then all Y values
 	if(ai->scan_dir == 0) {
-		fix_t distance, newPos;
+		uint24_t distance, newPos;
 		//Reflect off of x values
 		uint8_t x, xT, yT;
-		ufix_t rX;
-		fix_t yInt;
+		uint24_t rX;
+		uint24_t yInt;
 		bool left;
 		LineSeg line;
 		tile_t tile;
@@ -137,7 +137,7 @@ void aim_reflect(Tank* tank) {
 		//lineseg between it and the center of tank
 		line.x1 = center_x(&tank->phys);
 		line.y1 = center_y(&tank->phys);
-		line.x2 = 2 * rX - tanks[0].phys.position_x - to_ufix(tanks[0].phys.width) / 2;
+		line.x2 = 2 * rX - tanks[0].phys.position_x - tanks[0].phys.width / 2;
 		line.y2 = center_y(&tanks[0].phys);
 		//check if there is a tile where that lineseg intercepts the X line
 		yInt = y_intercept(&line, rX);
@@ -148,8 +148,8 @@ void aim_reflect(Tank* tank) {
 		gfx_SetColor(COL_RED);
 		draw_line(&line);
 		gfx_SetColor(COL_BLACK);
-		gfx_Line(from_ufix(rX), 0, from_ufix(rX), LCD_HEIGHT);
-		gfx_Line(0, from_ufix(yInt), LCD_WIDTH, from_ufix(yInt));
+		gfx_VertLine(rX, 0, LCD_HEIGHT);
+		gfx_HorizLine(0, yInt, LCD_WIDTH);
 		#endif
 
 		if(xT != 0 && xT < LEVEL_SIZE_X && yT !=0 && yT < LEVEL_SIZE_Y)
@@ -161,11 +161,11 @@ void aim_reflect(Tank* tank) {
 			fire_shell(tank);
 		}
 	} else {
-		fix_t distance, newPos;
+		uint24_t distance, newPos;
 		//Reflect off of y values
 		uint8_t y, xT, yT;
-		ufix_t rY;
-		fix_t xInt;
+		uint24_t rY;
+		int24_t xInt;
 		bool up;
 		LineSeg line;
 		tile_t tile;
@@ -189,7 +189,7 @@ void aim_reflect(Tank* tank) {
 		line.x1 = center_x(&tank->phys);
 		line.y1 = center_y(&tank->phys);
 		line.x2 = center_x(&tanks[0].phys);
-		line.y2 = 2 * rY - tanks[0].phys.position_y - to_ufix(tanks[0].phys.height) / 2;
+		line.y2 = 2 * rY - tanks[0].phys.position_y - tanks[0].phys.height / 2;
 		//check if there is a tile where that lineseg intercepts the X line
 		xInt = x_intercept(&line, rY);
 		xT = ptToXTile(xInt);
@@ -199,8 +199,8 @@ void aim_reflect(Tank* tank) {
 		gfx_SetColor(COL_RED);
 		draw_line(&line);
 		gfx_SetColor(COL_BLACK);
-		gfx_Line(0, from_ufix(rY), LCD_WIDTH, from_ufix(rY));
-		gfx_Line(from_ufix(xInt), 0, from_ufix(xInt), LCD_HEIGHT);
+		gfx_HorizLine(0, rY, LCD_WIDTH);
+		gfx_VertLine(xInt, 0, LCD_HEIGHT);
 		#endif
 		if(xT != 0 && xT < LEVEL_SIZE_X && yT !=0 && yT < LEVEL_SIZE_Y)
 			if(!tileHeight(tile) || tileType(tile) == DESTROYED) return;
@@ -230,7 +230,7 @@ void aim_future(Tank* tank) {
 //credit: https://theshoemaker.de/2016/02/ray-casting-in-2d-grids/
 //though I've rewritten a lot of it
 //returns 0 if hits across x axis, non-zero if y axis
-bool raycast(ufix_t startX, ufix_t startY, uint8_t angle, LineSeg* result) {
+bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result) {
 	int24_t dirX = fast_cos(angle) / 8;
 	int24_t dirY = fast_sin(angle) / 8;
 
@@ -245,8 +245,8 @@ bool raycast(ufix_t startX, ufix_t startY, uint8_t angle, LineSeg* result) {
 	int24_t dtX = (int24_t)(tileToXPt(tileX + (dirX >= 0 ? 1 : 0)) - startX) / dirX;
 	int24_t dtY = (int24_t)(tileToYPt(tileY + (dirY >= 0 ? 1 : 0)) - startY) / dirY;
 
-	int24_t dtXr = dirSignX * to_ufix(TILE_SIZE) / dirX;
-	int24_t dtYr = dirSignY * to_ufix(TILE_SIZE) / dirY;
+	int24_t dtXr = dirSignX * TILE_SIZE / dirX;
+	int24_t dtYr = dirSignY * TILE_SIZE / dirY;
 
 	//while inside the map
 	while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
@@ -284,8 +284,8 @@ bool raycast(ufix_t startX, ufix_t startY, uint8_t angle, LineSeg* result) {
 
 bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool future) {
 	uint8_t bounces;
-	ufix_t posX = center_x(&tank->phys);
-	ufix_t posY = center_y(&tank->phys);
+	uint24_t posX = center_x(&tank->phys);
+	uint24_t posY = center_y(&tank->phys);
 	uint8_t angle = tank->barrel_rot;
 	for(bounces = 0; bounces <= max_bounces; bounces++) {
 		bool reflectAxis;
@@ -314,7 +314,7 @@ bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool
 
 //Point directly at the player with no bounces or motion compensation
 void pointAtPlayer(Tank *tank, PhysicsBody *target) {
-	float dx = float_from_ufix(center_x(target)) - float_from_ufix(center_x(&tank->phys));
-	float dy = float_from_ufix(center_y(target)) - float_from_ufix(center_y(&tank->phys));
+	float dx = center_x(target) - center_x(&tank->phys);
+	float dy = center_y(target) - center_y(&tank->phys);
 	tank->barrel_rot = fast_atan2(dy, dx);
 }

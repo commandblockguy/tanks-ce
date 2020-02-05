@@ -21,6 +21,7 @@
 #include <keypadc.h>
 #include <compression.h>
 #include <fileioc.h>
+#undef NDEBUG
 #include <debug.h>
 
 #include "constants.h"
@@ -49,7 +50,7 @@ Tank* tanks; //List of all active tanks.
 tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y]; //Currently active tilemap data
 
 //todo: remove
-bool raycast(ufix_t startX, ufix_t startY, uint8_t angle, LineSeg* result);
+bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result);
 
 void main(void) {
 	int i;
@@ -80,7 +81,6 @@ void main(void) {
 	game.status = NEXT_LEVEL;
 
 	for(game.mission = 0; game.mission < lvl_pack.num_levels && game.status == NEXT_LEVEL; game.mission++) {
-		int i;
 		//Level loop
 		uint8_t* comp_tiles; //Compressed tile data
 		SerializedTank* ser_tanks;
@@ -95,13 +95,13 @@ void main(void) {
 		tanks = malloc(game.level.num_tanks * sizeof(Tank));
 		ti_Read(ser_tanks, sizeof(SerializedTank), game.level.num_tanks, appVar);
 		for(i = 0; i < game.level.num_tanks; i++) {
-			tanks[i] = deserializeTank(ser_tanks[i]);
+			deserializeTank(&tanks[i], &ser_tanks[i]);
 		}
 
 		//Decompress tile data
 		zx7_Decompress(tiles, comp_tiles);
 
-		gfx_FillScreen(gfx_white);
+		gfx_FillScreen(COL_WHITE);
 		
 		//Display the mission start screen
 		startMission(true);
@@ -177,8 +177,8 @@ void startMission(bool initial) {
 		int j;
 		if(initial) tank->alive = true;
 		if(tank->alive) remaining_tanks++;
-		tank->phys.position_x = to_ufix(tileToXPixel(tank->start_x));
-		tank->phys.position_y = to_ufix(tileToYPixel(tank->start_y));
+		tank->phys.position_x = tileToXPt(tank->start_x);
+		tank->phys.position_y = tileToYPt(tank->start_y);
 		tank->barrel_rot = 0;
 		tank->tread_rot = 192;
 		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
@@ -206,15 +206,15 @@ void processTank(Tank* tank) {
 		ai_process_fire(tank);
 	
 		//Keep the tank inside the map
-		if(tank->phys.position_x < to_ufix(MAP_OFFSET_X)) {
-			tank->phys.position_x = to_ufix(MAP_OFFSET_X);
-		} else if(tank->phys.position_x > to_ufix(MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1)) {
-			tank->phys.position_x = to_ufix(MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1);
+		if(tank->phys.position_x < MAP_OFFSET_X) {
+			tank->phys.position_x = MAP_OFFSET_X;
+		} else if(tank->phys.position_x > (MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1)) {
+			tank->phys.position_x = (MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1);
 		}
-		if(tank->phys.position_y > to_ufix(LCD_WIDTH + 20)) {
-			tank->phys.position_y = to_ufix(0);
-		} else if(tank->phys.position_y > to_ufix(TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE)) {
-			tank->phys.position_y = to_ufix(TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE);
+		if(tank->phys.position_y > LCD_WIDTH * PIXEL_SCALE + 20) {
+			tank->phys.position_y = 0;
+		} else if(tank->phys.position_y > (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE)) {
+			tank->phys.position_y = (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE);
 		}
 	
 		reflect = getTileReflect(&tank->phys, true, tiles);
@@ -243,14 +243,14 @@ void processTank(Tank* tank) {
 			if(!mine->alive) continue;
 			//mine belongs to enemy
 			if(tank != &tanks[0])
-				if(center_distance_lt(&mine->phys, &tanks[0].phys, float_to_ufix(MINE_EXPLOSION_RADIUS))) {
+				if(center_distance_lt(&mine->phys, &tanks[0].phys, MINE_EXPLOSION_RADIUS)) {
 					detonate(mine, tiles);
 					continue;
 				}
 			//mine belongs to our tank
-			if(!center_distance_lt(&mine->phys, &tanks[0].phys, float_to_ufix(MINE_EXPLOSION_RADIUS)))
+			if(!center_distance_lt(&mine->phys, &tanks[0].phys, MINE_EXPLOSION_RADIUS))
 				for(j = 1; j < game.level.num_tanks; j++) {
-					if(center_distance_lt(&mine->phys, &tanks[j].phys, float_to_ufix(MINE_EXPLOSION_RADIUS))) {
+					if(center_distance_lt(&mine->phys, &tanks[j].phys, MINE_EXPLOSION_RADIUS)) {
 						detonate(mine, tiles);
 						break;
 					}
@@ -301,14 +301,14 @@ void processShell(Shell* shell, Tank* tank) {
 		shell->left_tank_hitbox = true;
 	}
 
-	if(shell->phys.position_x < to_ufix(MAP_OFFSET_X)) {
+	if(shell->phys.position_x < MAP_OFFSET_X) {
 		shell_ricochet(shell, LEFT);
-	} else if(shell->phys.position_x > to_ufix(MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - SHELL_SIZE)) {
+	} else if(shell->phys.position_x > MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - SHELL_SIZE) {
 		shell_ricochet(shell, RIGHT);
 	}
-	if(shell->phys.position_y > to_ufix(LCD_WIDTH + 50)) {
+	if(shell->phys.position_y > LCD_WIDTH * PIXEL_SCALE + 50) {
 		shell_ricochet(shell, UP);
-	} else if(shell->phys.position_y > to_ufix(TILE_SIZE * LEVEL_SIZE_Y - SHELL_SIZE)) {
+	} else if(shell->phys.position_y > TILE_SIZE * LEVEL_SIZE_Y - SHELL_SIZE) {
 		shell_ricochet(shell, DOWN);
 	}
 
@@ -378,8 +378,8 @@ void handleInput() {
 		}
 
 		if(diff <= 32 && diff >=-32) {
-			player->phys.position_x += TANK_SPEED_NORMAL * fast_cos(player->tread_rot);
-			player->phys.position_y += TANK_SPEED_NORMAL * fast_sin(player->tread_rot);
+			player->phys.position_x += TANK_SPEED_NORMAL * fast_cos(player->tread_rot) / TRIG_SCALE;
+			player->phys.position_y += TANK_SPEED_NORMAL * fast_sin(player->tread_rot) / TRIG_SCALE;
 		}
 	}
 

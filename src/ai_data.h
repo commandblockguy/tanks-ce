@@ -43,8 +43,8 @@ struct ai_move_toward {
 };
 //Stay away from the player
 struct ai_move_away {
-	ufix_t target_x;
-	ufix_t target_y;
+	uint24_t target_x;
+	uint24_t target_y;
 };
 
 union ai_move {

@@ -59,18 +59,12 @@ typedef struct {
 
 void createLevels(void); //Temporary function to make a level pack
 
-uint16_t tileToXPixel(uint8_t tile_x);
-uint8_t tileToYPixel(uint8_t tile_y);
+uint24_t tileToXPt(uint8_t x);
+uint24_t tileToYPt(uint8_t y);
 
-ufix_t tileToXPt(uint8_t x);
-ufix_t tileToYPt(uint8_t y);
+uint8_t ptToXTile(uint24_t x);
+uint8_t ptToYTile(uint24_t y);
 
-uint8_t pixelToXTile(uint24_t pix_x);
-uint8_t pixelToYTile(uint8_t pix_x);
-
-uint8_t ptToXTile(ufix_t x);
-uint8_t ptToYTile(ufix_t y);
-
-Tank deserializeTank(SerializedTank ser_tank); //Convert a serialized tank into an actual one
+void deserializeTank(Tank *tank, SerializedTank *ser_tank); //Convert a serialized tank into an actual one
 
 #endif

@@ -15,25 +15,25 @@
 
 void gen_lookups(void);
 
-fix_t sin_table[64];
+int24_t sin_table[64];
 
 bool lookups_set = false;
 
 void gen_lookups(void) {
 	uint8_t i;
 	for(i = 0; i < 64; i++) {
-		sin_table[i] = float_to_fix( sin(i * ROT_UNITS_TO_RADIANS));
+		sin_table[i] = sin(i * ROT_UNITS_TO_RADIANS) * 256;
 	}
 	lookups_set = true;
 }
 
-fix_t fast_sin(uint8_t rot) {
+int24_t fast_sin(uint8_t rot) {
 	if(!lookups_set) gen_lookups();
 	if(rot <  64 ) return sin_table[rot];
-	if(rot == 64 ) return to_ufix(1);
+	if(rot == 64 ) return 256;
 	if(rot <  128) return sin_table[128 - rot];
 	if(rot <  192) return -sin_table[rot - 128];
-	if(rot == 192) return to_ufix(-1);
+	if(rot == 192) return -256;
 				  return -sin_table[256 - rot];
 }
 
@@ -43,14 +43,13 @@ float fast_atan2(float y, float x)
 	const float n1 = 0.97239411f * RADIANS_TO_ROT_UNITS;
 	const float n2 = -0.19194795f * RADIANS_TO_ROT_UNITS;
 	float result = 0.0f;
-	return 0;
 	if (x != 0.0f)
 	{
 		union { float flVal; uint32_t nVal; } tYSign;
 		union { float flVal; uint32_t nVal; } tXSign;
 		tYSign.flVal = y;
 		tXSign.flVal = x;
-		if (fabs(x) >= fabs(y))
+		if (abs(x) >= abs(y))
 		{
 			float z = y / x;
 			union { float flVal; uint32_t nVal; } tOffset = { M_PI * RADIANS_TO_ROT_UNITS };
@@ -66,9 +65,9 @@ float fast_atan2(float y, float x)
 			float z = x / y;
 			union { float flVal; uint32_t nVal; } tOffset = { M_PI_2 * RADIANS_TO_ROT_UNITS };
 			// Add or subtract PI/2 based on y's sign.
-			tOffset.nVal |= tYSign.nVal & 0x80000000u;			
+			tOffset.nVal |= tYSign.nVal & 0x80000000u;
 			result = tOffset.flVal;
-			result -= (n1 + n2 * z * z) * z;			
+			result -= (n1 + n2 * z * z) * z;
 		}
 	}
 	else if (y > 0.0f)

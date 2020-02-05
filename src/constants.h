@@ -22,21 +22,24 @@
 //Target frame rate
 #define TARGET_FPS 30
 
+// Number of physics units per pixel
+#define PIXEL_SCALE 256
+
 //Offset from sides of screen
-#define MAP_OFFSET_X 16
+#define MAP_OFFSET_X (16 * PIXEL_SCALE)
 
 //Size of the gameplay area in tiles
 #define LEVEL_SIZE_X 22
 #define LEVEL_SIZE_Y 17
 
 //Pixel size of each square object
-#define TILE_SIZE 13
-#define TANK_SIZE 13
-#define SHELL_SIZE 3
-#define MINE_SIZE 13
+#define TILE_SIZE (13 * PIXEL_SCALE)
+#define TANK_SIZE (13 * PIXEL_SCALE)
+#define SHELL_SIZE (3 * PIXEL_SCALE)
+#define MINE_SIZE (13 * PIXEL_SCALE)
 
 //Distance from center of tank new bullets appear
-#define BARREL_LENGTH 5
+#define BARREL_LENGTH (5 * PIXEL_SCALE)
 
 //148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
 #define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) //TODO
@@ -78,7 +81,7 @@
 #define MINE_COOLDOWN 10
 
 //TODO: Radius in pixels that enemy tanks will cause mines to explode
-#define MINE_DETECT_RANGE 20
+#define MINE_DETECT_RANGE (20 * PIXEL_SCALE)
 
 //120 pixels / 48 px/tile = 2.5 tiles
 #define MINE_EXPLOSION_RADIUS (2.5 * TILE_SIZE)

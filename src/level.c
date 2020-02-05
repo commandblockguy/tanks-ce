@@ -17,42 +17,31 @@
 #include "tiles/lvlpack.h"
 #endif
 
-uint16_t tileToXPixel(uint8_t tile_x) {
-	return MAP_OFFSET_X + tile_x * TILE_SIZE;
+#undef NDEBUG
+#include <debug.h>
+
+uint24_t tileToXPt(uint8_t x) {
+    uint24_t result = MAP_OFFSET_X + x * TILE_SIZE;
+    return result;
 }
 
-uint8_t tileToYPixel(uint8_t tile_y) {
-	return tile_y * TILE_SIZE;
+uint24_t tileToYPt(uint8_t y) {
+    uint24_t result = y * TILE_SIZE;
+    return result;
 }
 
-ufix_t tileToXPt(uint8_t x) {
-	return to_ufix(tileToXPixel(x));
+uint8_t ptToXTile(uint24_t x) {
+    return (x - MAP_OFFSET_X) / TILE_SIZE;
 }
 
-ufix_t tileToYPt(uint8_t y) {
-	return to_ufix(tileToYPixel(y));
-}
-
-uint8_t pixelToXTile(uint24_t pix_x) {
-	return (pix_x - MAP_OFFSET_X) / TILE_SIZE;
-}
-
-uint8_t pixelToYTile(uint8_t pix_y) {
-	return pix_y / TILE_SIZE;
-}
-
-uint8_t ptToXTile(ufix_t x) {
-	return pixelToXTile(from_ufix(x));
-}
-
-uint8_t ptToYTile(ufix_t y) {
-	return pixelToYTile(from_ufix(y));
+uint8_t ptToYTile(uint24_t y) {
+    return y / TILE_SIZE;
 }
 
 void createLevels(void) {
 	#ifdef CREATE_LEVEL_APPVAR
 	#define s(n) {sizeof(lvl##n##_compressed), sizeof(ser_tanks##n)/sizeof(ser_tanks##n[0])}
-	SerializedTank* ser_tanks; //TODO: change to a 2D array somehow?
+	const SerializedTank* ser_tanks; //TODO: change to a 2D array somehow?
 	const SerializedTank ser_tanks1[]  = {{PLAYER, 2, 6}, {IMMOBILE, 19, 6}};
 	const SerializedTank ser_tanks2[]  = {{PLAYER, 2, 13}, {BASIC, 19, 3}};
 	const SerializedTank ser_tanks3[]  = {{PLAYER, 2, 8}, {BASIC, 5, 1}, {BASIC, 18, 15}, {IMMOBILE, 19, 8}};
@@ -183,59 +172,57 @@ void createLevels(void) {
 	#endif
 }
 
-Tank deserializeTank(SerializedTank ser_tank) {
-	Tank result = {0};
-	result.type = ser_tank.type;
-	result.start_x = ser_tank.start_x;
-	result.start_y = ser_tank.start_y;
-	result.phys.position_x = tileToXPt(ser_tank.start_x);
-	result.phys.position_y = tileToYPt(ser_tank.start_y);
-	result.phys.height = TANK_SIZE;
-	result.phys.width = TANK_SIZE;
-	result.barrel_rot = 0;
-	result.tread_rot = 0;
+void deserializeTank(Tank* tank, SerializedTank *ser_tank) {
+	tank->type = ser_tank->type;
+	tank->start_x = ser_tank->start_x;
+	tank->start_y = ser_tank->start_y;
+	tank->phys.position_x = tileToXPt(ser_tank->start_x);
+	tank->phys.position_y = tileToYPt(ser_tank->start_y);
+	tank->phys.height = TANK_SIZE;
+	tank->phys.width = TANK_SIZE;
+	tank->barrel_rot = 0;
+	tank->tread_rot = 0;
 	//allocate AI
-	switch(result.type) {
+	switch(tank->type) {
 		default:
 		case(PLAYER):
-			result.ai_move = NULL;
-			result.ai_fire = NULL;
+			tank->ai_move = NULL;
+			tank->ai_fire = NULL;
 			break;
 		case(IMMOBILE):
-			result.ai_move = NULL;
-			result.ai_fire = calloc(sizeof(struct ai_fire_random), 1);
+			tank->ai_move = NULL;
+			tank->ai_fire = calloc(sizeof(struct ai_fire_random), 1);
 			break;
 		case(BASIC):
-			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
 			break;
 		case(MISSILE):
-			result.ai_move = calloc(sizeof(struct ai_move_away), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_current), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_away), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_current), 1);
 			break;
 		case(MINE):
-			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
 			break;
 		case(RED):
-			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
 			break;
 		case(IMMOB_MISSILE):
-			result.ai_move = NULL;
-			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			tank->ai_move = NULL;
+			tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
 			break;
 		case(FAST):
-			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
 			break;
 		case(INVISIBLE):
-			result.ai_move = calloc(sizeof(struct ai_move_random), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
 			break;
 		case(BLACK):
-			result.ai_move = calloc(sizeof(struct ai_move_toward), 1);
-			result.ai_fire = calloc(sizeof(struct ai_fire_future), 1);
+			tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
+			tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
 	}
-	return result;
 }

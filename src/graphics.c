@@ -134,14 +134,14 @@ void redraw(uint8_t* tiles, Level* level) {
 	tilemap.tiles 		= tileset_tiles;
 	tilemap.type_width 	= gfx_tile_no_pow2;
 	tilemap.type_height = gfx_tile_no_pow2;
-	tilemap.tile_height = TILE_SIZE;
-	tilemap.tile_width	= TILE_SIZE;
+	tilemap.tile_height = TILE_SIZE / PIXEL_SCALE;
+	tilemap.tile_width	= TILE_SIZE / PIXEL_SCALE;
 	tilemap.draw_height	= LEVEL_SIZE_Y;
 	tilemap.draw_width 	= LEVEL_SIZE_X;
 	tilemap.height 		= LEVEL_SIZE_Y;
 	tilemap.width		= LEVEL_SIZE_X;
 	tilemap.y_loc		= 0;
-	tilemap.x_loc		= MAP_OFFSET_X;
+	tilemap.x_loc		= MAP_OFFSET_X / PIXEL_SCALE;
 
 	gfx_FillScreen(COL_WHITE);
 
@@ -165,12 +165,12 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 			gfx_SetColor(COL_BLACK);
 			renderAABB(bb);
 			gfx_Line(
-				from_ufix(center_x(&tank->phys)),
-				from_ufix(center_y(&tank->phys)),
-				from_ufix(center_x(&tank->phys) + fast_cos(tank->barrel_rot) * BARREL_LENGTH),
-				from_ufix(center_y(&tank->phys) + fast_sin(tank->barrel_rot) * BARREL_LENGTH));
+				center_x(&tank->phys) / PIXEL_SCALE,
+				center_y(&tank->phys) / PIXEL_SCALE,
+				center_x(&tank->phys) / PIXEL_SCALE + fast_cos(tank->barrel_rot) * BARREL_LENGTH / PIXEL_SCALE / TRIG_SCALE,
+				center_y(&tank->phys) / PIXEL_SCALE + fast_sin(tank->barrel_rot) * BARREL_LENGTH / PIXEL_SCALE / TRIG_SCALE);
 			gfx_SetTextFGColor(COL_RED);
-			gfx_SetTextXY(from_ufix(tank->phys.position_x) + 1, from_ufix(tank->phys.position_y) + 1);
+			gfx_SetTextXY(tank->phys.position_x / PIXEL_SCALE + 1, tank->phys.position_y / PIXEL_SCALE + 1);
 			gfx_PrintUInt(tank->type, 1);
 		}
 
@@ -205,15 +205,15 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 }
 
 void renderAABB(AABB bb) {
-	gfx_Rectangle(bb.x1, bb.y1, bb.x2 - bb.x1, bb.y2 - bb.y1);
+	gfx_Rectangle(bb.x1 / PIXEL_SCALE, bb.y1 / PIXEL_SCALE, (bb.x2 - bb.x1) / PIXEL_SCALE, (bb.y2 - bb.y1) / PIXEL_SCALE);
 }
 
 void draw_line(LineSeg* ls) {
 	gfx_Line(
-		from_fix(ls->x1),
-		from_fix(ls->y1),
-		from_fix(ls->x2),
-		from_fix(ls->y2)
+		ls->x1 / PIXEL_SCALE,
+		ls->y1 / PIXEL_SCALE,
+		ls->x2 / PIXEL_SCALE,
+		ls->y2 / PIXEL_SCALE
 	);
 }
 

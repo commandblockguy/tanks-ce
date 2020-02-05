@@ -14,7 +14,7 @@
 #include "collision.h"
 #include "ai_data.h"
 
-typedef enum {
+enum {
 	PLAYER = 0, //blue
 	IMMOBILE = 1, //brown
 	BASIC = 2, //grey
