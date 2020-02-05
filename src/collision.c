@@ -88,8 +88,7 @@ bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles, tile_t* tiles
 }
 
 //TODO: if three corners are hit, move diagonally out
-struct reflection getTileReflect(PhysicsBody* p, bool respectHoles, uint8_t* tiles) {
-	struct reflection result = {false};
+void processReflection(struct reflection *result, PhysicsBody *p, bool respectHoles) {
 
 	//Figure out if the four corners are colliding
 	bool	topRight = checkTileCollision(p->position_x + p->width, p->position_y, respectHoles, tiles);
@@ -100,19 +99,19 @@ struct reflection getTileReflect(PhysicsBody* p, bool respectHoles, uint8_t* til
 	bool double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
 	bool double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
 
-	uint24_t dis_up	= -1;
+	uint24_t dis_up	   = -1;
 	uint24_t dis_down  = -1;
 	uint24_t dis_left  = -1;
 	uint24_t dis_right = -1;
 
-	result.colliding = (topRight || bottomRight || topLeft || bottomLeft);
+	result->colliding = (topRight || bottomRight || topLeft || bottomLeft);
 
-	result.dir = 0;
+	result->dir = 0;
 
-	if(!result.colliding) return result;
+	if(!result->colliding) return;
 
 	if((topRight || bottomRight) && !double_y) {
-		dis_right = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width) + 1);
+		dis_right = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width));
 	}
 	if((topLeft || bottomLeft) && !double_y) {
 		dis_left = tileToXPt(ptToXTile(p->position_x) + 1) - p->position_x;
@@ -121,28 +120,26 @@ struct reflection getTileReflect(PhysicsBody* p, bool respectHoles, uint8_t* til
 		dis_up = tileToYPt(ptToYTile(p->position_y) + 1) - p->position_y;
 	}
 	if((bottomLeft || bottomRight) && !double_x) {
-		dis_down = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height) + 1);
+		dis_down = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height));
 	}
 
 	//pick the direction with the smallest distance
 	if(dis_up <= dis_left && dis_up <= dis_right) {
-		result.dir = UP;
+		result->dir = UP;
 		p->position_y += dis_up;
 	}
 	if(dis_left < dis_up && dis_left < dis_down) {
-		result.dir = LEFT;
+		result->dir = LEFT;
 		p->position_x += dis_left;
 	}
 	if(dis_down <= dis_left && dis_down <= dis_right) {
-		result.dir = DOWN;
+		result->dir = DOWN;
 		p->position_y -= dis_down;
 	}
 	if(dis_right < dis_up && dis_right < dis_down) {
-		result.dir = RIGHT;
+		result->dir = RIGHT;
 		p->position_x -= dis_right;
 	}
-
-	return result;
 }
 
 bool pointInsideBody(PhysicsBody* p, uint24_t x, uint24_t y) {

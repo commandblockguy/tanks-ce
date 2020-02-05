@@ -216,8 +216,8 @@ void processTank(Tank* tank) {
 		} else if(tank->phys.position_y > (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE)) {
 			tank->phys.position_y = (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE);
 		}
-	
-		reflect = getTileReflect(&tank->phys, true, tiles);
+
+        processReflection(&reflect, &tank->phys, true);
 	
 		for(i = game.level.num_tanks - 1; i >= 0; i--) {
 			if(tanks[i].alive)
@@ -312,7 +312,7 @@ void processShell(Shell* shell, Tank* tank) {
 		shell_ricochet(shell, DOWN);
 	}
 
-	reflect = getTileReflect(&shell->phys, false, tiles);
+    processReflection(&reflect, &shell->phys, false);
 
 	if(reflect.colliding) {
 		shell_ricochet(shell, reflect.dir);

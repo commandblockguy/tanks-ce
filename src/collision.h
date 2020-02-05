@@ -73,7 +73,7 @@ bool detectCollision(PhysicsBody* p1, PhysicsBody* p2);
 bool pointInsideBody(PhysicsBody* p, uint24_t x, uint24_t y);
 
 //Determine if a collision occurs with the tilemap
-struct reflection getTileReflect(PhysicsBody* state2, bool respectHoles, uint8_t* tiles);
+void processReflection(struct reflection *result, PhysicsBody *p, bool respectHoles);
 
 //if colliding, push bodies an equal distance apart and return true
 bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2);
