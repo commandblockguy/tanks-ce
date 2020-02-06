@@ -40,48 +40,53 @@ int24_t fast_sin(angle_t angle) {
 				  return -sin_table[256 - angle];
 }
 
-//credit: https://www.dsprelated.com/showarticle/1052.php
-float fast_atan2(float y, float x)
-{
-	const float n1 = 0.97239411f * RADIANS_TO_ROT_UNITS;
-	const float n2 = -0.19194795f * RADIANS_TO_ROT_UNITS;
-	float result = 0.0f;
-	if (x != 0.0f)
-	{
-		union { float flVal; uint32_t nVal; } tYSign;
-		union { float flVal; uint32_t nVal; } tXSign;
-		tYSign.flVal = y;
-		tXSign.flVal = x;
-		if (abs(x) >= abs(y))
-		{
-			float z = y / x;
-			union { float flVal; uint32_t nVal; } tOffset = { M_PI * RADIANS_TO_ROT_UNITS };
-			// Add or subtract PI based on y's sign.
-			tOffset.nVal |= tYSign.nVal & 0x80000000u;
-			// No offset if x is positive, so multiply by 0 or based on x's sign.
-			tOffset.nVal *= tXSign.nVal >> 31;
-			result = tOffset.flVal;
-			result += (n1 + n2 * z * z) * z;
-		}
-		else // Use atan(y/x) = pi/2 - atan(x/y) if |y/x| > 1.
-		{
-			float z = x / y;
-			union { float flVal; uint32_t nVal; } tOffset = { M_PI_2 * RADIANS_TO_ROT_UNITS };
-			// Add or subtract PI/2 based on y's sign.
-			tOffset.nVal |= tYSign.nVal & 0x80000000u;
-			result = tOffset.flVal;
-			result -= (n1 + n2 * z * z) * z;
-		}
-	}
-	else if (y > 0.0f)
-	{
-		result = M_PI_2;
-	}
-	else if (y < 0.0f)
-	{
-		result = -M_PI_2;
-	}
-	return result * (1 << 16);
+int24_t qmul(int24_t a, int24_t b) {
+    return (a >> 12) * (b >> 11);
+}
+
+int24_t qdiv(int24_t a, int24_t b) {
+    int24_t a1 = a * (1 << 7);
+    int24_t d = (a1 / b);
+    return d * (1 << 16);
+}
+
+int24_t nabs(int24_t x) {
+    if(x > 0) x = -x;
+    return x;
+}
+
+// Credit: https://geekshavefeelings.com/posts/fixed-point-atan2
+uint24_t fast_atan2(int24_t y, int24_t x) {
+    if (x == y) { // x/y or y/x would return -1 since 1 isn't representable
+        if (y > 0) { // 1/8
+            return DEGREES_TO_ANGLE(360 / 8);
+        } else if (y < 0) { // 5/8
+            return DEGREES_TO_ANGLE(360 / 8 * 5);
+        } else { // x = y = 0
+            return 0;
+        }
+    }
+    int24_t nabs_y = nabs(y);
+    int24_t nabs_x = nabs(x);
+    if (nabs_x < nabs_y) { // octants 1, 4, 5, 8
+        int24_t y_over_x = qdiv(y, x);
+        int24_t correction = qmul(Q_FROM_FLOAT(0.273 * M_1_PI), nabs(y_over_x));
+        int24_t unrotated = qmul(Q_FROM_FLOAT(0.25 + 0.273 * M_1_PI) + correction, y_over_x);
+        if (x > 0) { // octants 1, 8
+            return unrotated;
+        } else { // octants 4, 5
+            return DEGREES_TO_ANGLE(180) + unrotated;
+        }
+    } else { // octants 2, 3, 6, 7
+        int24_t x_over_y = qdiv(x, y);
+        int24_t correction = qmul(Q_FROM_FLOAT(0.273 * M_1_PI), nabs(x_over_y));
+        int24_t unrotated = qmul(Q_FROM_FLOAT(0.25 + 0.273 * M_1_PI) + correction, x_over_y);
+        if (y > 0) { // octants 2, 3
+            return DEGREES_TO_ANGLE(90) - unrotated;
+        } else { // octants 6, 7
+            return DEGREES_TO_ANGLE(270) - unrotated;
+        }
+    }
 }
 
 //ms since last function call

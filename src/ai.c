@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+#undef NDEBUG
+#include <debug.h>
 
 #include "constants.h"
 #include "objects.h"
@@ -314,7 +315,7 @@ bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool
 
 //Point directly at the player with no bounces or motion compensation
 void pointAtPlayer(Tank *tank, PhysicsBody *target) {
-	float dx = center_x(target) - center_x(&tank->phys);
-	float dy = center_y(target) - center_y(&tank->phys);
+	int24_t dx = center_x(target) - center_x(&tank->phys);
+	int24_t dy = center_y(target) - center_y(&tank->phys);
 	tank->barrel_rot = fast_atan2(dy, dx);
 }
