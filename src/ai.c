@@ -17,22 +17,7 @@
 #include "util.h"
 #include "graphx.h" //debug reasons
 #include "graphics.h" //more debug reasons
-
-void move_random(Tank* tank);
-void move_away(Tank* tank);
-void move_toward(Tank* tank);
-
-bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result);
-bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool future);
-void pointAtPlayer(Tank *tank, PhysicsBody *target);
-
-void aim_random(Tank* tank);
-
-void aim_reflect(Tank* tank);
-
-void aim_current(Tank* tank);
-
-void aim_future(Tank* tank);
+#include "ai.h"
 
 void ai_process_move(Tank* tank) {
 	switch(tank->type) {
@@ -87,9 +72,9 @@ void move_toward(Tank* tank) {
 //Spin randomly rotation speed:
 //Angle 1: 10.78 degrees
 //Angle 2: 36.25 degrees
-//delta: 25.47 degrees = 28.5 rot units
+//delta: 25.47 degrees = 28.5 * 2^16 rot units
 //t: 1 s
-//Basically 1 rot unit per frame.
+//Basically 1 << 16 rot unit per frame.
 void aim_random(Tank* tank) {
 	int8_t i = 0;
 	if(!randInt(0, TARGET_FPS - 1)) tank->ai_fire->random.clockwise = !tank->ai_fire->random.clockwise;
@@ -231,17 +216,16 @@ void aim_future(Tank* tank) {
 //credit: https://theshoemaker.de/2016/02/ray-casting-in-2d-grids/
 //though I've rewritten a lot of it
 //returns 0 if hits across x axis, non-zero if y axis
-bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result) {
-	int24_t dirX = fast_cos(angle) / 8;
-	int24_t dirY = fast_sin(angle) / 8;
+bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result) {
+	int24_t dirX = fast_cos(angle) / 32;
+	int24_t dirY = fast_sin(angle) / 32;
 
 	int8_t dirSignX = dirX >= 0 ? 1 : -1;
 	int8_t dirSignY = dirY >= 0 ? 1 : -1;
 
-	uint24_t curX, curY;
 	int8_t tileX = ptToXTile(startX);
 	int8_t tileY = ptToYTile(startY);
-	float t = 0;
+	int24_t t = 0;
 
 	int24_t dtX = (int24_t)(tileToXPt(tileX + (dirX >= 0 ? 1 : 0)) - startX) / dirX;
 	int24_t dtY = (int24_t)(tileToYPt(tileY + (dirY >= 0 ? 1 : 0)) - startY) / dirY;
@@ -249,9 +233,13 @@ bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result) {
 	int24_t dtXr = dirSignX * TILE_SIZE / dirX;
 	int24_t dtYr = dirSignY * TILE_SIZE / dirY;
 
+	//dbg_sprintf(dbgout, "dtXr = %i, dtYr = %i\n", dtXr, dtYr);
+
 	//while inside the map
 	while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
 		tile_t tile = tiles[tileX + LEVEL_SIZE_X * tileY];
+
+		//dbg_sprintf(dbgout, "tileX: %i, tileY: %i, t: %i, dtX: %i, dtY: %i, tile: %X\n", tileX, tileY, t, dtX, dtY, tile);
 
 		if(tileHeight(tile) && tileType(tile) != DESTROYED) {
 			break;
@@ -287,7 +275,7 @@ bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool
 	uint8_t bounces;
 	uint24_t posX = center_x(&tank->phys);
 	uint24_t posY = center_y(&tank->phys);
-	uint8_t angle = tank->barrel_rot;
+	angle_t angle = tank->barrel_rot;
 	for(bounces = 0; bounces <= max_bounces; bounces++) {
 		bool reflectAxis;
 		LineSeg line;
@@ -297,13 +285,15 @@ bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool
 		draw_line(&line);
 		#endif
 		if(seg_collides_bb(&line, target)) {
+		    gfx_BlitBuffer();
+		    delay(500);
 			return true;
 		}
 		//move pos to new position and reflect angle
 		posX = line.x2;
 		posY = line.y2;
 		if(!reflectAxis) {
-			//reflect X compnent
+			//reflect X component
 			angle = 128 - angle;
 		} else {
 			//reflect Y component

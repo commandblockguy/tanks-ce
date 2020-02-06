@@ -70,7 +70,7 @@ bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2);
 bool center_distance_lt(PhysicsBody* p1, PhysicsBody* p2, uint24_t dis);
 
 bool seg_collides_bb(LineSeg* ls, PhysicsBody* phys);
-bool seg_collides_seg(LineSeg* line1, LineSeg* line2, int24_t* i_x, int24_t* i_y);
+bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* intercept_x, int24_t* intercept_y);
 
 int24_t y_intercept(LineSeg* line, int24_t xPos);
 int24_t x_intercept(LineSeg* line, int24_t yPos);

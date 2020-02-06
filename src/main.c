@@ -50,7 +50,7 @@ Tank* tanks; //List of all active tanks.
 tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y]; //Currently active tilemap data
 
 //todo: remove
-bool raycast(uint24_t startX, uint24_t startY, uint8_t angle, LineSeg* result);
+bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result);
 
 void main(void) {
 	int i;

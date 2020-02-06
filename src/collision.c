@@ -167,9 +167,9 @@ bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2) {
 }
 
 //todo: optimize?
-bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* i_x, int24_t* i_y) {
-	int24_t p0_x = l1->x1, p1_x = l1->x2, p2_x = l2->x1, p3_x = l2->x2;
-	int24_t p0_y = l1->y1, p1_y = l1->y2, p2_y = l2->y1, p3_y = l2->y2;
+bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* intercept_x, int24_t* intercept_y) {
+	int24_t p0_x = l1->x1 >> 4, p1_x = l1->x2 >> 4, p2_x = l2->x1 >> 4, p3_x = l2->x2 >> 4;
+	int24_t p0_y = l1->y1 >> 4, p1_y = l1->y2 >> 4, p2_y = l2->y1 >> 4, p3_y = l2->y2 >> 4;
 	int24_t s1_x, s1_y, s2_x, s2_y;
 	int24_t d, s, t;
 	s1_x = p1_x - p0_x;
@@ -183,11 +183,10 @@ bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* i_x, int24_t* i_y) {
 
 	if ((s >= 0) == (d >= 0) && abs(s) <= abs(d) && (t >= 0) == (d >= 0) && abs(t) <= abs(d)) {
 		//  Collision detected
-		//Untested, may not work
-		if (i_x != NULL)
-			*i_x = p0_x + ((float)t * s1_x / d);
-		if (i_y != NULL)
-			*i_y = p0_y + ((float)t * s1_y / d);
+		if (intercept_x != NULL)
+			*intercept_x = p0_x + ((float)t * s1_x / d);
+		if (intercept_y != NULL)
+			*intercept_y = p0_y + ((float)t * s1_y / d);
 		return 1;
 	}
 
