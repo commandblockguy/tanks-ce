@@ -96,11 +96,10 @@ void aim_reflect(Tank* tank) {
 	if(!canShoot(tank)) return;
 	//Loop through all X values, then all Y values
 	if(ai->scan_dir == 0) {
-		uint24_t distance, newPos;
 		//Reflect off of x values
 		uint8_t x, xT, yT;
 		uint24_t rX;
-		uint24_t yInt;
+		int24_t yInt;
 		bool left;
 		LineSeg line;
 		tile_t tile;
@@ -139,7 +138,10 @@ void aim_reflect(Tank* tank) {
 		#endif
 
 		if(xT != 0 && xT < LEVEL_SIZE_X && yT !=0 && yT < LEVEL_SIZE_Y)
-			if(!tileHeight(tile) || tileType(tile) == DESTROYED) return;
+			if(!tileHeight(tile) || tileType(tile) == DESTROYED)  {
+			    //dbg_sprintf(dbgout, "No tile at intersect point (%u, %u) (is %X)\n", xT, yT, tile);
+			    return;
+			}
 		//if so, check if pointingAtTarget
 		tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
 		if(pointingAtTarget(tank, &tanks[0].phys, max_bounces[tank->type], false)) {
@@ -147,7 +149,6 @@ void aim_reflect(Tank* tank) {
 			fire_shell(tank);
 		}
 	} else {
-		uint24_t distance, newPos;
 		//Reflect off of y values
 		uint8_t y, xT, yT;
 		uint24_t rY;
@@ -233,7 +234,18 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result) {
 	int24_t dtXr = dirSignX * TILE_SIZE / dirX;
 	int24_t dtYr = dirSignY * TILE_SIZE / dirY;
 
-	//dbg_sprintf(dbgout, "dtXr = %i, dtYr = %i\n", dtXr, dtYr);
+	if(dirX == 0) {
+	    dtXr = INT24_MAX;
+        dtX = INT24_MAX;
+	}
+
+    if(dirY == 0) {
+        dtYr = INT24_MAX;
+        dtY = INT24_MAX;
+    }
+
+    //dbg_sprintf(dbgout, "start: (%i, %i), angle: %u\n", startX, startY, angle >> 16);
+	//dbg_sprintf(dbgout, "dtXr = %i, dtYr = %i, dirX: %i, dirY: %i\n", dtXr, dtYr, dirX, dirY);
 
 	//while inside the map
 	while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
@@ -294,10 +306,10 @@ bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool
 		posY = line.y2;
 		if(!reflectAxis) {
 			//reflect X component
-			angle = 128 - angle;
+			angle = DEGREES_TO_ANGLE(180) - angle;
 		} else {
 			//reflect Y component
-			angle = 0 - angle;
+			angle = -angle;
 		}
 	}
 	return 0;
