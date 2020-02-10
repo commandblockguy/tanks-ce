@@ -136,14 +136,14 @@ void redraw(uint8_t* tiles, Level* level) {
 	tilemap.tiles 		= tileset_tiles;
 	tilemap.type_width 	= gfx_tile_no_pow2;
 	tilemap.type_height = gfx_tile_no_pow2;
-	tilemap.tile_height = TILE_SIZE / PIXEL_SCALE;
-	tilemap.tile_width	= TILE_SIZE / PIXEL_SCALE;
+	tilemap.tile_height = SCREEN_DELTA_X(TILE_SIZE);
+	tilemap.tile_width	= SCREEN_DELTA_Y(TILE_SIZE);
 	tilemap.draw_height	= LEVEL_SIZE_Y;
 	tilemap.draw_width 	= LEVEL_SIZE_X;
 	tilemap.height 		= LEVEL_SIZE_Y;
 	tilemap.width		= LEVEL_SIZE_X;
-	tilemap.y_loc		= 0;
-	tilemap.x_loc		= MAP_OFFSET_X / PIXEL_SCALE;
+	tilemap.y_loc		= SCREEN_Y(0);
+	tilemap.x_loc		= SCREEN_X(0);
 
 	gfx_FillScreen(COL_WHITE);
 
@@ -165,12 +165,12 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 			gfx_SetColor(COL_BLACK);
             renderPhysicsBody(&tank->phys);
 			gfx_Line(
-				center_x(&tank->phys) / PIXEL_SCALE,
-				center_y(&tank->phys) / PIXEL_SCALE,
-				center_x(&tank->phys) / PIXEL_SCALE + fast_cos(tank->barrel_rot) * BARREL_LENGTH / PIXEL_SCALE / TRIG_SCALE,
-				center_y(&tank->phys) / PIXEL_SCALE + fast_sin(tank->barrel_rot) * BARREL_LENGTH / PIXEL_SCALE / TRIG_SCALE);
+				SCREEN_X(center_x(&tank->phys)),
+				SCREEN_Y(center_y(&tank->phys)),
+				SCREEN_X(center_x(&tank->phys) + fast_cos(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE),
+				SCREEN_Y(center_y(&tank->phys) + fast_sin(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE));
 			gfx_SetTextFGColor(COL_RED);
-			gfx_SetTextXY(tank->phys.position_x / PIXEL_SCALE + 1, tank->phys.position_y / PIXEL_SCALE + 1);
+			gfx_SetTextXY(SCREEN_X(tank->phys.position_x) + 1, SCREEN_Y(tank->phys.position_y) + 1);
 			gfx_PrintUInt(tank->type, 1);
 		}
 
@@ -201,16 +201,16 @@ void render(uint8_t* tiles, Level* level, Tank* tanks) {
 }
 
 void renderPhysicsBody(PhysicsBody *phys) {
-	gfx_Rectangle(phys->position_x / PIXEL_SCALE, phys->position_y / PIXEL_SCALE,
-	        phys->width / PIXEL_SCALE, phys->height / PIXEL_SCALE);
+	gfx_Rectangle(SCREEN_X(phys->position_x), SCREEN_Y(phys->position_y),
+	        SCREEN_DELTA_X(phys->width), SCREEN_DELTA_Y(phys->height));
 }
 
 void draw_line(LineSeg* ls) {
 	gfx_Line(
-		ls->x1 / PIXEL_SCALE,
-		ls->y1 / PIXEL_SCALE,
-		ls->x2 / PIXEL_SCALE,
-		ls->y2 / PIXEL_SCALE
+		SCREEN_X(ls->x1),
+		SCREEN_Y(ls->y1),
+		SCREEN_X(ls->x2),
+		SCREEN_Y(ls->y2)
 	);
 }
 

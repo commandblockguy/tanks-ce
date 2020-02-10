@@ -26,7 +26,7 @@
 #define PIXEL_SCALE 256
 
 //Offset from sides of screen
-#define MAP_OFFSET_X (16 * PIXEL_SCALE)
+#define MAP_OFFSET_X 16
 
 //Size of the gameplay area in tiles
 #define LEVEL_SIZE_X 22

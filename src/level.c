@@ -21,7 +21,7 @@
 #include <debug.h>
 
 uint24_t tileToXPt(uint8_t x) {
-    uint24_t result = MAP_OFFSET_X + x * TILE_SIZE;
+    uint24_t result = x * TILE_SIZE;
     return result;
 }
 
@@ -31,7 +31,7 @@ uint24_t tileToYPt(uint8_t y) {
 }
 
 uint8_t ptToXTile(uint24_t x) {
-    return (x - MAP_OFFSET_X) / TILE_SIZE;
+    return x / TILE_SIZE;
 }
 
 uint8_t ptToYTile(uint24_t y) {

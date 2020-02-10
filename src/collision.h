@@ -43,10 +43,10 @@ struct reflection {
 
 typedef struct {
 	PhysicsType type;
-	uint24_t position_x; //this is ufix, but gives compiler errors for some reason
-	uint24_t position_y;
-	uint24_t velocity_x;
-	uint24_t velocity_y;
+	int24_t position_x;
+	int24_t position_y;
+	int24_t velocity_x;
+	int24_t velocity_y;
 	uint24_t width;
 	uint24_t height;
 	uint32_t updateTime;

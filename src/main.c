@@ -204,14 +204,16 @@ void processTank(Tank* tank) {
 	if(tank->alive) {
 		ai_process_move(tank);
 		ai_process_fire(tank);
-	
+
+
 		//Keep the tank inside the map
-		if(tank->phys.position_x < MAP_OFFSET_X) {
-			tank->phys.position_x = MAP_OFFSET_X;
-		} else if(tank->phys.position_x > (MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1)) {
-			tank->phys.position_x = (MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1);
+		//TODO: remove this? seems to be a hack to workaround the tile collision code
+		if(tank->phys.position_x < 0) {
+			tank->phys.position_x = 0;
+		} else if(tank->phys.position_x > TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1) {
+			tank->phys.position_x = TILE_SIZE * LEVEL_SIZE_X - TANK_SIZE - 1;
 		}
-		if(tank->phys.position_y > LCD_WIDTH * PIXEL_SCALE + 20) {
+		if(tank->phys.position_y < 0) {
 			tank->phys.position_y = 0;
 		} else if(tank->phys.position_y > (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE)) {
 			tank->phys.position_y = (TILE_SIZE * LEVEL_SIZE_Y - TANK_SIZE);
@@ -301,12 +303,12 @@ void processShell(Shell* shell, Tank* tank) {
 		shell->left_tank_hitbox = true;
 	}
 
-	if(shell->phys.position_x < MAP_OFFSET_X) {
+	if(shell->phys.position_x < 0) {
 		shell_ricochet(shell, LEFT);
-	} else if(shell->phys.position_x > MAP_OFFSET_X + TILE_SIZE * LEVEL_SIZE_X - SHELL_SIZE) {
+	} else if(shell->phys.position_x > TILE_SIZE * LEVEL_SIZE_X - SHELL_SIZE) {
 		shell_ricochet(shell, RIGHT);
 	}
-	if(shell->phys.position_y > LCD_WIDTH * PIXEL_SCALE + 50) {
+	if(shell->phys.position_y < 0) {
 		shell_ricochet(shell, UP);
 	} else if(shell->phys.position_y > TILE_SIZE * LEVEL_SIZE_Y - SHELL_SIZE) {
 		shell_ricochet(shell, DOWN);
