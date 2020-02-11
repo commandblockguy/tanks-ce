@@ -6,6 +6,9 @@
 #ifndef H_UTIL
 #define H_UTIL
 
+/* *is immediately stabbed* */
+#define max(a, b) a < b ? a : b
+
 typedef uint24_t angle_t;
 
 /* Converts a constant integer number of degrees to an angle_t */
