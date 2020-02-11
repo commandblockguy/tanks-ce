@@ -29,7 +29,7 @@
 #include "collision.h"
 #include "level.h"
 #include "graphics.h"
-#include "gfx/tiles_gfx.h"
+#include "gfx/gfx.h"
 #include "util.h"
 #include "constants.h"
 #include "ai.h"
@@ -64,7 +64,7 @@ void main(void) {
 	createLevels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
 
 	gfx_Begin(); //Set up draw bits
-	gfx_SetPalette(tiles_gfx_pal, sizeof_tiles_gfx_pal, 0);
+	gfx_SetPalette(palette, sizeof_palette, 0);
 	gfx_SetDrawBuffer();
 	gfx_SetTextFGColor(7);
 

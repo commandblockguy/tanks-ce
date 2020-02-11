@@ -50,3 +50,5 @@ bin/
 obj/
 cmake-build-debug/
 .idea/
+src/gfx/*.c
+src/gfx/*.h

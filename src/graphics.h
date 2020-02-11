@@ -14,7 +14,6 @@
 #include "constants.h"
 #include "objects.h"
 #include "level.h"
-#include "gfx/tiles_gfx.h"
 
 /* Calculate the screen-space position for a given world-space point */
 #define SCREEN_X(x) ((x) / PIXEL_SCALE + MAP_OFFSET_X)

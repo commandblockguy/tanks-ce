@@ -14,12 +14,9 @@
 
 #include "constants.h"
 #include "objects.h"
-//Hopefully we can remove this when we remove AABB rendering
-//Hopefully we can now stop referring to myself in the plural
-#include "collision.h"
 #include "level.h"
 #include "graphics.h"
-#include "gfx/tiles_gfx.h"
+#include "gfx/gfx.h"
 #include "util.h"
 #include "keypadc.h"
 
@@ -53,10 +50,10 @@ void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	
 	gfx_FillRectangle_NoClip(0, 48, LCD_WIDTH, 100);
 	gfx_SetColor(COL_RHOM_2);
-	for(x = 0; x < LCD_WIDTH / 12; x++) {
+	for(x = 0; x <= LCD_WIDTH / 12; x++) {
 		for(y = 0; y < 6; y++) {
-			gfx_FillTriangle_NoClip(x * 12 + 6, 55 + y * 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
-			gfx_FillTriangle_NoClip(x * 12 + 6, 55 + y * 15 + 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
+			gfx_FillTriangle(x * 12 + 6, 55 + y * 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
+			gfx_FillTriangle(x * 12 + 6, 55 + y * 15 + 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
 		}
 	}
 

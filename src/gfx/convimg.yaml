@@ -1,0 +1,24 @@
+output: c
+  include-file: gfx.h
+  palettes:
+    - palette
+  converts:
+    - tileset
+
+palette: palette
+  images: automatic
+  fixed-color: {index:  1, r: 255, g: 255, b: 255}
+  fixed-color: {index:  2, r:   0, g:   0, b:   0}
+  fixed-color: {index:  3, r: 255, g:   0, b:   0}
+  fixed-color: {index:  4, r: 228, g: 230, b: 173}
+  fixed-color: {index:  5, r: 174, g:  49, b:  48}
+  fixed-color: {index:  6, r: 164, g:  45, b:  46}
+  fixed-color: {index:  7, r: 183, g: 185, b: 139}
+  fixed-color: {index:  8, r: 193, g: 162, b:  43}
+  fixed-color: {index:  9, r: 134, g:  36, b:  37}
+  fixed-color: {index: 10, r:  70, g: 127, b: 111}
+
+convert: tileset
+  palette: palette
+  tilesets: {tile-width: 13, tile-height: 13}
+    - tileset.png
