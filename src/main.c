@@ -139,7 +139,7 @@ void main(void) {
 				game.status = NEXT_LEVEL;
 			}
 
-			render(tiles, &game.level, tanks);
+            render(&game.level);
 		}
 
 		if(game.mission % 5 == 4 && game.mission != lvl_pack.num_levels - 1) {
@@ -240,20 +240,20 @@ void processTank(Tank* tank) {
 			if(!mine->countdown) continue;
 			
 			if(--mine->countdown == EXPLOSION_ANIM) {
-				detonate(mine, tiles);
+                detonate(mine);
 			}
 			if(!mine->alive) continue;
 			//mine belongs to enemy
 			if(tank != &tanks[0])
 				if(center_distance_lt(&mine->phys, &tanks[0].phys, MINE_EXPLOSION_RADIUS)) {
-					detonate(mine, tiles);
+                    detonate(mine);
 					continue;
 				}
 			//mine belongs to our tank
 			if(!center_distance_lt(&mine->phys, &tanks[0].phys, MINE_EXPLOSION_RADIUS))
 				for(j = 1; j < game.level.num_tanks; j++) {
 					if(center_distance_lt(&mine->phys, &tanks[j].phys, MINE_EXPLOSION_RADIUS)) {
-						detonate(mine, tiles);
+                        detonate(mine);
 						break;
 					}
 				}
@@ -280,7 +280,7 @@ void processShell(Shell* shell, Tank* tank) {
 					Mine* mine = &tanks[j].mines[i];
 					if(mine->alive && detectCollision(&shell->phys, &mine->phys)) {
 						shell->alive = false;
-						detonate(mine, tiles);
+                        detonate(mine);
 					}
 				}
 

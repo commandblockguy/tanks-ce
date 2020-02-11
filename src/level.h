@@ -36,8 +36,8 @@ enum {
 
 //0 = no block
 //1 = full block, as above
-#define tileHeight(tile) (tile & 7)
-#define tileType(tile) (tile & DESTROYED)
+#define TILE_HEIGHT(tile) (tile & 7)
+#define TILE_TYPE(tile) (tile & DESTROYED)
 
 typedef struct {
 	//A tank as stored in the level file

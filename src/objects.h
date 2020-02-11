@@ -69,7 +69,7 @@ bool fire_shell(Tank* tank); //PEW PEW PEW
 
 bool lay_mine(Tank* tank); //Lay a mine under the tank
 
-void detonate(Mine* mine, uint8_t* tiles);
+void detonate(Mine *mine);
 
 //Bounce a shell off a wall
 //Returns whether or not the shell is still alive

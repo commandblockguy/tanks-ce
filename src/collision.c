@@ -51,7 +51,7 @@ bool center_distance_lt(PhysicsBody* p1, PhysicsBody* p2, uint24_t dis) {
 //Check if a point is colliding with a tile
 bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles, tile_t* tiles) {
 	tile_t tile = tiles[ptToXTile(x) + LEVEL_SIZE_X * ptToYTile(y)];
-	bool colliding = (tileHeight(tile) && tileType(tile) != DESTROYED) || (respectHoles && tileType(tile) == HOLE);
+	bool colliding = (TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) || (respectHoles && TILE_TYPE(tile) == HOLE);
 	return colliding;
 }
 

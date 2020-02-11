@@ -138,7 +138,7 @@ void aim_reflect(Tank* tank) {
 		#endif
 
 		if(xT != 0 && xT < LEVEL_SIZE_X && yT !=0 && yT < LEVEL_SIZE_Y)
-			if(!tileHeight(tile) || tileType(tile) == DESTROYED)  {
+			if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED)  {
 			    //dbg_sprintf(dbgout, "No tile at intersect point (%u, %u) (is %X)\n", xT, yT, tile);
 			    return;
 			}
@@ -190,7 +190,7 @@ void aim_reflect(Tank* tank) {
 		gfx_VertLine(xInt, 0, LCD_HEIGHT);
 		#endif
 		if(xT != 0 && xT < LEVEL_SIZE_X && yT !=0 && yT < LEVEL_SIZE_Y)
-			if(!tileHeight(tile) || tileType(tile) == DESTROYED) return;
+			if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) return;
 		//if so, check if pointingAtTarget
 		tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
 		if(pointingAtTarget(tank, &tanks[0].phys, max_bounces[tank->type], false)) {
@@ -253,7 +253,7 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result) {
 
 		//dbg_sprintf(dbgout, "tileX: %i, tileY: %i, t: %i, dtX: %i, dtY: %i, tile: %X\n", tileX, tileY, t, dtX, dtY, tile);
 
-		if(tileHeight(tile) && tileType(tile) != DESTROYED) {
+		if(TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) {
 			break;
 		}
 

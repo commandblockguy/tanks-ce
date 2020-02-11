@@ -151,7 +151,7 @@ void redraw(uint8_t* tiles, Level* level) {
 	gfx_Tilemap_NoClip(&tilemap, 0, 0);
 }
 
-void render(uint8_t* tiles, Level* level, Tank* tanks) {
+void render(Level *level) {
 	int i = 0;
 	
 	//Eventually, this will only be called once

@@ -13,7 +13,8 @@
 #include "level.h"
 #include "collision.h"
 #include "util.h"
-#include "debug.h"
+#undef NDEBUG
+#include <debug.h>
 
 extern Game game;
 extern Tank* tanks;
@@ -70,7 +71,7 @@ bool lay_mine(Tank* tank) {
 	return false;
 }
 
-void detonate(Mine* mine, uint8_t* tiles) {
+void detonate(Mine *mine) {
 	int j, k;
 	
 	mine->alive = false;
@@ -80,14 +81,12 @@ void detonate(Mine* mine, uint8_t* tiles) {
 	//Don't tell anyone.
 
 	for(j  = ptToXTile(center_x(&mine->phys) - MINE_EXPLOSION_RADIUS);
-		j <= ptToXTile(center_x(&mine->phys) + MINE_EXPLOSION_RADIUS); j++)
-	{
-		if(j < 0 || j > LEVEL_SIZE_X) continue;
+		j <= ptToXTile(center_x(&mine->phys) + MINE_EXPLOSION_RADIUS); j++) {
+		if(j < 0 || j >= LEVEL_SIZE_X) continue;
 		for(k  = ptToYTile(center_y(&mine->phys) - MINE_EXPLOSION_RADIUS);
-			k <= ptToYTile(center_y(&mine->phys) + MINE_EXPLOSION_RADIUS); k++)
-		{
-			if(k < 0 || k > LEVEL_SIZE_Y) continue;
-			if(tiles[j + LEVEL_SIZE_X * k] == DESTRUCTIBLE) tiles[j + LEVEL_SIZE_X * k] = DESTROYED;
+			k <= ptToYTile(center_y(&mine->phys) + MINE_EXPLOSION_RADIUS); k++) {
+			if(k < 0 || k >= LEVEL_SIZE_Y) continue;
+			if(TILE_TYPE(tiles[j + LEVEL_SIZE_X * k]) == DESTRUCTIBLE) tiles[j + LEVEL_SIZE_X * k] |= DESTROYED;
 		}
 	}
 
@@ -105,7 +104,7 @@ void detonate(Mine* mine, uint8_t* tiles) {
 		for(k = 0; k < max_mines[tank->type]; k++) {
 			Mine* mine2 = &tank->mines[k];
 			if(mine2->alive && center_distance_lt(&mine->phys, &mine2->phys, MINE_EXPLOSION_RADIUS)) {
-				detonate(mine2, tiles);
+                detonate(mine2);
 			}
 		}
 	}

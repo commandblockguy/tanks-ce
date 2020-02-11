@@ -28,7 +28,7 @@ void displayScores(void); //Display high scores
 
 void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
 
-void render(uint8_t* tiles, Level* level, Tank* tanks); //Render tilemap, tanks, and UI during the game loop
+void render(Level *level); //Render tilemap, tanks, and UI during the game loop
 
 void renderPhysicsBody(PhysicsBody *phys);
 
