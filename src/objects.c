@@ -94,6 +94,8 @@ void detonate(Mine *mine) {
 		Tank* tank = &tanks[j];
 		if(tank->alive && center_distance_lt(&mine->phys, &tank->phys, MINE_EXPLOSION_RADIUS)) {
 			tank->alive = false;
+			game.kills[tanks[j].type];
+			game.total_kills++;
 		}
 		for(k = 0; k < max_shells[tank->type]; k++) {
 			Shell* shell = &tank->shells[k];

@@ -49,9 +49,6 @@ Game game; //Game global, so I can reuse those names elsewhere if needed
 Tank* tanks; //List of all active tanks. 
 tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y]; //Currently active tilemap data
 
-//todo: remove
-bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result);
-
 void main(void) {
 	int i;
 	LevelPack lvl_pack;
@@ -68,9 +65,11 @@ void main(void) {
 	gfx_SetDrawBuffer();
 	gfx_SetTextFGColor(7);
 
-	timer_1_MatchValue_1 = 32768 / TARGET_FPS; //Something with timers, I think.
+	timer_1_MatchValue_1 = 32768 / TARGET_FPS;
 
 	game.lives = 3;
+	game.total_kills = 0;
+	memset(game.kills, 0, sizeof(game.kills));
 
 	displayScores();
 
@@ -159,6 +158,7 @@ void main(void) {
 	}
 
 	if(game.status == LOSE) {
+        displayKillCounts();
 		displayScores();
 	}
 
@@ -295,6 +295,8 @@ void processShell(Shell* shell, Tank* tank) {
 			if(!tanks[j].alive) continue;
 
 			if(detectCollision(&shell->phys, &tanks[j].phys)) {
+			    game.total_kills++;
+			    game.kills[tanks[j].type]++;
 				tanks[j].alive = false;
 				shell->alive = false;
 			}

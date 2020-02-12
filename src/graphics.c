@@ -25,6 +25,89 @@ void displayScores(void) {
 
 }
 
+// todo: improve
+void displayKillCounts(void) {
+    uint8_t i;
+    const uint24_t bg_width = 120;
+    const uint24_t base_x = (LCD_WIDTH - bg_width) / 2;
+
+    const uint8_t bands_base_y = 17;
+    const uint8_t band_height = 3;
+    const uint8_t num_bands = 4;
+    const uint8_t bands_total_height = num_bands * 2*band_height - band_height;
+
+    const uint8_t text_base_y = bands_base_y + bands_total_height + 20;
+    const uint8_t line_spacing = 18;
+    const uint24_t text_center_point = LCD_WIDTH / 2 + 19;
+    const uint8_t char_width = 8;
+
+    const uint8_t bottom_band_y = LCD_HEIGHT - 36;
+
+    const uint24_t final_box_width = 38;
+    const uint8_t final_box_height = 19;
+    const uint24_t final_box_x = text_center_point - final_box_width / 2;
+    const uint8_t final_box_y = bottom_band_y + 2 * band_height;
+    const uint8_t box_text_y = final_box_y + (final_box_height - 6 * 2) / 2;
+
+    const char results[] = "Results";
+
+    gfx_SetColor(COL_BG);
+    gfx_FillRectangle(base_x, 0,
+            bg_width, LCD_HEIGHT);
+
+    gfx_SetColor(COL_OLIVE_BANDS);
+    for(i = 0; i < num_bands; i++)
+        gfx_FillRectangle(base_x, bands_base_y + i * 2 * band_height,
+                bg_width, band_height);
+
+    gfx_FillRectangle(base_x, bottom_band_y, bg_width, band_height);
+
+    gfx_SetColor(COL_WHITE);
+    gfx_FillRectangle(final_box_x, final_box_y, final_box_width, final_box_height);
+    gfx_FillCircle(final_box_x, final_box_y + final_box_height / 2, final_box_height / 2);
+    gfx_FillCircle(final_box_x + final_box_width, final_box_y + final_box_height / 2, final_box_height / 2);
+
+    gfx_SetTextFGColor(COL_BLACK);
+    gfx_SetTextScale(2,2);
+    gfx_PrintStringXY(results, (LCD_WIDTH - gfx_GetStringWidth(results)) / 2, bands_base_y + band_height);
+
+
+    gfx_SetTextScale(1, 1);
+    for(i = 0; i < NUM_TANK_TYPES - 1; i++) {
+        uint8_t num_kills = game.kills[i + 1];
+        if(!num_kills) continue;
+
+        /* TODO: tank sprite */
+        if(num_kills >= 10) {
+            gfx_SetTextXY(text_center_point - char_width,
+                          text_base_y + line_spacing * i);
+            gfx_PrintUInt(num_kills, 2);
+        } else {
+            gfx_SetTextXY(text_center_point - char_width / 2,
+                          text_base_y + line_spacing * i);
+            gfx_PrintUInt(num_kills, 1);
+        }
+        gfx_BlitBuffer();
+        delay(500);
+    }
+
+    gfx_SetTextScale(2, 2);
+    if(game.total_kills > 100) {
+        gfx_SetTextXY(text_center_point - char_width * 3 / 2, box_text_y);
+        gfx_PrintUInt(game.total_kills, 3);
+    } else if(game.total_kills > 10) {
+        gfx_SetTextXY(text_center_point - char_width, box_text_y);
+        gfx_PrintUInt(game.total_kills, 2);
+    } else {
+        gfx_SetTextXY(text_center_point - char_width / 2, box_text_y);
+        gfx_PrintUInt(game.total_kills, 1);
+    }
+
+    gfx_BlitBuffer();
+
+    while(!kb_IsDown(kb_KeyEnter) && !kb_IsDown(kb_KeyClear)) kb_Scan();
+}
+
 //Screen is 700 (240) pixels tall
 //Background is (228,230,173)
 //140 (48) pixels between the top and banner
@@ -41,7 +124,6 @@ void displayScores(void) {
 //50 (17) (16) pixels between text and bottom band
 //Text shadow (134,36,37) has 8px (3px) offset
 //# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
-//todo: fix right side
 void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	int x, y;
 	gfx_FillScreen(COL_BG);

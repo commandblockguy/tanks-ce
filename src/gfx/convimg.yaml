@@ -17,6 +17,7 @@ palette: palette
   fixed-color: {index:  8, r: 193, g: 162, b:  43}
   fixed-color: {index:  9, r: 134, g:  36, b:  37}
   fixed-color: {index: 10, r:  70, g: 127, b: 111}
+  fixed-color: {index: 11, r: 168, g: 179, b: 139}
 
 convert: tileset
   palette: palette

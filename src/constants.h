@@ -96,17 +96,6 @@
 #define MISSION_NUMBER_TEXT 3
 #define ENEMY_TANK_TEXT 2
 
-#define COL_WHITE      1
-#define COL_BLACK      2
-#define COL_RED        3
-#define COL_BG         4
-#define COL_RHOM_1     5
-#define COL_RHOM_2     6
-#define COL_RIB_SHADOW 7
-#define COL_GOLD       8
-#define COL_TXT_SHADOW 9
-#define COL_LIVES_TXT  10
-
 #define ROT_UNITS_TO_RADIANS (M_PI / 8388608.0f)
 #define RADIANS_TO_ROT_UNITS (8388608.0f / M_PI)
 
@@ -123,7 +112,8 @@ typedef struct {
     Level level; //level currently being played
 	uint8_t mission; //The mission number, always displayed 1 higher than stored. Also used as an index for levels.
 	uint8_t lives; //Number of remaining tanks. This includes the tank that is currently in use, so a value of 1 means that the game will end the next time the tank is hit.
-	uint8_t kills; //Number of enemy tanks destroyed.
+	uint8_t total_kills; //Number of enemy tanks destroyed.
+	uint8_t kills[NUM_TANK_TYPES];
 	uint24_t timer; //Game time, probably used for physics stuff.
 	uint16_t cursor_x; //If I decide to implement a cursor mode, this will represent the position of the crosshairs on the screen.
 	uint8_t cursor_y;  //TODO: Otherwise, this will be removed
@@ -135,5 +125,6 @@ typedef struct {
 
 extern Tank* tanks;
 extern tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y];
+extern Game game;
 
 #endif /* H_CONSTANTS */

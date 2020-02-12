@@ -24,7 +24,8 @@ enum {
 	IMMOB_MISSILE = 6, //green
 	FAST = 7, //purple
 	INVISIBLE = 8, //white
-	BLACK = 9
+	BLACK = 9,
+	NUM_TANK_TYPES = 10
 };
 
 typedef uint8_t TankType;
