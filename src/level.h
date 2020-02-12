@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "tank.h"
 #include "constants.h"
-#include "objects.h"
 
 typedef uint8_t tile_t;
 //TODO: change formatting to the following:
@@ -20,28 +20,21 @@ typedef uint8_t tile_t;
 //0 for no tile, 1 for full block, 3 for 1.5 blocks, 4 for 2 blocks
 //Bits 4-3:
 enum {
-	BLOCK = 0, //Block that can be neither shot nor moved through
-	DESTRUCTIBLE = 8, //Blocks that can be exploded with mines
-	HOLE = 16, //Hole that can be shot over but not moved through
-	DESTROYED = 24//DESTRUCTIBLE blocks that have been removed using mines
+	BLOCK        = 0 << 3, //Block that can be neither shot nor moved through
+	DESTRUCTIBLE = 1 << 3, //Blocks that can be exploded with mines
+	HOLE         = 2 << 3, //Hole that can be shot over but not moved through
+	DESTROYED    = 3 << 3, //DESTRUCTIBLE blocks that have been removed using mines
+	TYPE_MASK    = 3 << 3
 };
-/*
-enum {
-	EMPTY = 0,
-	BLOCK,
-	DESTRUCTIBLE,
-	HOLE,
-	DESTROYED
-};*/
 
 //0 = no block
 //1 = full block, as above
 #define TILE_HEIGHT(tile) (tile & 7)
-#define TILE_TYPE(tile) (tile & DESTROYED)
+#define TILE_TYPE(tile) (tile & TYPE_MASK)
 
 typedef struct {
 	//A tank as stored in the level file
-	TankType type;
+	tankType_t type;
 	uint8_t start_x; //Tile the tank starts on
 	uint8_t start_y;
 } SerializedTank;
@@ -49,7 +42,7 @@ typedef struct {
 typedef struct {
 	uint8_t compressed_tile_size; //Compressed size of tile data
 	uint8_t num_tanks; //Number of tanks in the level
-} Level;
+} level_t;
 
 typedef struct {
 	char name[15];
@@ -59,12 +52,12 @@ typedef struct {
 
 void createLevels(void); //Temporary function to make a level pack
 
-uint24_t tileToXPt(uint8_t x);
-uint24_t tileToYPt(uint8_t y);
+int24_t tileToXPt(int8_t x);
+int24_t tileToYPt(int8_t y);
 
-uint8_t ptToXTile(uint24_t x);
-uint8_t ptToYTile(uint24_t y);
+int8_t ptToXTile(int24_t x);
+int8_t ptToYTile(int24_t y);
 
-void deserializeTank(Tank *tank, SerializedTank *ser_tank); //Convert a serialized tank into an actual one
+void deserializeTank(tank_t *tank, const SerializedTank *ser_tank); //Convert a serialized tank into an actual one
 
 #endif

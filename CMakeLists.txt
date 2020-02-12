@@ -23,7 +23,5 @@ add_executable(dummy
         src/level.c
         src/level.h
         src/main.c
-        src/objects.c
-        src/objects.h
         src/util.c
-        src/util.h)
+        src/util.h src/tank.c src/tank.h src/shell.c src/shell.h src/mine.c src/mine.h src/globals.c src/globals.h)

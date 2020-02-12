@@ -9,25 +9,23 @@
 #include <string.h>
 
 #include "constants.h"
-#include "objects.h"
 #include "collision.h"
 #include "level.h"
 #include "util.h"
-
-#include <graphx.h>
+#include "globals.h"
 
 #undef NDEBUG
 #include <debug.h>
 
-uint24_t center_x(PhysicsBody* p) {
+uint24_t centerX(physicsBody_t* p) {
 	return p->position_x + p->width / 2;
 }
 
-uint24_t center_y(PhysicsBody* p) {
+uint24_t centerY(physicsBody_t* p) {
 	return p->position_y + p->height / 2;
 }
 
-bool detectCollision(PhysicsBody *p1, PhysicsBody *p2) {
+bool detectCollision(physicsBody_t *p1, physicsBody_t *p2) {
 	return
 		p1->position_x < p2->position_x + p2->width &&
 		p1->position_x + p1->width > p2->position_x &&
@@ -35,42 +33,58 @@ bool detectCollision(PhysicsBody *p1, PhysicsBody *p2) {
 		p1->position_y + p1->height > p2->position_y;
 }
 
-bool center_distance_lt(PhysicsBody* p1, PhysicsBody* p2, uint24_t dis) {
+bool centerDistanceLessThan(physicsBody_t* p1, physicsBody_t* p2, uint24_t dis) {
 	int24_t delta_x;
 	int24_t delta_y;
 
-	if(abs((int24_t)center_x(p1) - (int24_t)center_x(p2)) > dis) return false;
-	if(abs((int24_t)center_y(p1) - (int24_t)center_y(p2)) > dis) return false;
+	if(abs((int24_t) centerX(p1) - (int24_t) centerX(p2)) > dis) return false;
+	if(abs((int24_t) centerY(p1) - (int24_t) centerY(p2)) > dis) return false;
 
-	delta_x = (center_x(p1) - center_x(p2)) >> 8;
-	delta_y = (center_y(p1) - center_y(p2)) >> 8;
+	delta_x = (centerX(p1) - centerX(p2)) >> 8;
+	delta_y = (centerY(p1) - centerY(p2)) >> 8;
 
 	return sqrt(delta_x * delta_x + delta_y * delta_y) < dis >> 8;
 }
 
 //Check if a point is colliding with a tile
-bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles, tile_t* tiles) {
+bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles) {
 	tile_t tile = tiles[ptToXTile(x) + LEVEL_SIZE_X * ptToYTile(y)];
 	bool colliding = (TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) || (respectHoles && TILE_TYPE(tile) == HOLE);
 	return colliding;
 }
 
 //TODO: if three corners are hit, move diagonally out
-void processReflection(struct reflection *result, PhysicsBody *p, bool respectHoles) {
+void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles) {
 
 	//Figure out if the four corners are colliding
-	bool	topRight = checkTileCollision(p->position_x + p->width, p->position_y, respectHoles, tiles);
-	bool bottomRight = checkTileCollision(p->position_x + p->width, p->position_y + p->height, respectHoles, tiles);
-	bool	topLeft  = checkTileCollision(p->position_x, p->position_y, respectHoles, tiles);
-	bool bottomLeft  = checkTileCollision(p->position_x, p->position_y + p->height, respectHoles, tiles);
+	bool	topRight = checkTileCollision(p->position_x + p->width,
+                                          p->position_y, respectHoles);
+	bool bottomRight = checkTileCollision(p->position_x + p->width,
+                                          p->position_y + p->height,
+                                          respectHoles);
+	bool	topLeft  = checkTileCollision(p->position_x, p->position_y,
+                                          respectHoles);
+	bool bottomLeft  = checkTileCollision(p->position_x,
+                                          p->position_y + p->height,
+                                          respectHoles);
 
-	bool double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
-	bool double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
+	bool double_x;
+	bool double_y;
 
-	uint24_t dis_up	   = -1;
-	uint24_t dis_down  = -1;
-	uint24_t dis_left  = -1;
-	uint24_t dis_right = -1;
+    if(p->position_y < 0) topRight =    topLeft = true;
+    if(p->position_x < 0) topLeft  = bottomLeft = true;
+    if(p->position_x + p->width > LEVEL_SIZE_X * TILE_SIZE)
+        topRight = bottomRight = true;
+    if(p->position_y + p->height > LEVEL_SIZE_Y * TILE_SIZE)
+        topLeft = bottomLeft = true;
+
+	double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
+	double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
+
+	uint24_t disUp	   = -1;
+	uint24_t disDown  = -1;
+	uint24_t disLeft  = -1;
+	uint24_t disRight = -1;
 
 	result->colliding = (topRight || bottomRight || topLeft || bottomLeft);
 
@@ -79,38 +93,38 @@ void processReflection(struct reflection *result, PhysicsBody *p, bool respectHo
 	if(!result->colliding) return;
 
 	if((topRight || bottomRight) && !double_y) {
-		dis_right = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width));
+        disRight = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width));
 	}
 	if((topLeft || bottomLeft) && !double_y) {
-		dis_left = tileToXPt(ptToXTile(p->position_x) + 1) - p->position_x;
+        disLeft = tileToXPt(ptToXTile(p->position_x) + 1) - p->position_x;
 	}
 	if((topLeft || topRight) && !double_x) {
-		dis_up = tileToYPt(ptToYTile(p->position_y) + 1) - p->position_y;
+        disUp = tileToYPt(ptToYTile(p->position_y) + 1) - p->position_y;
 	}
 	if((bottomLeft || bottomRight) && !double_x) {
-		dis_down = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height));
+        disDown = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height));
 	}
 
 	//pick the direction with the smallest distance
-	if(dis_up <= dis_left && dis_up <= dis_right) {
+	if(disUp <= disLeft && disUp <= disRight) {
 		result->dir = UP;
-		p->position_y += dis_up;
+		p->position_y += disUp;
 	}
-	if(dis_left < dis_up && dis_left < dis_down) {
+	if(disLeft < disUp && disLeft < disDown) {
 		result->dir = LEFT;
-		p->position_x += dis_left;
+		p->position_x += disLeft;
 	}
-	if(dis_down <= dis_left && dis_down <= dis_right) {
+	if(disDown <= disLeft && disDown <= disRight) {
 		result->dir = DOWN;
-		p->position_y -= dis_down;
+		p->position_y -= disDown;
 	}
-	if(dis_right < dis_up && dis_right < dis_down) {
+	if(disRight < disUp && disRight < disDown) {
 		result->dir = RIGHT;
-		p->position_x -= dis_right;
+		p->position_x -= disRight;
 	}
 }
 
-bool pointInsideBody(PhysicsBody* p, uint24_t x, uint24_t y) {
+bool pointInsideBody(physicsBody_t* p, uint24_t x, uint24_t y) {
 	return
 		p->position_x <= x &&
 		p->position_y <= y &&
@@ -118,56 +132,56 @@ bool pointInsideBody(PhysicsBody* p, uint24_t x, uint24_t y) {
 		p->position_y + p->height >= y;
 }
 
-bool collideAndPush(PhysicsBody* p1, PhysicsBody* p2) {
+bool collideAndPush(physicsBody_t* p1, physicsBody_t* p2) {
 	//Figure out if the four corners are colliding
 	bool	topRight = pointInsideBody(p2, p1->position_x + p1->width, p1->position_y);
 	bool bottomRight = pointInsideBody(p2, p1->position_x + p1->width, p1->position_y + p1->height);
 	bool	topLeft  = pointInsideBody(p2, p1->position_x, p1->position_y);
 	bool bottomLeft  = pointInsideBody(p2, p1->position_x, p1->position_y + p1->height);
 
-	uint24_t dis_up    = -1;
-	uint24_t dis_down  = -1;
-	uint24_t dis_left  = -1;
-	uint24_t dis_right = -1;
+	uint24_t disUp    = -1;
+	uint24_t disDown  = -1;
+	uint24_t disLeft  = -1;
+	uint24_t disRight = -1;
 
 	if(!(topRight || bottomRight || topLeft || bottomLeft)) return false;
 
 	if((topRight || bottomRight)) {
-		dis_right = p1->position_x + p1->width - p2->position_x;
+        disRight = p1->position_x + p1->width - p2->position_x;
 	}
 	if((topLeft || bottomLeft)) {
-		dis_left = p2->position_x + p2->width - p1->position_x;
+        disLeft = p2->position_x + p2->width - p1->position_x;
 	}
 	if((topLeft || topRight)) {
-		dis_up = p2->position_y + p2->height - p1->position_y;
+        disUp = p2->position_y + p2->height - p1->position_y;
 	}
 	if((bottomLeft || bottomRight)) {
-		dis_down = p1->position_y + p1->height - p2->position_y;
+        disDown = p1->position_y + p1->height - p2->position_y;
 	}
 
 	//pick the direction with the smallest distance
-	if(dis_up < dis_left && dis_up < dis_right) {
-		p1->position_y += dis_up / 2;
-		p2->position_y -= dis_up / 2;
+	if(disUp < disLeft && disUp < disRight) {
+		p1->position_y += disUp / 2;
+		p2->position_y -= disUp / 2;
 	}
-	if(dis_left < dis_up && dis_left < dis_down) {
-		p1->position_x += dis_left / 2;
-		p2->position_x -= dis_left / 2;
+	if(disLeft < disUp && disLeft < disDown) {
+		p1->position_x += disLeft / 2;
+		p2->position_x -= disLeft / 2;
 	}
-	if(dis_down < dis_left && dis_down < dis_right) {
-		p1->position_y -= dis_down / 2;
-		p2->position_y += dis_down / 2;
+	if(disDown < disLeft && disDown < disRight) {
+		p1->position_y -= disDown / 2;
+		p2->position_y += disDown / 2;
 	}
-	if(dis_right < dis_up && dis_right < dis_down) {
-		p1->position_x -= dis_right / 2;
-		p2->position_x += dis_right / 2;
+	if(disRight < disUp && disRight < disDown) {
+		p1->position_x -= disRight / 2;
+		p2->position_x += disRight / 2;
 	}
 
 	return true;
 }
 
 //todo: optimize?
-bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* intercept_x, int24_t* intercept_y) {
+bool segCollidesSeg(lineSeg_t* l1, lineSeg_t* l2, int24_t* intercept_x, int24_t* intercept_y) {
 	int24_t p0_x = l1->x1 >> 4, p1_x = l1->x2 >> 4, p2_x = l2->x1 >> 4, p3_x = l2->x2 >> 4;
 	int24_t p0_y = l1->y1 >> 4, p1_y = l1->y2 >> 4, p2_y = l2->y1 >> 4, p3_y = l2->y2 >> 4;
 	int24_t s1_x, s1_y, s2_x, s2_y;
@@ -194,33 +208,33 @@ bool seg_collides_seg(LineSeg* l1, LineSeg* l2, int24_t* intercept_x, int24_t* i
 }
 
 //TODO: optimize
-bool seg_collides_bb(LineSeg* ls, PhysicsBody* phys) {
-	LineSeg border;
+bool segCollidesBody(lineSeg_t* ls, physicsBody_t* phys) {
+	lineSeg_t border;
 	//top
 	border.x1 = phys->position_x;
 	border.x2 = phys->position_x + phys->width;
 	border.y1 = phys->position_y;
 	border.y2 = phys->position_y;
-	if(seg_collides_seg(&border, ls, NULL, NULL)) return true;
+	if(segCollidesSeg(&border, ls, NULL, NULL)) return true;
 	//bottom
 	border.y1 += phys->height;
 	border.y2 += phys->height;
-	if(seg_collides_seg(&border, ls, NULL, NULL)) return true;
+	if(segCollidesSeg(&border, ls, NULL, NULL)) return true;
 	//left
 	border.x2 = phys->position_x;
 	border.y1 = phys->position_y;
-	if(seg_collides_seg(&border, ls, NULL, NULL)) return true;
+	if(segCollidesSeg(&border, ls, NULL, NULL)) return true;
 	//right
 	border.x1 += phys->width;
 	border.x2 += phys->width;
-	if(seg_collides_seg(&border, ls, NULL, NULL)) return true;
+	if(segCollidesSeg(&border, ls, NULL, NULL)) return true;
 	return false;
 }
 
-int24_t y_intercept(LineSeg* line, int24_t xPos) {
+int24_t yIntercept(lineSeg_t* line, int24_t xPos) {
 	return line->y1 + (line->y2 - line->y1) * (xPos - line->x1) / (line->x2 - line->x1);
 }
 
-int24_t x_intercept(LineSeg* line, int24_t yPos) {
+int24_t xIntercept(lineSeg_t* line, int24_t yPos) {
 	return line->x1 + (line->x2 - line->x1) * (yPos - line->y1) / (line->y2 - line->y1);
 }

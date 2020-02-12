@@ -13,25 +13,24 @@
 
 #include "constants.h"
 #include "level.h"
-#include "objects.h"
 
-void ai_process_move(Tank* tank);
-void ai_process_fire(Tank* tank);
+void ai_process_move(tank_t* tank);
+void ai_process_fire(tank_t* tank);
 
-void move_random(Tank* tank);
-void move_away(Tank* tank);
-void move_toward(Tank* tank);
+void move_random(tank_t* tank);
+void move_away(tank_t* tank);
+void move_toward(tank_t* tank);
 
-bool raycast(uint24_t startX, uint24_t startY, angle_t angle, LineSeg* result);
-bool pointingAtTarget(Tank* tank, PhysicsBody* target, uint8_t max_bounces, bool future);
-void pointAtPlayer(Tank *tank, PhysicsBody *target);
+bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result);
+bool pointingAtTarget(tank_t* tank, physicsBody_t* target, uint8_t max_bounces, bool future);
+void pointAtPlayer(tank_t *tank, physicsBody_t *target);
 
-void aim_random(Tank* tank);
+void aim_random(tank_t* tank);
 
-void aim_reflect(Tank* tank);
+void aim_reflect(tank_t* tank);
 
-void aim_current(Tank* tank);
+void aim_current(tank_t* tank);
 
-void aim_future(Tank* tank);
+void aim_future(tank_t* tank);
 
 #endif /* H_AI */

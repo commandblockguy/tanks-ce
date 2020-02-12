@@ -1,6 +1,9 @@
 #ifndef H_AI_DATA
 #define H_AI_DATA
 
+#include <stdbool.h>
+#include <stdint.h>
+
 //AI tasks:
 //Spin randomly and shoot if it can hit the player
 struct ai_fire_random {
@@ -54,7 +57,7 @@ union ai_move {
 	struct ai_move_away away;
 };
 
-//Move out of the path of bullets
+//Move out of the path of shells
 //Stay away from mines
 struct ai_general {
 	uint8_t dummy;

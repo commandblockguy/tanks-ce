@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "level.h"
-
 //Comment this out to stop the levels from being bundled with the program
 #define CREATE_LEVEL_APPVAR
 
@@ -38,7 +36,7 @@
 #define SHELL_SIZE (3 * PIXEL_SCALE)
 #define MINE_SIZE (13 * PIXEL_SCALE)
 
-//Distance from center of tank new bullets appear
+//Distance from center of tank new shells appear
 #define BARREL_LENGTH (5 * PIXEL_SCALE)
 
 //148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
@@ -46,7 +44,7 @@
 #define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_FPS)
 #define TANK_SPEED_BLACK 5 //TODO
 
-//Speed of bullets in pixels per tick
+//Speed of shells in pixels per tick
 //Standard:
 //434 px X / 48 px/tile = 11.4210526316 tiles
 //157 px Y / 32 px/tile = 4.90625 tiles
@@ -96,9 +94,6 @@
 #define MISSION_NUMBER_TEXT 3
 #define ENEMY_TANK_TEXT 2
 
-#define ROT_UNITS_TO_RADIANS (M_PI / 8388608.0f)
-#define RADIANS_TO_ROT_UNITS (8388608.0f / M_PI)
-
 // Game status
 enum {
 	IN_PROGRESS,
@@ -107,24 +102,5 @@ enum {
 	WIN,
 	LOSE
 };
-
-typedef struct {
-    Level level; //level currently being played
-	uint8_t mission; //The mission number, always displayed 1 higher than stored. Also used as an index for levels.
-	uint8_t lives; //Number of remaining tanks. This includes the tank that is currently in use, so a value of 1 means that the game will end the next time the tank is hit.
-	uint8_t total_kills; //Number of enemy tanks destroyed.
-	uint8_t kills[NUM_TANK_TYPES];
-	uint24_t timer; //Game time, probably used for physics stuff.
-	uint16_t cursor_x; //If I decide to implement a cursor mode, this will represent the position of the crosshairs on the screen.
-	uint8_t cursor_y;  //TODO: Otherwise, this will be removed
-	uint24_t lastCycle; //Time the last physics cycle started
-	uint8_t status; //Game status enum
-	uint8_t shotCooldown; //How many more ticks before we can fire another shot
-	uint8_t mineCooldown;
-} Game;
-
-extern Tank* tanks;
-extern tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y];
-extern Game game;
 
 #endif /* H_CONSTANTS */

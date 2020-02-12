@@ -13,12 +13,12 @@
 #include <debug.h>
 
 #include "constants.h"
-#include "objects.h"
 #include "level.h"
 #include "graphics.h"
 #include "gfx/gfx.h"
 #include "util.h"
 #include "keypadc.h"
+#include "globals.h"
 
 
 void displayScores(void) {
@@ -124,7 +124,7 @@ void displayKillCounts(void) {
 //50 (17) (16) pixels between text and bottom band
 //Text shadow (134,36,37) has 8px (3px) offset
 //# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
-void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
+void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	int x, y;
 	gfx_FillScreen(COL_BG);
 
@@ -208,21 +208,21 @@ void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	}
 }
 
-void redraw(uint8_t* tiles, Level* level) {
-	gfx_tilemap_t tilemap; //Tilemap config struct
-
-	tilemap.map 		= tiles;
-	tilemap.tiles 		= tileset_tiles;
-	tilemap.type_width 	= gfx_tile_no_pow2;
-	tilemap.type_height = gfx_tile_no_pow2;
-	tilemap.tile_height = SCREEN_DELTA_X(TILE_SIZE);
-	tilemap.tile_width	= SCREEN_DELTA_Y(TILE_SIZE);
-	tilemap.draw_height	= LEVEL_SIZE_Y;
-	tilemap.draw_width 	= LEVEL_SIZE_X;
-	tilemap.height 		= LEVEL_SIZE_Y;
-	tilemap.width		= LEVEL_SIZE_X;
-	tilemap.y_loc		= SCREEN_Y(0);
-	tilemap.x_loc		= SCREEN_X(0);
+void redraw(void) {
+	const gfx_tilemap_t tilemap = {
+	        tiles,
+	        tileset_tiles,
+            SCREEN_DELTA_X(TILE_SIZE),
+            SCREEN_DELTA_Y(TILE_SIZE),
+            LEVEL_SIZE_Y,
+            LEVEL_SIZE_X,
+	        gfx_tile_no_pow2,
+	        gfx_tile_no_pow2,
+	        LEVEL_SIZE_Y,
+	        LEVEL_SIZE_X,
+            SCREEN_Y(0),
+            SCREEN_X(0)
+	}; //Tilemap config struct
 
 	gfx_FillScreen(COL_WHITE);
 
@@ -230,7 +230,7 @@ void redraw(uint8_t* tiles, Level* level) {
 	gfx_Tilemap_NoClip(&tilemap, 0, 0);
 }
 
-void render(Level *level) {
+void render(level_t *level) {
 	int i = 0;
 	
 	//Eventually, this will only be called once
@@ -239,15 +239,15 @@ void render(Level *level) {
 	for(i = 0; i < level->num_tanks; i++) {
 		//Render tanks
 		int j;
-		Tank* tank = &tanks[i];
+		tank_t* tank = &tanks[i];
 		if(tank->alive) {
 			gfx_SetColor(COL_BLACK);
             renderPhysicsBody(&tank->phys);
 			gfx_Line(
-				SCREEN_X(center_x(&tank->phys)),
-				SCREEN_Y(center_y(&tank->phys)),
-				SCREEN_X(center_x(&tank->phys) + fast_cos(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE),
-				SCREEN_Y(center_y(&tank->phys) + fast_sin(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE));
+				SCREEN_X(centerX(&tank->phys)),
+				SCREEN_Y(centerY(&tank->phys)),
+				SCREEN_X(centerX(&tank->phys) + fast_cos(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE),
+				SCREEN_Y(centerY(&tank->phys) + fast_sin(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE));
 			gfx_SetTextFGColor(COL_RED);
 			gfx_SetTextXY(SCREEN_X(tank->phys.position_x) + 1, SCREEN_Y(tank->phys.position_y) + 1);
 			gfx_PrintUInt(tank->type, 1);
@@ -255,14 +255,14 @@ void render(Level *level) {
 
 		//draw shell hitboxes until I can get sprites
 		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
-			Shell* shell = &tank->shells[j];
+			shell_t* shell = &tank->shells[j];
 			if(!(shell->alive)) continue;
 			gfx_SetColor(COL_BLACK);
             renderPhysicsBody(&shell->phys);
 		}
 		//draw mine hitboxes
 		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
-			Mine* mine = &tank->mines[j];
+			mine_t* mine = &tank->mines[j];
 			if(!mine->countdown) continue;
 			gfx_SetColor(COL_RED);
 			if(mine->alive) gfx_SetColor(COL_BLACK);
@@ -275,16 +275,16 @@ void render(Level *level) {
 
 	gfx_BlitBuffer();
 
-	redraw(tiles, level); //todo: move back?
+    redraw(); //todo: move back?
 
 }
 
-void renderPhysicsBody(PhysicsBody *phys) {
+void renderPhysicsBody(physicsBody_t *phys) {
 	gfx_Rectangle(SCREEN_X(phys->position_x), SCREEN_Y(phys->position_y),
 	        SCREEN_DELTA_X(phys->width), SCREEN_DELTA_Y(phys->height));
 }
 
-void draw_line(LineSeg* ls) {
+void drawLine(lineSeg_t* ls) {
 	gfx_Line(
 		SCREEN_X(ls->x1),
 		SCREEN_Y(ls->y1),

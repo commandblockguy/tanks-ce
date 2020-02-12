@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "constants.h"
-#include "objects.h"
 #include "level.h"
 
 enum colors {
@@ -41,14 +40,14 @@ void displayScores(void); //Display high scores
 
 void displayKillCounts(void);
 
-void missionStart(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
+void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
 
-void render(Level *level); //Render tilemap, tanks, and UI during the game loop
+void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
 
-void renderPhysicsBody(PhysicsBody *phys);
+void renderPhysicsBody(physicsBody_t *phys);
 
 void displayUI(void); //Display UI during a mission
 
-void draw_line(LineSeg* ls);
+void drawLine(lineSeg_t* ls);
 
 #endif

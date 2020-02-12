@@ -10,32 +10,34 @@
 #include <fileioc.h>
 
 #include "constants.h"
-#include "objects.h"
 #include "level.h"
 #include "util.h"
 #ifdef CREATE_LEVEL_APPVAR
 #include "tiles/lvlpack.h"
 #endif
+#include "ai_data.h"
 
 #undef NDEBUG
 #include <debug.h>
 
-uint24_t tileToXPt(uint8_t x) {
-    uint24_t result = x * TILE_SIZE;
+int24_t tileToXPt(int8_t x) {
+    return x * TILE_SIZE;
+}
+
+int24_t tileToYPt(int8_t y) {
+    return y * TILE_SIZE;
+}
+
+int8_t ptToXTile(int24_t x) {
+    int8_t result = x / TILE_SIZE;
+    if(x < 0) result--;
     return result;
 }
 
-uint24_t tileToYPt(uint8_t y) {
-    uint24_t result = y * TILE_SIZE;
+int8_t ptToYTile(int24_t y) {
+    int8_t result = y / TILE_SIZE;
+    if(y < 0) result--;
     return result;
-}
-
-uint8_t ptToXTile(uint24_t x) {
-    return x / TILE_SIZE;
-}
-
-uint8_t ptToYTile(uint24_t y) {
-    return y / TILE_SIZE;
 }
 
 void createLevels(void) {
@@ -62,7 +64,7 @@ void createLevels(void) {
 	const SerializedTank ser_tanks18[] = {{PLAYER, 2, 13}, {MISSILE, 4, 2}, {FAST, 14, 2}, {RED, 7, 4}, {IMMOB_MISSILE, 11, 8}, {MISSILE, 19, 14}, {FAST, 14, 15}};
 	const SerializedTank ser_tanks19[] = {{PLAYER, 1, 15}, {FAST, 1, 1}, {FAST, 8, 1}, {FAST, 17, 1}, {FAST, 9, 5}, {FAST, 19, 6}, {FAST, 1, 8}, {FAST, 20, 11}, {FAST, 17, 15}};
 	const SerializedTank ser_tanks20[] = {{PLAYER, 2, 8}, {INVISIBLE, 17, 6}, {INVISIBLE, 19, 8}};
-	Level lvls[] = {s(1), s(2), s(3), s(4), s(5), s(6), s(7), s(8), s(9), s(10), s(11), s(12), s(13), s(14), s(15), s(16), s(17), s(18), s(19), s(20)};
+	level_t lvls[] = {s(1), s(2), s(3), s(4), s(5), s(6), s(7), s(8), s(9), s(10), s(11), s(12), s(13), s(14), s(15), s(16), s(17), s(18), s(19), s(20)};
 	LevelPack lvl_pack = {"TANKS!", sizeof(lvls) / sizeof(lvls[0]), {0, 0, 0, 0, 0}};
 	ti_var_t appVar;
 	int i;
@@ -74,7 +76,7 @@ void createLevels(void) {
 	ti_Write(&lvl_pack, sizeof(LevelPack), 1, appVar);
 	for(i = 0; i < lvl_pack.num_levels; i++) {
 		uint8_t* comp_tiles;
-		ti_Write(lvls + i, sizeof(Level), 1, appVar);
+		ti_Write(lvls + i, sizeof(level_t), 1, appVar);
 		switch(i) {
 			case 0:
 			default:
@@ -172,7 +174,7 @@ void createLevels(void) {
 	#endif
 }
 
-void deserializeTank(Tank* tank, SerializedTank *ser_tank) {
+void deserializeTank(tank_t* tank, const SerializedTank *ser_tank) {
 	tank->type = ser_tank->type;
 	tank->start_x = ser_tank->start_x;
 	tank->start_y = ser_tank->start_y;
