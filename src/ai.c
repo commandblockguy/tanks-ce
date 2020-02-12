@@ -299,8 +299,6 @@ bool pointingAtTarget(tank_t* tank, physicsBody_t* target, uint8_t max_bounces, 
         drawLine(&line);
 		#endif
 		if(segCollidesBody(&line, target)) {
-		    gfx_BlitBuffer();
-		    delay(500);
 			return true;
 		}
 		//move pos to new position and reflect angle
