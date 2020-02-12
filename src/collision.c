@@ -76,7 +76,7 @@ void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles
     if(p->position_x + p->width > LEVEL_SIZE_X * TILE_SIZE)
         topRight = bottomRight = true;
     if(p->position_y + p->height > LEVEL_SIZE_Y * TILE_SIZE)
-        topLeft = bottomLeft = true;
+        bottomLeft = bottomRight = true;
 
 	double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
 	double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
