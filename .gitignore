@@ -48,7 +48,7 @@ Temporary Items
 
 bin/
 obj/
-cmake-build-debug/
+cmake-build-*/
 .idea/
 src/gfx/*.c
 src/gfx/*.h
