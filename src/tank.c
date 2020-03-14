@@ -16,13 +16,15 @@ const uint8_t max_bounces[] = 	{1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
 //Process tank physics
 void processTank(tank_t* tank) {
     int i;
-    reflection_t reflect;
 
     if(tank->alive) {
         ai_process_move(tank);
         ai_process_fire(tank);
 
-        processReflection(&reflect, &tank->phys, true);
+        tank->phys.position_x += tank->phys.velocity_x;
+        tank->phys.position_y += tank->phys.velocity_y;
+
+        processReflection(&tank->phys, true);
 
         for(i = game.level.num_tanks - 1; i >= 0; i--) {
             if(tanks[i].alive)

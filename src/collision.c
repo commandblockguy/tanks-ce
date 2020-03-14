@@ -54,9 +54,8 @@ bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles) {
 }
 
 //TODO: if three corners are hit, move diagonally out
-void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles) {
-
-	//Figure out if the four corners are colliding
+direction_t processReflection(physicsBody_t *p, bool respectHoles) {
+	// Figure out if the four corners are colliding
 	bool	topRight = checkTileCollision(p->position_x + p->width,
                                           p->position_y, respectHoles);
 	bool bottomRight = checkTileCollision(p->position_x + p->width,
@@ -68,8 +67,7 @@ void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles
                                           p->position_y + p->height,
                                           respectHoles);
 
-	bool double_x;
-	bool double_y;
+	bool double_x, double_y;
 
     if(p->position_y < 0) topRight =    topLeft = true;
     if(p->position_x < 0) topLeft  = bottomLeft = true;
@@ -78,50 +76,43 @@ void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles
     if(p->position_y + p->height > LEVEL_SIZE_Y * TILE_SIZE)
         bottomLeft = bottomRight = true;
 
-	double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
-	double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
+    double_x = (bottomLeft && topLeft) || (topRight && bottomRight);
+    double_y = (topRight && topLeft) || (bottomRight && bottomLeft);
 
-	uint24_t disUp	   = -1;
-	uint24_t disDown  = -1;
-	uint24_t disLeft  = -1;
-	uint24_t disRight = -1;
+	uint8_t dir = 0;
 
-	result->colliding = (topRight || bottomRight || topLeft || bottomLeft);
+	if((topRight || bottomRight) && (!double_y || double_x)) {
+        int24_t disRight = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width));
+        if(disRight <= p->velocity_x) {
+            dir |= RIGHT;
+            p->position_x -= disRight;
+        }
+	}
+	if((topLeft || bottomLeft) && (!double_y || double_x)) {
+        int24_t disLeft = tileToXPt(ptToXTile(p->position_x) + 1) - p->position_x;
+        if(disLeft <= -p->velocity_x) {
+            dir |= LEFT;
+            p->position_x += disLeft;
+        }
+	}
+	if((topLeft || topRight) && (!double_x || double_y)) {
+        int24_t disUp = tileToYPt(ptToYTile(p->position_y) + 1) - p->position_y;
+        if(disUp <= -p->velocity_y) {
+            dir |= UP;
+            p->position_y += disUp;
+        }
+	}
+	if((bottomLeft || bottomRight) && (!double_x || double_y)) {
+        int24_t disDown = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height));
+        if(disDown <= p->velocity_y) {
+            dir |= DOWN;
+            p->position_y -= disDown;
+        }
+    }
 
-	result->dir = 0;
+	if(dir)
 
-	if(!result->colliding) return;
-
-	if((topRight || bottomRight) && !double_y) {
-        disRight = p->position_x + p->width - tileToXPt(ptToXTile(p->position_x + p->width));
-	}
-	if((topLeft || bottomLeft) && !double_y) {
-        disLeft = tileToXPt(ptToXTile(p->position_x) + 1) - p->position_x;
-	}
-	if((topLeft || topRight) && !double_x) {
-        disUp = tileToYPt(ptToYTile(p->position_y) + 1) - p->position_y;
-	}
-	if((bottomLeft || bottomRight) && !double_x) {
-        disDown = p->position_y + p->height - tileToYPt(ptToYTile(p->position_y + p->height));
-	}
-
-	//pick the direction with the smallest distance
-	if(disUp <= disLeft && disUp <= disRight) {
-		result->dir = UP;
-		p->position_y += disUp;
-	}
-	if(disLeft < disUp && disLeft < disDown) {
-		result->dir = LEFT;
-		p->position_x += disLeft;
-	}
-	if(disDown <= disLeft && disDown <= disRight) {
-		result->dir = DOWN;
-		p->position_y -= disDown;
-	}
-	if(disRight < disUp && disRight < disDown) {
-		result->dir = RIGHT;
-		p->position_x -= disRight;
-	}
+	return dir;
 }
 
 bool pointInsideBody(physicsBody_t* p, uint24_t x, uint24_t y) {

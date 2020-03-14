@@ -37,11 +37,6 @@ enum {
 typedef uint8_t physicsType_t;
 
 typedef struct {
-	bool colliding;
-	direction_t dir;
-} reflection_t;
-
-typedef struct {
 	physicsType_t type;
 	int24_t position_x;
 	int24_t position_y;
@@ -62,7 +57,7 @@ bool detectCollision(physicsBody_t* p1, physicsBody_t* p2);
 bool pointInsideBody(physicsBody_t* p, uint24_t x, uint24_t y);
 
 //Determine if a collision occurs with the tilemap
-void processReflection(reflection_t *result, physicsBody_t *p, bool respectHoles);
+direction_t processReflection(physicsBody_t *p, bool respectHoles);
 
 //if colliding, push bodies an equal distance apart and return true
 bool collideAndPush(physicsBody_t* p1, physicsBody_t* p2);

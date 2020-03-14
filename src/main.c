@@ -204,6 +204,8 @@ void handleInput() {
 
 	switch(keys) {
 		default:
+            player->phys.velocity_x = 0;
+            player->phys.velocity_y = 0;
 			moving = false;
 			break;
 		case UP:
@@ -246,8 +248,8 @@ void handleInput() {
 		}
 
 		if(abs(diff) <= DEGREES_TO_ANGLE(45)) {
-			player->phys.position_x += (int24_t)TANK_SPEED_NORMAL * fast_cos(player->tread_rot) / TRIG_SCALE;
-			player->phys.position_y += (int24_t)TANK_SPEED_NORMAL * fast_sin(player->tread_rot) / TRIG_SCALE;
+			player->phys.velocity_x = (int24_t)TANK_SPEED_NORMAL * fast_cos(player->tread_rot) / TRIG_SCALE;
+			player->phys.velocity_y = (int24_t)TANK_SPEED_NORMAL * fast_sin(player->tread_rot) / TRIG_SCALE;
 		}
 	}
 

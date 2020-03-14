@@ -180,6 +180,8 @@ void deserializeTank(tank_t* tank, const SerializedTank *ser_tank) {
 	tank->start_y = ser_tank->start_y;
 	tank->phys.position_x = tileToXPt(ser_tank->start_x);
 	tank->phys.position_y = tileToYPt(ser_tank->start_y);
+    tank->phys.velocity_x = 0;
+    tank->phys.velocity_y = 0;
 	tank->phys.height = TANK_SIZE;
 	tank->phys.width = TANK_SIZE;
 	tank->barrel_rot = 0;

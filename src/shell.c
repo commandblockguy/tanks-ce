@@ -5,7 +5,7 @@
 
 void processShell(shell_t* shell, tank_t* tank) {
     int j;
-    reflection_t reflect;
+    direction_t collide_dir;
     //Ignore dead shells
     if(!shell->alive) return;
     //Add velocity
@@ -46,23 +46,28 @@ void processShell(shell_t* shell, tank_t* tank) {
         shell->left_tank_hitbox = true;
     }
 
-    processReflection(&reflect, &shell->phys, false);
+    collide_dir = processReflection(&shell->phys, false);
 
-    if(reflect.colliding) {
-        shellRicochet(shell, reflect.dir);
+    if(collide_dir) {
+        shellRicochet(shell, collide_dir);
     }
 }
 
 bool shellRicochet(shell_t* shell, direction_t dir) {
-    //Determine if shell explodes here, and subtracts 1 from the bounces left
-    if(!shell->bounces--) {
+    if(!shell->bounces) {
         shell->alive = false;
         return false;
     }
+
     //shell_t is still alive
-    if(dir & UP || dir & DOWN)
+    if(dir & UP || dir & DOWN) {
         shell->phys.velocity_y *= -1;
-    if(dir & LEFT || dir & RIGHT)
+        shell->bounces--;
+    }
+    if(dir & LEFT || dir & RIGHT) {
         shell->phys.velocity_x *= -1;
+        shell->bounces--;
+    }
+
     return true;
 }
