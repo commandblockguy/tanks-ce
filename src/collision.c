@@ -53,7 +53,6 @@ bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles) {
 	return colliding;
 }
 
-//TODO: if three corners are hit, move diagonally out
 direction_t processReflection(physicsBody_t *p, bool respectHoles) {
 	// Figure out if the four corners are colliding
 	bool	topRight = checkTileCollision(p->position_x + p->width,
