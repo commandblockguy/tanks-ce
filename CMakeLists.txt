@@ -10,7 +10,6 @@ add_custom_target(Make ALL $(MAKE) WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 
 # A dummy target to make CLion do stuff
 add_executable(dummy
-        src/gfx/tileset.c
         src/tiles/lvlpack.c
         src/tiles/lvlpack.h
         src/ai.c

@@ -101,6 +101,8 @@ void main(void) {
 		//Display the mission start screen
 		startMission(true);
 
+        generate_bg_tilemap();
+
 		game.status = IN_PROGRESS;
 		//Game loop
 		while(game.status == IN_PROGRESS) {

@@ -28,15 +28,46 @@ enum colors {
     COL_OLIVE_BANDS = 11
 };
 
-#define TILE_PIXEL_SIZE 13
+enum tileset {
+    TS_TOP_TOP,
+    TS_SIDE_TOP,
+    TS_SIDE_ALT_TOP,
+    TS_SIDE_HALF,
+    TS_DEST_TOP_TOP,
+    TS_DEST_SIDE_TOP,
+    TS_DEST_SIDE_HALF,
+    TS_HOLE_TOP,
+    TS_TOP_BOT,
+    TS_SIDE_BOT,
+    TS_SIDE_ALT_BOT,
+    TS_SIDE_ALT_HALF,
+    TS_DEST_TOP_BOT,
+    TS_DEST_SIDE_BOT,
+    TS_NONE,
+    TS_HOLE_BOT
+};
 
-/* Calculate the screen-space position for a given world-space point */
-#define SCREEN_X(x) ((x) * TILE_PIXEL_SIZE / 256 + MAP_OFFSET_X)
-#define SCREEN_Y(y) ((y) * TILE_PIXEL_SIZE / 256)
+#define TILE_PIXEL_SIZE_X 14
+#define TILE_PIXEL_SIZE_Y 10
 
 /* Calculate the screen-space distance for a given world-space distance */
-#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE / 256)
-#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE / 256)
+#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE_X / 256)
+#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE_Y / 256)
+
+#define TILE_PIXEL_WIDTH SCREEN_DELTA_X(TILE_SIZE)
+#define TILE_PIXEL_HEIGHT 10
+#define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_HEIGHT / 2)
+
+#define TILEMAP_OFFSET 4
+
+//Offset from sides of screen
+#define MAP_OFFSET_X ((LCD_WIDTH  - SCREEN_DELTA_X(LEVEL_SIZE_X * TILE_SIZE)) / 2)
+// Offset from top of the screen
+#define MAP_OFFSET_Y ((LCD_HEIGHT - SCREEN_DELTA_Y(LEVEL_SIZE_Y * TILE_SIZE)) / 2)
+
+/* Calculate the screen-space position for a given world-space point */
+#define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
+#define SCREEN_Y(y) (SCREEN_DELTA_Y(y) + MAP_OFFSET_Y)
 
 void displayScores(void); //Display high scores
 
@@ -51,5 +82,7 @@ void renderPhysicsBody(physicsBody_t *phys);
 void displayUI(void); //Display UI during a mission
 
 void drawLine(lineSeg_t* ls);
+
+void generate_bg_tilemap(void);
 
 #endif

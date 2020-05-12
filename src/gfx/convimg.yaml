@@ -3,7 +3,7 @@ output: c
   palettes:
     - palette
   converts:
-    - tileset
+    - convert
 
 palette: palette
   images: automatic
@@ -19,7 +19,7 @@ palette: palette
   fixed-color: {index: 10, r:  70, g: 127, b: 111}
   fixed-color: {index: 11, r: 168, g: 179, b: 139}
 
-convert: tileset
+convert: convert
   palette: palette
-  tilesets: {tile-width: 13, tile-height: 13}
+  tilesets: {tile-width:14, tile-height:5}
     - tileset.png

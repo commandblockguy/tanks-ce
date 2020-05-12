@@ -209,28 +209,124 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	}
 }
 
+#define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET)
+uint8_t tilemap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
+
+void generate_bg_tilemap(void) {
+    uint8_t y;
+    const bool bottom_is_tall[] = {0, 1, 0, 0, 1, 0, 0, 1};
+    const bool bottom_is_alt[] = {0, 0, 1, 0, 0, 1, 0, 0};
+
+    for(y = 0; y < TILEMAP_HEIGHT; y++) {
+        uint8_t x;
+        for(x = 0; x < LEVEL_SIZE_X; x++) {
+            tilemap[y][x] = TS_NONE;
+        }
+    }
+
+    for(y = 0; y < LEVEL_SIZE_Y; y++) {
+        uint8_t x;
+        for(x = 0; x < LEVEL_SIZE_X; x++) {
+            tile_t tile = tiles[y][x];
+            uint8_t height = TILE_HEIGHT(tile);
+            uint8_t type = TILE_TYPE(tile);
+            bool tall = bottom_is_tall[height];
+            bool alt = bottom_is_alt[height];
+
+            switch(type) {
+                default:
+                    break;
+                case DESTROYED:
+                    tilemap[2 * y + TILEMAP_OFFSET][x] = TS_NONE;
+                    tilemap[2 * y + TILEMAP_OFFSET + 1][x] = TS_NONE;
+                    break;
+                case HOLE:
+                    tilemap[2 * y + TILEMAP_OFFSET][x] = TS_HOLE_TOP;
+                    tilemap[2 * y + TILEMAP_OFFSET + 1][x] = TS_HOLE_BOT;
+                    break;
+                case BLOCK: {
+                    int8_t z;
+                    if(!TILE_HEIGHT(tile)) {
+                        tilemap[2 * y + TILEMAP_OFFSET][x] = TS_NONE;
+                        tilemap[2 * y + TILEMAP_OFFSET + 1][x] = TS_NONE;
+                        break;
+                    }
+
+                    for(z = -1; z < height; z++) {
+                        if(tall) {
+                            if(alt) {
+                                tilemap[2 * y + TILEMAP_OFFSET - z - 1][x] = TS_SIDE_ALT_TOP;
+                                tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_SIDE_ALT_BOT;
+                            } else {
+                                tilemap[2 * y + TILEMAP_OFFSET - z - 1][x] = TS_SIDE_TOP;
+                                tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_SIDE_BOT;
+                            }
+                            z++;
+                        } else {
+                            if(alt) {
+                                tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_SIDE_ALT_HALF;
+                            } else {
+                                tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_SIDE_HALF;
+                            }
+                        }
+                        alt  = !alt;
+                        tall = !tall;
+                    }
+
+                    tilemap[2 * y + TILEMAP_OFFSET - z - 1][x] = TS_TOP_TOP;
+                    tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_TOP_BOT;
+
+                    break;
+                }
+                case DESTRUCTIBLE: {
+                    int8_t z;
+                    if(!TILE_HEIGHT(tile)) {
+                        tilemap[2 * y + TILEMAP_OFFSET][x] = TS_NONE;
+                        tilemap[2 * y + TILEMAP_OFFSET + 1][x] = TS_NONE;
+                        break;
+                    }
+
+                    for(z = -1; z < height; z++) {
+                        if(tall) {
+                            tilemap[2 * y + TILEMAP_OFFSET - z - 1][x] = TS_DEST_SIDE_TOP;
+                            tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_DEST_SIDE_BOT;
+                            z++;
+                        } else {
+                            tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_DEST_SIDE_HALF;
+                        }
+                        tall = !tall;
+                    }
+
+                    tilemap[2 * y + TILEMAP_OFFSET - z - 1][x] = TS_DEST_TOP_TOP;
+                    tilemap[2 * y + TILEMAP_OFFSET - z][x] = TS_DEST_TOP_BOT;
+
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void redraw(void) {
     profiler_start(tilemap);
-	const gfx_tilemap_t tilemap = {
-            (uint8_t*)tiles,
-	        tileset_tiles,
-            SCREEN_DELTA_X(TILE_SIZE),
-            SCREEN_DELTA_Y(TILE_SIZE),
-            LEVEL_SIZE_Y,
+    const gfx_tilemap_t tilemap_config = {
+            (uint8_t*)tilemap,
+            tileset_tiles,
+            HALF_TILE_PIXEL_HEIGHT,
+            14,
+            TILEMAP_HEIGHT,
             LEVEL_SIZE_X,
-	        gfx_tile_no_pow2,
-	        gfx_tile_no_pow2,
-	        LEVEL_SIZE_Y,
-	        LEVEL_SIZE_X,
-            SCREEN_Y(0),
+            gfx_tile_no_pow2,
+            gfx_tile_no_pow2,
+            TILEMAP_HEIGHT,
+            LEVEL_SIZE_X,
+            SCREEN_Y(0) - TILE_PIXEL_HEIGHT * 2,
             SCREEN_X(0)
-	}; //Tilemap config struct
-
+    };
 	gfx_FillScreen(COL_WHITE);
 
-	//Render level tiles
-	gfx_Tilemap_NoClip(&tilemap, 0, 0);
-	profiler_end(tilemap);
+	gfx_Tilemap(&tilemap_config, 0, 0);
+    profiler_end(tilemap);
 }
 
 void render(level_t *level) {

@@ -20,9 +20,6 @@
 //Target frame rate
 #define TARGET_FPS 30
 
-//Offset from sides of screen
-#define MAP_OFFSET_X 16
-
 //Size of the gameplay area in tiles
 #define LEVEL_SIZE_X 22
 #define LEVEL_SIZE_Y 17
@@ -30,11 +27,11 @@
 //Pixel size of each square object
 #define TILE_SIZE 256
 #define TANK_SIZE TILE_SIZE
-#define SHELL_SIZE (TILE_SIZE * 3 / 13)
+#define SHELL_SIZE (TILE_SIZE * 3 / 14)
 #define MINE_SIZE TILE_SIZE
 
 //Distance from center of tank new shells appear
-#define BARREL_LENGTH (TANK_SIZE * 5 / 13)
+#define BARREL_LENGTH (TANK_SIZE * 5 / 14)
 
 //148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
 #define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) //TODO
