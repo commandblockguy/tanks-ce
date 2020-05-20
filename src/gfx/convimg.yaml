@@ -23,3 +23,6 @@ convert: convert
   palette: palette
   tilesets: {tile-width:14, tile-height:5}
     - tileset.png
+  images:
+    - player_base/*
+    - player_turret/*

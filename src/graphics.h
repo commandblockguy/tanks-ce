@@ -59,6 +59,8 @@ enum tileset {
 #define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_HEIGHT / 2)
 
 #define TILEMAP_OFFSET 4
+#define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET)
+#define TILEMAP_BASE_Y (SCREEN_Y(0) - HALF_TILE_PIXEL_HEIGHT * TILEMAP_OFFSET)
 
 //Offset from sides of screen
 #define MAP_OFFSET_X ((LCD_WIDTH  - SCREEN_DELTA_X(LEVEL_SIZE_X * TILE_SIZE)) / 2)
@@ -68,6 +70,13 @@ enum tileset {
 /* Calculate the screen-space position for a given world-space point */
 #define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
 #define SCREEN_Y(y) (SCREEN_DELTA_Y(y) + MAP_OFFSET_Y)
+
+#define TANK_SPRITE_OFFSET_X 8
+#define TANK_SPRITE_OFFSET_Y 11
+#define TANK_SPRITE_SIZE_X 28
+#define TANK_SPRITE_SIZE_Y 24
+
+void initGraphics(void);
 
 void displayScores(void); //Display high scores
 

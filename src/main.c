@@ -52,10 +52,7 @@ void main(void) {
 	
 	createLevels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
 
-	gfx_Begin(); //Set up draw bits
-	gfx_SetPalette(palette, sizeof_palette, 0);
-	gfx_SetDrawBuffer();
-	gfx_SetTextFGColor(7);
+	initGraphics();
 
 	timer_Control = 0;
 	timer_1_MatchValue_1 = 32768 / TARGET_FPS;
