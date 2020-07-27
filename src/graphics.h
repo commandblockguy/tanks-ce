@@ -78,12 +78,6 @@ enum tileset {
 
 void initGraphics(void);
 
-void displayScores(void); //Display high scores
-
-void displayKillCounts(void);
-
-void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
-
 void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
 
 void renderPhysicsBody(physicsBody_t *phys);

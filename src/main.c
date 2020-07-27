@@ -36,6 +36,7 @@
 #include "shell.h"
 #include "globals.h"
 #include "profiler.h"
+#include "gui.h"
 
 void startMission(bool initial); //Start a mission and reset various tank things.
 
