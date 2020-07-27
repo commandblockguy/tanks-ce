@@ -268,8 +268,9 @@ void render_tank(tank_t *tank) {
 
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
-                uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // doesn't work without the -1
-                if(depthmap[tile_y][tile_x] > tank_y) {
+                uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // -1 is to round down if exactly on the edge
+                uint8_t world_tile_y = depthmap[tile_y][tile_x];
+                if(world_tile_y > tank_y && TILE_HEIGHT(tiles[world_tile_y][tile_x])) { // this is a hackfix, but whatever
                     redraw_tile(tile_x, tile_y);
                 }
             }
