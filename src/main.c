@@ -191,9 +191,11 @@ void startMission(bool initial) {
 			tank->mines[j].alive = false;
 		}
 	}
-	for(i = 0; i < LEVEL_SIZE_X * LEVEL_SIZE_Y; i++) {
-		if(tiles[i] == DESTROYED)
-			tiles[i] = DESTRUCTIBLE;
+	for(uint8_t x = 0; x < LEVEL_SIZE_X; x++) {
+	    for(uint8_t y = 0; y < LEVEL_SIZE_Y; y++) {
+            if(tiles[y][x] == DESTROYED)
+                tiles[y][x] = DESTRUCTIBLE;
+        }
 	}
     missionStartScreen(game.mission, game.lives, remaining_tanks);
 }

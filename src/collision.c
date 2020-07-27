@@ -48,7 +48,7 @@ bool centerDistanceLessThan(physicsBody_t* p1, physicsBody_t* p2, uint24_t dis) 
 
 //Check if a point is colliding with a tile
 bool checkTileCollision(uint24_t x, uint24_t y, bool respectHoles) {
-	tile_t tile = tiles[ptToXTile(x) + LEVEL_SIZE_X * ptToYTile(y)];
+	tile_t tile = tiles[ptToYTile(y)][ptToXTile(x)];
 	bool colliding = (TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) || (respectHoles && TILE_TYPE(tile) == HOLE);
 	return colliding;
 }
@@ -108,9 +108,7 @@ direction_t processReflection(physicsBody_t *p, bool respectHoles) {
             p->position_y -= disDown;
         }
     }
-
-	if(dir)
-
+	
 	return dir;
 }
 

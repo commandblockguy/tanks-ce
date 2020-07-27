@@ -19,7 +19,7 @@ void detonate(mine_t *mine) {
         for(k  = ptToYTile(centerY(&mine->phys) - MINE_EXPLOSION_RADIUS);
             k <= ptToYTile(centerY(&mine->phys) + MINE_EXPLOSION_RADIUS); k++) {
             if(k < 0 || k >= LEVEL_SIZE_Y) continue;
-            if(TILE_TYPE(tiles[j + LEVEL_SIZE_X * k]) == DESTRUCTIBLE) tiles[j + LEVEL_SIZE_X * k] |= DESTROYED;
+            if(TILE_TYPE(tiles[k][j]) == DESTRUCTIBLE) tiles[k][j] |= DESTROYED;
         }
     }
 

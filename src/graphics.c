@@ -212,7 +212,7 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 void redraw(void) {
     profiler_start(tilemap);
 	const gfx_tilemap_t tilemap = {
-	        tiles,
+            (uint8_t*)tiles,
 	        tileset_tiles,
             SCREEN_DELTA_X(TILE_SIZE),
             SCREEN_DELTA_Y(TILE_SIZE),

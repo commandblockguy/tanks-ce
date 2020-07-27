@@ -21,7 +21,7 @@ typedef struct {
 } game_t;
 
 extern tank_t* tanks;
-extern tile_t tiles[LEVEL_SIZE_X * LEVEL_SIZE_Y];
+extern tile_t tiles[LEVEL_SIZE_Y][LEVEL_SIZE_X];
 extern game_t game;
 
 #endif //TANKS_GLOBALS_H

@@ -130,7 +130,7 @@ void aim_reflect(tank_t* tank) {
 		yInt = yIntercept(&line, rX);
 		xT = x - !left;
 		yT = ptToYTile(yInt);
-		tile = tiles[xT + LEVEL_SIZE_X * yT];
+		tile = tiles[yT][xT];
 		#ifdef DBG_DRAW
 		gfx_SetColor(COL_RED);
         drawLine(&line);
@@ -183,7 +183,7 @@ void aim_reflect(tank_t* tank) {
 		xInt = xIntercept(&line, rY);
 		xT = ptToXTile(xInt);
 		yT = y - !up;
-		tile = tiles[xT + LEVEL_SIZE_X * yT];
+		tile = tiles[yT][xT];
 		#ifdef DBG_DRAW
 		gfx_SetColor(COL_RED);
         drawLine(&line);
@@ -251,7 +251,7 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result)
 
 	//while inside the map
 	while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
-		tile_t tile = tiles[tileX + LEVEL_SIZE_X * tileY];
+		tile_t tile = tiles[tileY][tileX];
 
 		//dbg_sprintf(dbgout, "tileX: %i, tileY: %i, t: %i, dtX: %i, dtY: %i, tile: %X\n", tileX, tileY, t, dtX, dtY, tile);
 
