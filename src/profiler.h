@@ -2,6 +2,7 @@
 #define TANKS_PROFILER_H
 
 #include <stdint.h>
+#include <tice.h>
 
 #define USE_PROFILER 1
 
@@ -11,9 +12,12 @@ typedef union {
     struct {
         uint24_t total;
         uint24_t graphics;
+        uint24_t gfx_wait;
         uint24_t tilemap;
         uint24_t render_tanks;
+        uint24_t render_player;
         uint24_t swapdraw;
+        uint24_t store_bg;
         uint24_t undraw;
         uint24_t physics;
         uint24_t ai;

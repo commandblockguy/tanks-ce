@@ -3,15 +3,18 @@
 #undef NDEBUG
 #include <debug.h>
 #include "partial_redraw.h"
+#include "profiler.h"
 
 bool pdraw_current_buffer = 0;
 pdraw_sprite_t pdraw_sprites[2][32];
 uint8_t pdraw_num_sprites[2] = {0, 0};
 
 pdraw_sprite_t *pdraw_RectRegion(uint24_t x, uint8_t y, uint8_t width, uint8_t height) {
+    profiler_add(store_bg);
     gfx_sprite_t *bg_sprite = gfx_MallocSprite(width, height);
     if(bg_sprite == NULL) {
         dbg_sprintf(dbgout, "Failed to allocate memory for redraw sprite\n");
+        profiler_end(store_bg);
         return NULL;
     }
 
@@ -21,6 +24,7 @@ pdraw_sprite_t *pdraw_RectRegion(uint24_t x, uint8_t y, uint8_t width, uint8_t h
     psprite->x = x;
     psprite->y = y;
 
+    profiler_end(store_bg);
     return psprite;
 }
 

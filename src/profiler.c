@@ -40,10 +40,13 @@ void profiler_print(void) {
     dbg_sprintf(dbgout, "Last frame (%u): %u FPS\n", profiler_frame_index - 1, 32768 / profiler_frames[profiler_frame_index - 1].total);
     profiler_field_last(total, 0);
     profiler_field_last(  graphics, 1);
+    profiler_field_last(    gfx_wait, 2);
     profiler_field_last(    tilemap, 2);
     profiler_field_last(    render_tanks, 2);
+    profiler_field_last(      render_player, 3);
     profiler_field_last(    swapdraw, 2);
     profiler_field_last(    undraw, 2);
+    profiler_field_last(    store_bg, 2);
     profiler_field_last(  physics, 1);
     profiler_field_last(    ai, 2);
     profiler_field_last(      ai_move, 3);
@@ -55,10 +58,13 @@ void profiler_print(void) {
     dbg_sprintf(dbgout, "Average of last 256 frames: %u FPS\n", 8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
     profiler_field_average(  graphics, 1);
+    profiler_field_average(    gfx_wait, 2);
     profiler_field_average(    tilemap, 2);
     profiler_field_average(    render_tanks, 2);
+    profiler_field_average(      render_player, 3);
     profiler_field_average(    swapdraw, 2);
     profiler_field_average(    undraw, 2);
+    profiler_field_average(    store_bg, 2);
     profiler_field_average(  physics, 1);
     profiler_field_average(    ai, 2);
     profiler_field_average(      ai_move, 3);

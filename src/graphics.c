@@ -248,8 +248,7 @@ void full_redraw(void) {
 
 // Convert a screenspace coordinate to a redraw tile
 uint8_t screen_to_tm_x(uint24_t screen_x) {
-    uint24_t base_x = SCREEN_X(0);
-    return (screen_x - base_x) / SCREEN_DELTA_X(TILE_SIZE);
+    return (screen_x - SCREEN_X(0)) / SCREEN_DELTA_X(TILE_SIZE);
 }
 
 uint8_t screen_to_tm_y(uint24_t screen_y) {
@@ -260,6 +259,7 @@ void render_tank(tank_t *tank) {
     int j;
 
     if(tank == &tanks[0]) {
+        profiler_start(render_player);
         uint24_t base_x = SCREEN_X(tank->phys.position_x) - TANK_SPRITE_OFFSET_X;
         uint8_t base_y = SCREEN_Y(tank->phys.position_y) - TANK_SPRITE_OFFSET_Y;
         uint8_t base_sprite = (((uint8_t)-((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
@@ -267,19 +267,20 @@ void render_tank(tank_t *tank) {
         uint8_t tile_x, tile_y;
         uint8_t end_x = screen_to_tm_x(base_x + TANK_SPRITE_SIZE_X);
         uint8_t end_y = screen_to_tm_y(base_y + TANK_SPRITE_SIZE_Y);
+        uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // -1 is to round down if exactly on the edge
 
         pdraw_TransparentSprite_NoClip(player_bases[base_sprite], base_x, base_y);
         pdraw_TransparentSprite_NoClip(player_turrets[turret_sprite], base_x, base_y);
 
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
-                uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // -1 is to round down if exactly on the edge
                 uint8_t world_tile_y = depthmap[tile_y][tile_x];
                 if(world_tile_y > tank_y && TILE_HEIGHT(tiles[world_tile_y][tile_x])) { // this is a hackfix, but whatever
                     redraw_tile(tile_x, tile_y);
                 }
             }
         }
+        profiler_end(render_player);
     }
     else if(tank->alive) {
         gfx_SetColor(COL_BLACK);
@@ -314,6 +315,10 @@ void render_tank(tank_t *tank) {
 void render(level_t *level) {
 	profiler_start(graphics);
     int i;
+
+    profiler_start(gfx_wait);
+    gfx_Wait();
+    profiler_end(gfx_wait);
 	
 	if(needs_redraw) {
         profiler_start(tilemap);
