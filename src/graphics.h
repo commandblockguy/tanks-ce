@@ -28,13 +28,15 @@ enum colors {
     COL_OLIVE_BANDS = 11
 };
 
+#define TILE_PIXEL_SIZE 13
+
 /* Calculate the screen-space position for a given world-space point */
-#define SCREEN_X(x) ((x) / PIXEL_SCALE + MAP_OFFSET_X)
-#define SCREEN_Y(y) ((y) / PIXEL_SCALE)
+#define SCREEN_X(x) ((x) * TILE_PIXEL_SIZE / 256 + MAP_OFFSET_X)
+#define SCREEN_Y(y) ((y) * TILE_PIXEL_SIZE / 256)
 
 /* Calculate the screen-space distance for a given world-space distance */
-#define SCREEN_DELTA_X(x) ((x) / PIXEL_SCALE)
-#define SCREEN_DELTA_Y(y) ((y) / PIXEL_SCALE)
+#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE / 256)
+#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE / 256)
 
 void displayScores(void); //Display high scores
 

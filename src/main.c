@@ -62,6 +62,8 @@ void main(void) {
 
 	profiler_init();
 
+	gen_lookups();
+
 	game.lives = 3;
 	game.total_kills = 0;
 	memset(game.kills, 0, sizeof(game.kills));

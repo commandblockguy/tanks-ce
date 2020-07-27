@@ -52,11 +52,12 @@ typedef struct {
 
 void createLevels(void); //Temporary function to make a level pack
 
-int24_t tileToXPt(int8_t x);
-int24_t tileToYPt(int8_t y);
+#define tileToXPt(x) ((x) * TILE_SIZE)
+#define tileToYPt(y) ((y) * TILE_SIZE)
 
-int8_t ptToXTile(int24_t x);
-int8_t ptToYTile(int24_t y);
+// we always want to round down, rather than towards 0, hence the -(x < 0)
+#define ptToXTile(x) ((x) / TILE_SIZE - (x < 0))
+#define ptToYTile(y) ((y) / TILE_SIZE - (y < 0))
 
 void deserializeTank(tank_t *tank, const SerializedTank *ser_tank); //Convert a serialized tank into an actual one
 

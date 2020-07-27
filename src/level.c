@@ -20,26 +20,6 @@
 #undef NDEBUG
 #include <debug.h>
 
-int24_t tileToXPt(int8_t x) {
-    return x * TILE_SIZE;
-}
-
-int24_t tileToYPt(int8_t y) {
-    return y * TILE_SIZE;
-}
-
-int8_t ptToXTile(int24_t x) {
-    int8_t result = x / TILE_SIZE;
-    if(x < 0) result--;
-    return result;
-}
-
-int8_t ptToYTile(int24_t y) {
-    int8_t result = y / TILE_SIZE;
-    if(y < 0) result--;
-    return result;
-}
-
 void createLevels(void) {
 	#ifdef CREATE_LEVEL_APPVAR
 	#define s(n) {sizeof(lvl##n##_compressed), sizeof(ser_tanks##n)/sizeof(ser_tanks##n[0])}

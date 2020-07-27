@@ -21,6 +21,8 @@ typedef uint24_t angle_t;
 int24_t qmul(int24_t a, int24_t b);
 int24_t qdiv(int24_t a, int24_t b);
 
+void gen_lookups(void);
+
 int24_t fast_sin(angle_t angle);
 #define fast_cos(rot) fast_sin(DEGREES_TO_ANGLE(90) - rot)
 

@@ -31,7 +31,6 @@ void gen_lookups(void) {
 int24_t fast_sin(angle_t angle) {
     //todo: fix angle
     angle = angle >> 16;
-	if(!lookups_set) gen_lookups();
 	if(angle < 64) return sin_table[angle];
 	if(angle == 64) return 256;
 	if(angle < 128) return sin_table[128 - angle];
