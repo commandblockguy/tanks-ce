@@ -32,8 +32,9 @@ void profiler_tick(void) {
     timer_2_Counter = 0;
 }
 
-#define profiler_field_last(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u ms\n", 2*(1+depth), "                    ", #name, profiler_frames[profiler_frame_index - 1].name / 33)
-#define profiler_field_average(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u ms\n", 2*(1+depth), "                    ", #name, (uint24_t)(profiler_sum.name / 8388.608))
+#define as_decimal(x) (uint24_t)(x),((uint24_t)((x)*1000) % 1000)
+#define profiler_field_last(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u.%03u ms\n", 2*(1+depth), "                    ", #name, as_decimal(profiler_frames[profiler_frame_index - 1].name / 33.0))
+#define profiler_field_average(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u.%03u ms\n", 2*(1+depth), "                    ", #name, as_decimal(profiler_sum.name / 8388.608))
 
 void profiler_print(void) {
     dbg_sprintf(dbgout, "Last frame (%u): %u FPS\n", profiler_frame_index - 1, 32768 / profiler_frames[profiler_frame_index - 1].total);
@@ -43,6 +44,12 @@ void profiler_print(void) {
     profiler_field_last(    render_tanks, 2);
     profiler_field_last(    blit, 2);
     profiler_field_last(  physics, 1);
+    profiler_field_last(    ai, 2);
+    profiler_field_last(      ai_move, 3);
+    profiler_field_last(      ai_fire, 3);
+    profiler_field_last(    tank_collision, 2);
+    profiler_field_last(    shells, 2);
+    profiler_field_last(    mines, 2);
     profiler_field_last(  input, 1);
     dbg_sprintf(dbgout, "Average of last 256 frames: %u FPS\n", 8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
@@ -51,6 +58,12 @@ void profiler_print(void) {
     profiler_field_average(    render_tanks, 2);
     profiler_field_average(    blit, 2);
     profiler_field_average(  physics, 1);
+    profiler_field_average(    ai, 2);
+    profiler_field_average(      ai_move, 3);
+    profiler_field_average(      ai_fire, 3);
+    profiler_field_average(    tank_collision, 2);
+    profiler_field_average(    shells, 2);
+    profiler_field_average(    mines, 2);
     profiler_field_average(  input, 1);
 }
 

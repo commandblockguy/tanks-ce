@@ -20,8 +20,10 @@
 #include "ai_data.h"
 #include "tank.h"
 #include "globals.h"
+#include "profiler.h"
 
 void ai_process_move(tank_t* tank) {
+    profiler_add(ai_move);
 	switch(tank->type) {
 		case(BASIC):
 		case(INVISIBLE):
@@ -36,9 +38,11 @@ void ai_process_move(tank_t* tank) {
 		case(BLACK):
 			move_toward(tank);
 	}
+	profiler_end(ai_move);
 }
 
 void ai_process_fire(tank_t* tank) {
+    profiler_add(ai_fire);
 	switch(tank->type) {
 		case(IMMOBILE):
 			aim_random(tank);
@@ -57,6 +61,7 @@ void ai_process_fire(tank_t* tank) {
 		case(BLACK):
 			aim_future(tank);
 	}
+	profiler_end(ai_fire);
 }
 
 void move_random(tank_t* tank) {

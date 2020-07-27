@@ -4,6 +4,7 @@
 #include "shell.h"
 #include "mine.h"
 #include "globals.h"
+#include "profiler.h"
 
 //todo: fix headers
 void processShell(shell_t *shell, tank_t *tank);
@@ -18,30 +19,38 @@ void processTank(tank_t* tank) {
     int i;
 
     if(tank->alive) {
+        profiler_add(ai);
         ai_process_move(tank);
         ai_process_fire(tank);
+        profiler_end(ai);
 
         tank->phys.position_x += tank->phys.velocity_x;
         tank->phys.position_y += tank->phys.velocity_y;
 
+        profiler_add(tank_collision);
         processReflection(&tank->phys, true);
 
         for(i = game.level.num_tanks - 1; i >= 0; i--) {
             if(tanks[i].alive)
                 collideAndPush(&tank->phys, &tanks[i].phys);
         }
+        profiler_end(tank_collision);
     }
 
     //Loop through all shells
+    profiler_add(shells);
     for(i = max_shells[tank->type] - 1; i >= 0; i--) {
         processShell(&tank->shells[i], tank);
     }
+    profiler_end(shells);
     //Loop through mines
+    profiler_add(mines);
     if(max_mines[tank->type]) {
         for(i = max_mines[tank->type] - 1; i >= 0; i--) {
             processMine(&tank->mines[i], tank);
         }
     }
+    profiler_end(mines);
 }
 
 bool fireShell(tank_t* tank) {

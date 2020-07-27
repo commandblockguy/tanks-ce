@@ -15,6 +15,12 @@ typedef union {
         uint24_t render_tanks;
         uint24_t blit;
         uint24_t physics;
+        uint24_t ai;
+        uint24_t ai_move;
+        uint24_t ai_fire;
+        uint24_t tank_collision;
+        uint24_t shells;
+        uint24_t mines;
         uint24_t input;
     };
     uint24_t array[0];
