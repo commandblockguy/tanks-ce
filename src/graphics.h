@@ -88,4 +88,6 @@ void drawLine(lineSeg_t* ls);
 
 void generate_bg_tilemap(void);
 
+extern bool needs_redraw; // set if the entire map should be redrawn
+
 #endif

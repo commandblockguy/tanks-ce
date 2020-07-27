@@ -13,7 +13,8 @@ typedef union {
         uint24_t graphics;
         uint24_t tilemap;
         uint24_t render_tanks;
-        uint24_t blit;
+        uint24_t swapdraw;
+        uint24_t undraw;
         uint24_t physics;
         uint24_t ai;
         uint24_t ai_move;

@@ -99,7 +99,7 @@ void main(void) {
 		//Display the mission start screen
 		startMission(true);
 
-        generate_bg_tilemap();
+        needs_redraw = true;
 
 		game.status = IN_PROGRESS;
 		//Game loop
@@ -113,6 +113,7 @@ void main(void) {
 					break;
 				}
 				startMission(false);
+				needs_redraw = true;
 			}
 
 			if(game.shotCooldown) {
@@ -139,6 +140,7 @@ void main(void) {
 			profiler_end(physics);
 
             render(&game.level);
+
 			profiler_end(total);
 			profiler_tick();
 		}

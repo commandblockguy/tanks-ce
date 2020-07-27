@@ -20,6 +20,7 @@
 #include "keypadc.h"
 #include "globals.h"
 #include "profiler.h"
+#include "partial_redraw.h"
 
 uint8_t tilemap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
 // For each tilemap tile, the level Y of the block that it's representing
@@ -78,6 +79,8 @@ gfx_sprite_t *player_turrets[16] = {
     (gfx_sprite_t*)pl_turret_14_data,
     (gfx_sprite_t*)pl_turret_15_data,
 };
+
+bool needs_redraw;
 
 void initGraphics(void) {
     int8_t i;
@@ -233,12 +236,14 @@ void redraw_tile(uint8_t x, uint8_t y) {
     gfx_Sprite_NoClip(tile, SCREEN_X(TILE_SIZE * x), screen_y);
 }
 
-void redraw(void) {
-    profiler_start(tilemap);
-	gfx_FillScreen(COL_WHITE);
+void full_redraw(void) {
+    generate_bg_tilemap();
 
+	gfx_FillScreen(COL_WHITE);
 	gfx_Tilemap(&tilemap_config, 0, 0);
-    profiler_end(tilemap);
+
+	pdraw_FreeAll();
+    needs_redraw = false;
 }
 
 // Convert a screenspace coordinate to a redraw tile
@@ -263,8 +268,8 @@ void render_tank(tank_t *tank) {
         uint8_t end_x = screen_to_tm_x(base_x + TANK_SPRITE_SIZE_X);
         uint8_t end_y = screen_to_tm_y(base_y + TANK_SPRITE_SIZE_Y);
 
-        gfx_TransparentSprite(player_bases[base_sprite], base_x, base_y);
-        gfx_TransparentSprite(player_turrets[turret_sprite], base_x, base_y);
+        pdraw_TransparentSprite_NoClip(player_bases[base_sprite], base_x, base_y);
+        pdraw_TransparentSprite_NoClip(player_turrets[turret_sprite], base_x, base_y);
 
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
@@ -310,31 +315,45 @@ void render(level_t *level) {
 	profiler_start(graphics);
     int i;
 	
-	//Eventually, this will only be called once
-	//redraw(tiles, level);
+	if(needs_redraw) {
+        profiler_start(tilemap);
+	    gfx_SetDrawScreen();
+	    full_redraw();
+	    gfx_SetDrawBuffer();
+	    full_redraw();
+        profiler_end(tilemap);
+	}
+
+	profiler_start(undraw);
+    pdraw_RemoveSprites();
+    profiler_end(undraw);
 
 	profiler_start(render_tanks);
     // todo: z-sorting
 	for(i = 0; i < level->num_tanks; i++) {
-		//Render tanks
 		render_tank(&tanks[i]);
 	}
 	profiler_end(render_tanks);
 
+	gfx_SetColor(COL_WHITE);
+	gfx_FillRectangle_NoClip(0, 0, 32, 8);
 	gfx_SetTextXY(0,0);
 	gfx_PrintUInt(fpsCounter(), 4);
 
-	profiler_start(blit);
-	gfx_BlitBuffer();
-	profiler_end(blit);
+	profiler_start(swapdraw);
+	gfx_SwapDraw();
+	profiler_end(swapdraw);
 
-    redraw(); //todo: move back?
     profiler_end(graphics);
 }
 
 void renderPhysicsBody(physicsBody_t *phys) {
-	gfx_Rectangle(SCREEN_X(phys->position_x), SCREEN_Y(phys->position_y),
-	        SCREEN_DELTA_X(phys->width), SCREEN_DELTA_Y(phys->height));
+    uint24_t x = SCREEN_X(phys->position_x);
+    uint8_t y = SCREEN_Y(phys->position_y);
+    uint8_t width = SCREEN_DELTA_X(phys->width);
+    uint8_t height = SCREEN_DELTA_Y(phys->height);
+    pdraw_RectRegion(x, y, width, height);
+	gfx_Rectangle(x, y, width, height);
 }
 
 void drawLine(lineSeg_t* ls) {

@@ -42,7 +42,8 @@ void profiler_print(void) {
     profiler_field_last(  graphics, 1);
     profiler_field_last(    tilemap, 2);
     profiler_field_last(    render_tanks, 2);
-    profiler_field_last(    blit, 2);
+    profiler_field_last(    swapdraw, 2);
+    profiler_field_last(    undraw, 2);
     profiler_field_last(  physics, 1);
     profiler_field_last(    ai, 2);
     profiler_field_last(      ai_move, 3);
@@ -56,7 +57,8 @@ void profiler_print(void) {
     profiler_field_average(  graphics, 1);
     profiler_field_average(    tilemap, 2);
     profiler_field_average(    render_tanks, 2);
-    profiler_field_average(    blit, 2);
+    profiler_field_average(    swapdraw, 2);
+    profiler_field_average(    undraw, 2);
     profiler_field_average(  physics, 1);
     profiler_field_average(    ai, 2);
     profiler_field_average(      ai_move, 3);

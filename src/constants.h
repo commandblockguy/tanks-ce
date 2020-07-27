@@ -15,7 +15,7 @@
 #define CREATE_LEVEL_APPVAR
 
 //Comment this out to remove the debug overdraws
-#define DBG_DRAW
+//#define DBG_DRAW
 
 //Target frame rate
 #define TARGET_FPS 30

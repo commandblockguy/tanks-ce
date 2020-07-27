@@ -21,6 +21,7 @@ void detonate(mine_t *mine) {
             k <= ptToYTile(centerY(&mine->phys) + MINE_EXPLOSION_RADIUS); k++) {
             if(k < 0 || k >= LEVEL_SIZE_Y) continue;
             if(TILE_TYPE(tiles[k][j]) == DESTRUCTIBLE) tiles[k][j] |= DESTROYED;
+            needs_redraw = true;
         }
     }
 
