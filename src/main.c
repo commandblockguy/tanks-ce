@@ -35,6 +35,7 @@
 #include "tank.h"
 #include "shell.h"
 #include "globals.h"
+#include "profiler.h"
 
 void startMission(bool initial); //Start a mission and reset various tank things.
 
@@ -56,7 +57,10 @@ void main(void) {
 	gfx_SetDrawBuffer();
 	gfx_SetTextFGColor(7);
 
+	timer_Control = 0;
 	timer_1_MatchValue_1 = 32768 / TARGET_FPS;
+
+	profiler_init();
 
 	game.lives = 3;
 	game.total_kills = 0;
@@ -98,6 +102,7 @@ void main(void) {
 		game.status = IN_PROGRESS;
 		//Game loop
 		while(game.status == IN_PROGRESS) {
+		    profiler_start(total);
 			int alive_tanks = 0;
 			if(!tanks[0].alive) {
                 game.lives--;
@@ -119,6 +124,7 @@ void main(void) {
 			handleInput();
 			//process physics
 
+			profiler_start(physics);
 			for(i = 0; i < game.level.num_tanks; i++) {
 				processTank(&tanks[i]);
 				if(i && tanks[i].alive) {
@@ -128,8 +134,11 @@ void main(void) {
 			if(!alive_tanks) {
 				game.status = NEXT_LEVEL;
 			}
+			profiler_end(physics);
 
             render(&game.level);
+			profiler_end(total);
+			profiler_tick();
 		}
 
 		if(game.mission % 5 == 4 && game.mission != lvl_pack.num_levels - 1) {
@@ -190,6 +199,7 @@ void startMission(bool initial) {
 }
 
 void handleInput() {
+    profiler_start(input);
 	tank_t* player = &tanks[0];
 	bool moving = true;
 	angle_t target_rot = 0;
@@ -273,6 +283,10 @@ void handleInput() {
 	if(kb_IsDown(kb_KeyClear)) {
 		game.status = QUIT;
 	}
+	if(kb_IsDown(kb_KeyYequ)) {
+	    profiler_print();
+	}
+	profiler_end(input);
 }
 
 //TODO: compress sprites

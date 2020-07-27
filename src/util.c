@@ -94,13 +94,13 @@ uint24_t fpsCounter(void) {
 	uint24_t r;
 
 	//Disable timer temporarily
-	timer_Control = TIMER1_DISABLE;
+	timer_Control &= ~TIMER1_ENABLE;
 
 	r = timer_1_Counter / 33;
 
 	timer_1_Counter = 0;
 	/* Reenable the timer, set it to the 32768 kHz clock */
-	timer_Control = TIMER1_ENABLE | TIMER1_32K | TIMER1_NOINT | TIMER1_UP;
+	timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_NOINT | TIMER1_UP;
 
 	return r;
 }

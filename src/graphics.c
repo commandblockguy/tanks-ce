@@ -19,6 +19,7 @@
 #include "util.h"
 #include "keypadc.h"
 #include "globals.h"
+#include "profiler.h"
 
 
 void displayScores(void) {
@@ -191,9 +192,9 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 	gfx_BlitBuffer();
 
 	//Delay for some time, or wait for a keypress
-    timer_Control = TIMER1_DISABLE;
+    timer_Control &= ~TIMER1_ENABLE;
     timer_1_ReloadValue = timer_1_Counter = 33 * MISSION_START_TIME;
-	timer_Control = TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
+	timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
 
 	while(true) {
 		if(timer_IntStatus & TIMER1_RELOADED) {
@@ -209,6 +210,7 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 }
 
 void redraw(void) {
+    profiler_start(tilemap);
 	const gfx_tilemap_t tilemap = {
 	        tiles,
 	        tileset_tiles,
@@ -228,14 +230,17 @@ void redraw(void) {
 
 	//Render level tiles
 	gfx_Tilemap_NoClip(&tilemap, 0, 0);
+	profiler_end(tilemap);
 }
 
 void render(level_t *level) {
+    profiler_start(graphics);
 	int i = 0;
 	
 	//Eventually, this will only be called once
 	//redraw(tiles, level);
 
+	profiler_start(render_tanks);
 	for(i = 0; i < level->num_tanks; i++) {
 		//Render tanks
 		int j;
@@ -269,14 +274,17 @@ void render(level_t *level) {
             renderPhysicsBody(&mine->phys);
 		}
 	}
+	profiler_end(render_tanks);
 
 	gfx_SetTextXY(0,0);
 	gfx_PrintUInt(fpsCounter(), 4);
 
+	profiler_start(blit);
 	gfx_BlitBuffer();
+	profiler_end(blit);
 
     redraw(); //todo: move back?
-
+    profiler_end(graphics);
 }
 
 void renderPhysicsBody(physicsBody_t *phys) {
