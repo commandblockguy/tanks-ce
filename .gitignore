@@ -52,3 +52,7 @@ cmake-build-*/
 .idea/
 src/gfx/*.c
 src/gfx/*.h
+src/gfx/rendered
+src/gfx/trimmed
+src/gfx/offsets
+tank.blend1

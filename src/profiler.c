@@ -43,7 +43,6 @@ void profiler_print(void) {
     profiler_field_last(    gfx_wait, 2);
     profiler_field_last(    tilemap, 2);
     profiler_field_last(    render_tanks, 2);
-    profiler_field_last(      render_player, 3);
     profiler_field_last(    swapdraw, 2);
     profiler_field_last(    undraw, 2);
     profiler_field_last(    store_bg, 2);
@@ -61,7 +60,6 @@ void profiler_print(void) {
     profiler_field_average(    gfx_wait, 2);
     profiler_field_average(    tilemap, 2);
     profiler_field_average(    render_tanks, 2);
-    profiler_field_average(      render_player, 3);
     profiler_field_average(    swapdraw, 2);
     profiler_field_average(    undraw, 2);
     profiler_field_average(    store_bg, 2);

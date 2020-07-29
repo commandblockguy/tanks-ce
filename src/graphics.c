@@ -21,79 +21,72 @@
 #include "globals.h"
 #include "profiler.h"
 #include "partial_redraw.h"
+#include "dynamic_sprites.h"
 
 uint8_t tilemap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
 // For each tilemap tile, the level Y of the block that it's representing
 uint8_t depthmap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
 
-gfx_UninitedSprite(pl_base_9, 28, 24);
-gfx_UninitedSprite(pl_base_10, 28, 24);
-gfx_UninitedSprite(pl_base_11, 28, 24);
-gfx_UninitedSprite(pl_base_12, 28, 24);
-gfx_UninitedSprite(pl_base_13, 28, 24);
-gfx_UninitedSprite(pl_base_14, 28, 24);
-gfx_UninitedSprite(pl_base_15, 28, 24);
-
-gfx_UninitedSprite(pl_turret_9, 28, 24);
-gfx_UninitedSprite(pl_turret_10, 28, 24);
-gfx_UninitedSprite(pl_turret_11, 28, 24);
-gfx_UninitedSprite(pl_turret_12, 28, 24);
-gfx_UninitedSprite(pl_turret_13, 28, 24);
-gfx_UninitedSprite(pl_turret_14, 28, 24);
-gfx_UninitedSprite(pl_turret_15, 28, 24);
-
-gfx_sprite_t *player_bases[16] = {
-    pl_base_0,
-    pl_base_1,
-    pl_base_2,
-    pl_base_3,
-    pl_base_4,
-    pl_base_5,
-    pl_base_6,
-    pl_base_7,
-    pl_base_8,
-    (gfx_sprite_t*)pl_base_9_data,
-    (gfx_sprite_t*)pl_base_10_data,
-    (gfx_sprite_t*)pl_base_11_data,
-    (gfx_sprite_t*)pl_base_12_data,
-    (gfx_sprite_t*)pl_base_13_data,
-    (gfx_sprite_t*)pl_base_14_data,
-    (gfx_sprite_t*)pl_base_15_data,
-};
-
-gfx_sprite_t *player_turrets[16] = {
-    pl_turret_0,
-    pl_turret_1,
-    pl_turret_2,
-    pl_turret_3,
-    pl_turret_4,
-    pl_turret_5,
-    pl_turret_6,
-    pl_turret_7,
-    pl_turret_8,
-    (gfx_sprite_t*)pl_turret_9_data,
-    (gfx_sprite_t*)pl_turret_10_data,
-    (gfx_sprite_t*)pl_turret_11_data,
-    (gfx_sprite_t*)pl_turret_12_data,
-    (gfx_sprite_t*)pl_turret_13_data,
-    (gfx_sprite_t*)pl_turret_14_data,
-    (gfx_sprite_t*)pl_turret_15_data,
-};
-
 bool needs_redraw;
 
+void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t *map) {
+    out->width = in->width;
+    out->height = in->height;
+
+    size_t size = in->width * in->height;
+
+    for(uint24_t i = 0; i < size; i++) {
+        out->data[i] = map[in->data[i]];
+    }
+}
+
+// this is supposed to go in dynamic_sprites.c, but a weird (linker?) issue causes this array to be filled with NULL if I do that
+gfx_sprite_t * const enemy_bases_unconv[9] = {
+        en_base_0,
+        en_base_1,
+        en_base_2,
+        en_base_3,
+        en_base_4,
+        en_base_5,
+        en_base_6,
+        en_base_7,
+        en_base_8
+};
+
+gfx_sprite_t * const enemy_turrets_unconv[9] = {
+        en_turret_0,
+        en_turret_1,
+        en_turret_2,
+        en_turret_3,
+        en_turret_4,
+        en_turret_5,
+        en_turret_6,
+        en_turret_7,
+        en_turret_8
+};
+
 void initGraphics(void) {
-    int8_t i;
     gfx_Begin(); //Set up draw bits
     gfx_SetPalette(palette, sizeof_palette, 0);
     gfx_SetDrawBuffer();
-    gfx_SetTextFGColor(7);
+    gfx_SetTextFGColor(COL_RIB_SHADOW); // todo: verify
 
-    for(i = 1; i < 8; i++) {
-        player_bases[i]->width  = player_turrets[i]->width  = 28;
-        player_bases[i]->height = player_turrets[i]->height = 24;
-        gfx_FlipSpriteY(player_bases[i], player_bases[16 - i]);
-        gfx_FlipSpriteY(player_turrets[i], player_turrets[16 - i]);
+    for(uint8_t i = 1; i < 8; i++) {
+        gfx_FlipSpriteY(tank_bases[PLAYER][i], tank_bases[PLAYER][16 - i]);
+        gfx_FlipSpriteY(tank_turrets[PLAYER][i], tank_turrets[PLAYER][16 - i]);
+    }
+    for(uint8_t type = PLAYER + 1; type < NUM_TANK_TYPES; type++) {
+        uint8_t palette_table[6] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2};
+        for(uint8_t i = 0; i < 3; i++) palette_table[3 + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type;
+
+        for(uint8_t rot = 0; rot < 9; rot++) {
+            repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_table);
+            repalettize_sprite(tank_turrets[type][rot], enemy_turrets_unconv[rot], palette_table);
+        }
+        for(uint8_t i = 1; i < 8; i++) {
+            gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);
+            gfx_FlipSpriteY(tank_turrets[type][i], tank_turrets[type][16 - i]);
+        }
     }
 }
 
@@ -258,8 +251,7 @@ uint8_t screen_to_tm_y(uint24_t screen_y) {
 void render_tank(tank_t *tank) {
     int j;
 
-    if(tank == &tanks[0]) {
-        profiler_start(render_player);
+    if(tank->alive) {
         uint24_t base_x = SCREEN_X(tank->phys.position_x) - TANK_SPRITE_OFFSET_X;
         uint8_t base_y = SCREEN_Y(tank->phys.position_y) - TANK_SPRITE_OFFSET_Y;
         uint8_t base_sprite = (((uint8_t)-((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
@@ -269,8 +261,12 @@ void render_tank(tank_t *tank) {
         uint8_t end_y = screen_to_tm_y(base_y + TANK_SPRITE_SIZE_Y);
         uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // -1 is to round down if exactly on the edge
 
-        pdraw_TransparentSprite_NoClip(player_bases[base_sprite], base_x, base_y);
-        pdraw_TransparentSprite_NoClip(player_turrets[turret_sprite], base_x, base_y);
+        pdraw_TransparentSprite_NoClip(tank_bases[tank->type][base_sprite],
+                base_x + base_x_offsets[base_sprite],
+                base_y + base_y_offsets[base_sprite]);
+        pdraw_TransparentSprite_NoClip(tank_turrets[tank->type][turret_sprite],
+                base_x + turret_x_offsets[turret_sprite],
+                base_y + turret_y_offsets[turret_sprite]);
 
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
@@ -280,19 +276,6 @@ void render_tank(tank_t *tank) {
                 }
             }
         }
-        profiler_end(render_player);
-    }
-    else if(tank->alive) {
-        gfx_SetColor(COL_BLACK);
-        renderPhysicsBody(&tank->phys);
-        gfx_Line(
-                SCREEN_X(centerX(&tank->phys)),
-                SCREEN_Y(centerY(&tank->phys)),
-                SCREEN_X(centerX(&tank->phys) + fast_cos(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE),
-                SCREEN_Y(centerY(&tank->phys) + fast_sin(tank->barrel_rot) * BARREL_LENGTH / TRIG_SCALE));
-        gfx_SetTextFGColor(COL_RED);
-        gfx_SetTextXY(SCREEN_X(tank->phys.position_x) + 1, SCREEN_Y(tank->phys.position_y) + 1);
-        gfx_PrintUInt(tank->type, 1);
     }
 
     //draw shell hitboxes until I can get sprites

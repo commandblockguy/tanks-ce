@@ -25,8 +25,12 @@ enum colors {
     COL_GOLD = 8,
     COL_TXT_SHADOW = 9,
     COL_LIVES_TXT = 10,
-    COL_OLIVE_BANDS = 11
+    COL_OLIVE_BANDS = 11,
+    COL_ENEMY_TANK_WOOD_1 = 12,
+    COL_ENEMY_TANK_WOOD_2 = 13
 };
+
+#define NUM_DYNAMIC_COLORS 5
 
 enum tileset {
     TS_TOP_TOP,

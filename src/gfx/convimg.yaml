@@ -1,28 +1,113 @@
-output: c
-  include-file: gfx.h
-  palettes:
-    - palette
-  converts:
-    - convert
+outputs:
+  - type: c
+    include-file: gfx.h
+    palettes:
+      - palette
+    converts:
+      - convert
+      - enemy
 
-palette: palette
-  images: automatic
-  fixed-color: {index:  1, r: 255, g: 255, b: 255}
-  fixed-color: {index:  2, r:   0, g:   0, b:   0}
-  fixed-color: {index:  3, r: 255, g:   0, b:   0}
-  fixed-color: {index:  4, r: 228, g: 230, b: 173}
-  fixed-color: {index:  5, r: 174, g:  49, b:  48}
-  fixed-color: {index:  6, r: 164, g:  45, b:  46}
-  fixed-color: {index:  7, r: 183, g: 185, b: 139}
-  fixed-color: {index:  8, r: 193, g: 162, b:  43}
-  fixed-color: {index:  9, r: 134, g:  36, b:  37}
-  fixed-color: {index: 10, r:  70, g: 127, b: 111}
-  fixed-color: {index: 11, r: 168, g: 179, b: 139}
+palettes:
+  - name: palette
+    images: automatic
+    fixed-colors:
+      - color: {index:  1, r: 255, g: 255, b: 255}
+      - color: {index:  2, r:   0, g:   0, b:   0}
+      - color: {index:  3, r: 255, g:   0, b:   0}
+      - color: {index:  4, r: 228, g: 230, b: 173}
+      - color: {index:  5, r: 174, g:  49, b:  48}
+      - color: {index:  6, r: 164, g:  45, b:  46}
+      - color: {index:  7, r: 183, g: 185, b: 139}
+      - color: {index:  8, r: 193, g: 162, b:  43}
+      - color: {index:  9, r: 134, g:  36, b:  37}
+      - color: {index: 10, r:  70, g: 127, b: 111}
+      - color: {index: 11, r: 168, g: 179, b: 139}
+      - color: {index: 12, r: 148, g:  93, b:  58}
+      - color: {index: 13, r: 107, g:  61, b:  25}
 
-convert: convert
-  palette: palette
-  tilesets: {tile-width:14, tile-height:5}
-    - tileset.png
-  images:
-    - player_base/*
-    - player_turret/*
+      - color: {index: 211, r: 180, g: 132, b:  60}
+      - color: {index: 212, r: 156, g: 114, b:  52}
+      - color: {index: 213, r:  13, g:   9, b:   4}
+      - color: {index: 214, r:  95, g:  69, b:  32}
+      - color: {index: 215, r: 176, g: 129, b:  59}
+
+      - color: {index: 216, r:  91, g:  82, b:  73}
+      - color: {index: 217, r:  79, g:  71, b:  63}
+      - color: {index: 218, r:   7, g:   6, b:   5}
+      - color: {index: 219, r:  47, g:  43, b:  38}
+      - color: {index: 220, r:  89, g:  80, b:  71}
+
+      - color: {index: 221, r:  55, g: 105, b:  91}
+      - color: {index: 222, r:  47, g:  91, b:  71}
+      - color: {index: 223, r:   4, g:   8, b:   7}
+      - color: {index: 224, r:  28, g:  55, b:  47}
+      - color: {index: 225, r:  53, g: 102, b:  89}
+
+      - color: {index: 226, r: 214, g: 191, b:  27}
+      - color: {index: 227, r: 195, g: 175, b:  25}
+      - color: {index: 228, r:  85, g:  76, b:  11}
+      - color: {index: 229, r: 147, g: 132, b:  19}
+      - color: {index: 230, r: 211, g: 189, b:  27}
+
+      - color: {index: 231, r: 167, g:  56, b:  86}
+      - color: {index: 232, r: 150, g:  50, b:  77}
+      - color: {index: 233, r:  51, g:  17, b:  26}
+      - color: {index: 234, r: 107, g:  36, b:  55}
+      - color: {index: 235, r: 165, g:  55, b:  84}
+
+      - color: {index: 236, r:  66, g: 117, b:  55}
+      - color: {index: 237, r:  57, g: 101, b:  47}
+      - color: {index: 238, r:   5, g:   9, b:   4}
+      - color: {index: 239, r:  35, g:  61, b:  28}
+      - color: {index: 240, r:  65, g: 114, b:  53}
+# purple (as opposed to violet >_>):
+#      - color: {index: , r:  91, g:  41, b:  97}
+#      - color: {index: , r:  79, g:  36, b:  84}
+#      - color: {index: , r:   7, g:   3, b:   7}
+#      - color: {index: , r:  47, g:  22, b:  51}
+#      - color: {index: , r:  89, g:  40, b:  95}
+
+      - color: {index: 241, r: 114, g:  70, b: 114}
+      - color: {index: 242, r:  98, g:  60, b:  98}
+      - color: {index: 243, r:   8, g:   5, b:   8}
+      - color: {index: 244, r:  59, g:  36, b:  59}
+      - color: {index: 245, r: 111, g:  68, b: 111}
+
+      - color: {index: 246, r: 235, g: 226, b: 198}
+      - color: {index: 247, r: 233, g: 224, b: 193}
+      - color: {index: 248, r: 224, g: 210, b: 167}
+      - color: {index: 249, r: 229, g: 218, b: 182}
+      - color: {index: 250, r: 235, g: 226, b: 197}
+
+      - color: {index: 251, r:  44, g:  40, b:  36}
+      - color: {index: 252, r:  38, g:  34, b:  31}
+      - color: {index: 253, r:   3, g:   3, b:   1}
+      - color: {index: 254, r:  23, g:  21, b:  19}
+      - color: {index: 255, r:  43, g:  39, b:  35}
+
+  - name: enemy_palette
+    max-entries: 8
+    fixed-colors:
+      - color: {index:  0, r:   0, g: 206, b:   0}
+      - color: {index:  1, r: 115, g:  81, b:  49}
+      - color: {index:  2, r:  82, g:  45, b:  33}
+      - color: {index:  3, r: 173, g:  61, b: 197}
+      - color: {index:  4, r: 148, g:  53, b: 173}
+      - color: {index:  5, r:  16, g:   4, b:   8}
+      - color: {index:  6, r: 107, g:  24, b: 132}
+      - color: {index:  7, r: 132, g:  77, b: 123}
+
+converts:
+  - name: convert
+    palette: palette
+    tilesets:
+      tile-width: 14
+      tile-height: 5
+      ptable: true
+      - tileset.png
+    images:
+      - trimmed/pl_*.png
+  - name: enemy
+    palette: enemy_palette
+      images:
+        - trimmed/en_*.png
