@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "constants.h"
 #undef NDEBUG
 #include <debug.h>
 #include "util.h"

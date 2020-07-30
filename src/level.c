@@ -9,13 +9,15 @@
 #include <string.h>
 #include <fileioc.h>
 
-#include "constants.h"
 #include "level.h"
 #include "util.h"
+//Comment this out to stop the levels from being bundled with the program
+#define CREATE_LEVEL_APPVAR
 #ifdef CREATE_LEVEL_APPVAR
 #include "tiles/lvlpack.h"
 #endif
 #include "ai_data.h"
+#include "tank.h"
 
 #undef NDEBUG
 #include <debug.h>
@@ -23,29 +25,29 @@
 void createLevels(void) {
 	#ifdef CREATE_LEVEL_APPVAR
 	#define s(n) {sizeof(lvl##n##_compressed), sizeof(ser_tanks##n)/sizeof(ser_tanks##n[0])}
-	const SerializedTank* ser_tanks; //TODO: change to a 2D array somehow?
-	const SerializedTank ser_tanks1[]  = {{PLAYER, 2, 6}, {IMMOBILE, 19, 6}};
-	const SerializedTank ser_tanks2[]  = {{PLAYER, 2, 13}, {BASIC, 19, 3}};
-	const SerializedTank ser_tanks3[]  = {{PLAYER, 2, 8}, {BASIC, 5, 1}, {BASIC, 18, 15}, {IMMOBILE, 19, 8}};
-	const SerializedTank ser_tanks4[]  = {{PLAYER, 3, 14}, {BASIC, 10, 8}, {BASIC, 18, 2}, {IMMOBILE, 18, 8}, {IMMOBILE, 11, 2}};
-	const SerializedTank ser_tanks5[]  = {{PLAYER, 2, 14}, {MISSILE, 14, 1}, {MISSILE, 20, 9}};
-	const SerializedTank ser_tanks6[]  = {{PLAYER, 2, 8}, {BASIC, 17, 4}, {BASIC, 17, 15}, {MISSILE, 19, 8}, {MISSILE, 20, 13}};
-	const SerializedTank ser_tanks7[]  = {{PLAYER, 2, 14}, {MISSILE, 1, 1}, {MISSILE, 19, 2}, {MISSILE, 2, 7}, {MISSILE, 19, 15}};
-	const SerializedTank ser_tanks8[]  = {{PLAYER, 1, 8}, {MISSILE, 21, 2}, {MISSILE, 21, 14}, {MINE, 15, 4}, {MINE, 18, 8}, {MINE, 14, 14}};
-	const SerializedTank ser_tanks9[]  = {{PLAYER, 2, 13}, {MINE, 3, 3}, {MINE, 19, 13}, {BASIC, 7, 1}, {BASIC, 13, 5}, {BASIC, 14, 15}, {BASIC, 19, 3}};
-	const SerializedTank ser_tanks10[] = {{PLAYER, 1, 12}, {RED, 11, 1}, {RED, 20, 4}};
-	const SerializedTank ser_tanks11[] = {{PLAYER, 2, 2}, {BASIC, 3, 13}, {BASIC, 14, 1}, {MISSILE, 7, 0}, {MISSILE, 19, 14}, {RED, 19, 4}, {RED, 10, 8}};
-	const SerializedTank ser_tanks12[] = {{PLAYER, 2, 7}, {RED, 12, 1}, {RED, 10, 14}, {IMMOB_MISSILE, 17, 15}, {IMMOB_MISSILE, 19, 4}};
-	const SerializedTank ser_tanks13[] = {{PLAYER, 0, 8}, {MINE, 5, 15}, {MINE, 8, 1}, {MINE, 12, 10}, {MISSILE, 20, 1}, {MISSILE, 20, 15}, {MISSILE, 21, 8}};
-	const SerializedTank ser_tanks14[] = {{PLAYER, 1, 15}, {RED, 1, 7}, {RED, 15, 1}, {RED, 20, 11}, {IMMOB_MISSILE, 6, 6}, {IMMOB_MISSILE, 15, 11}, {IMMOB_MISSILE, 20, 1}};
-	const SerializedTank ser_tanks15[] = {{PLAYER, 2, 15}, {FAST, 6, 5}, {FAST, 19, 2}, {FAST, 19, 15}};
-	const SerializedTank ser_tanks16[] = {{PLAYER, 1, 15}, {FAST, 9, 1}, {IMMOB_MISSILE, 20, 1}, {FAST, 13, 8}, {IMMOB_MISSILE, 8, 11}, {FAST, 1, 11}};
-	const SerializedTank ser_tanks17[] = {{PLAYER, 1, 13}, {IMMOB_MISSILE, 3, 2}, {IMMOB_MISSILE, 20, 3}, {IMMOB_MISSILE, 10, 8}, {IMMOB_MISSILE, 20, 9}, {IMMOB_MISSILE, 19, 14}};
-	const SerializedTank ser_tanks18[] = {{PLAYER, 2, 13}, {MISSILE, 4, 2}, {FAST, 14, 2}, {RED, 7, 4}, {IMMOB_MISSILE, 11, 8}, {MISSILE, 19, 14}, {FAST, 14, 15}};
-	const SerializedTank ser_tanks19[] = {{PLAYER, 1, 15}, {FAST, 1, 1}, {FAST, 8, 1}, {FAST, 17, 1}, {FAST, 9, 5}, {FAST, 19, 6}, {FAST, 1, 8}, {FAST, 20, 11}, {FAST, 17, 15}};
-	const SerializedTank ser_tanks20[] = {{PLAYER, 2, 8}, {INVISIBLE, 17, 6}, {INVISIBLE, 19, 8}};
+	const serialized_tank_t* ser_tanks; //TODO: change to a 2D array somehow?
+	const serialized_tank_t ser_tanks1[]  = {{PLAYER, 2, 6}, {IMMOBILE, 19, 6}};
+	const serialized_tank_t ser_tanks2[]  = {{PLAYER, 2, 13}, {BASIC, 19, 3}};
+	const serialized_tank_t ser_tanks3[]  = {{PLAYER, 2, 8}, {BASIC, 5, 1}, {BASIC, 18, 15}, {IMMOBILE, 19, 8}};
+	const serialized_tank_t ser_tanks4[]  = {{PLAYER, 3, 14}, {BASIC, 10, 8}, {BASIC, 18, 2}, {IMMOBILE, 18, 8}, {IMMOBILE, 11, 2}};
+	const serialized_tank_t ser_tanks5[]  = {{PLAYER, 2, 14}, {MISSILE, 14, 1}, {MISSILE, 20, 9}};
+	const serialized_tank_t ser_tanks6[]  = {{PLAYER, 2, 8}, {BASIC, 17, 4}, {BASIC, 17, 15}, {MISSILE, 19, 8}, {MISSILE, 20, 13}};
+	const serialized_tank_t ser_tanks7[]  = {{PLAYER, 2, 14}, {MISSILE, 1, 1}, {MISSILE, 19, 2}, {MISSILE, 2, 7}, {MISSILE, 19, 15}};
+	const serialized_tank_t ser_tanks8[]  = {{PLAYER, 1, 8}, {MISSILE, 21, 2}, {MISSILE, 21, 14}, {MINE, 15, 4}, {MINE, 18, 8}, {MINE, 14, 14}};
+	const serialized_tank_t ser_tanks9[]  = {{PLAYER, 2, 13}, {MINE, 3, 3}, {MINE, 19, 13}, {BASIC, 7, 1}, {BASIC, 13, 5}, {BASIC, 14, 15}, {BASIC, 19, 3}};
+	const serialized_tank_t ser_tanks10[] = {{PLAYER, 1, 12}, {RED, 11, 1}, {RED, 20, 4}};
+	const serialized_tank_t ser_tanks11[] = {{PLAYER, 2, 2}, {BASIC, 3, 13}, {BASIC, 14, 1}, {MISSILE, 7, 0}, {MISSILE, 19, 14}, {RED, 19, 4}, {RED, 10, 8}};
+	const serialized_tank_t ser_tanks12[] = {{PLAYER, 2, 7}, {RED, 12, 1}, {RED, 10, 14}, {IMMOB_MISSILE, 17, 15}, {IMMOB_MISSILE, 19, 4}};
+	const serialized_tank_t ser_tanks13[] = {{PLAYER, 0, 8}, {MINE, 5, 15}, {MINE, 8, 1}, {MINE, 12, 10}, {MISSILE, 20, 1}, {MISSILE, 20, 15}, {MISSILE, 21, 8}};
+	const serialized_tank_t ser_tanks14[] = {{PLAYER, 1, 15}, {RED, 1, 7}, {RED, 15, 1}, {RED, 20, 11}, {IMMOB_MISSILE, 6, 6}, {IMMOB_MISSILE, 15, 11}, {IMMOB_MISSILE, 20, 1}};
+	const serialized_tank_t ser_tanks15[] = {{PLAYER, 2, 15}, {FAST, 6, 5}, {FAST, 19, 2}, {FAST, 19, 15}};
+	const serialized_tank_t ser_tanks16[] = {{PLAYER, 1, 15}, {FAST, 9, 1}, {IMMOB_MISSILE, 20, 1}, {FAST, 13, 8}, {IMMOB_MISSILE, 8, 11}, {FAST, 1, 11}};
+	const serialized_tank_t ser_tanks17[] = {{PLAYER, 1, 13}, {IMMOB_MISSILE, 3, 2}, {IMMOB_MISSILE, 20, 3}, {IMMOB_MISSILE, 10, 8}, {IMMOB_MISSILE, 20, 9}, {IMMOB_MISSILE, 19, 14}};
+	const serialized_tank_t ser_tanks18[] = {{PLAYER, 2, 13}, {MISSILE, 4, 2}, {FAST, 14, 2}, {RED, 7, 4}, {IMMOB_MISSILE, 11, 8}, {MISSILE, 19, 14}, {FAST, 14, 15}};
+	const serialized_tank_t ser_tanks19[] = {{PLAYER, 1, 15}, {FAST, 1, 1}, {FAST, 8, 1}, {FAST, 17, 1}, {FAST, 9, 5}, {FAST, 19, 6}, {FAST, 1, 8}, {FAST, 20, 11}, {FAST, 17, 15}};
+	const serialized_tank_t ser_tanks20[] = {{PLAYER, 2, 8}, {INVISIBLE, 17, 6}, {INVISIBLE, 19, 8}};
 	level_t lvls[] = {s(1), s(2), s(3), s(4), s(5), s(6), s(7), s(8), s(9), s(10), s(11), s(12), s(13), s(14), s(15), s(16), s(17), s(18), s(19), s(20)};
-	LevelPack lvl_pack = {"TANKS!", sizeof(lvls) / sizeof(lvls[0]), {0, 0, 0, 0, 0}};
+	level_pack_t lvl_pack = {"TANKS!", sizeof(lvls) / sizeof(lvls[0]), {0, 0, 0, 0, 0}};
 	ti_var_t appVar;
 	int i;
 
@@ -53,7 +55,7 @@ void createLevels(void) {
 
 	appVar = ti_Open("TANKSLPK", "w");
 
-	ti_Write(&lvl_pack, sizeof(LevelPack), 1, appVar);
+	ti_Write(&lvl_pack, sizeof(level_pack_t), 1, appVar);
 	for(i = 0; i < lvl_pack.num_levels; i++) {
 		uint8_t* comp_tiles;
 		ti_Write(lvls + i, sizeof(level_t), 1, appVar);
@@ -141,7 +143,7 @@ void createLevels(void) {
 				break;
 		}
 		ti_Write(comp_tiles, sizeof(uint8_t), lvls[i].compressed_tile_size, appVar);
-		ti_Write(ser_tanks, sizeof(SerializedTank), lvls[i].num_tanks, appVar);
+		ti_Write(ser_tanks, sizeof(serialized_tank_t), lvls[i].num_tanks, appVar);
 	}
 
 	ti_CloseAll();
@@ -154,7 +156,7 @@ void createLevels(void) {
 	#endif
 }
 
-void deserializeTank(tank_t* tank, const SerializedTank *ser_tank) {
+void deserializeTank(tank_t* tank, const serialized_tank_t *ser_tank) {
 	tank->type = ser_tank->type;
 	tank->start_x = ser_tank->start_x;
 	tank->start_y = ser_tank->start_y;

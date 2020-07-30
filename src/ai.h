@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "constants.h"
 #include "level.h"
+#include "tank.h"
 
 void ai_process_move(tank_t* tank);
 void ai_process_fire(tank_t* tank);

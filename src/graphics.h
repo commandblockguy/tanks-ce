@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "constants.h"
+#include "collision.h"
 #include "level.h"
 
 enum colors {
@@ -50,6 +50,9 @@ enum tileset {
     TS_NONE,
     TS_HOLE_BOT
 };
+
+//Target frame rate
+#define TARGET_FPS 30
 
 #define TILE_PIXEL_SIZE_X 14
 #define TILE_PIXEL_SIZE_Y 10

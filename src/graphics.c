@@ -12,7 +12,6 @@
 #undef NDEBUG
 #include <debug.h>
 
-#include "constants.h"
 #include "level.h"
 #include "graphics.h"
 #include "gfx/gfx.h"

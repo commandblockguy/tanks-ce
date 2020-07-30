@@ -24,13 +24,11 @@
 #undef NDEBUG
 #include <debug.h>
 
-#include "constants.h"
 #include "collision.h"
 #include "level.h"
 #include "graphics.h"
 #include "gfx/gfx.h"
 #include "util.h"
-#include "constants.h"
 #include "ai.h"
 #include "tank.h"
 #include "shell.h"
@@ -38,13 +36,30 @@
 #include "profiler.h"
 #include "gui.h"
 
+//Player action cooldown
+#define SHOT_COOLDOWN 5
+#define MINE_COOLDOWN 10
+
+#define PLAYER_BARREL_ROTATION DEGREES_TO_ANGLE(5)
+//1/3 of a second for 90 degree rotation
+#define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_FPS / 3))
+
+// Game status
+enum {
+    IN_PROGRESS,
+    QUIT,
+    NEXT_LEVEL,
+    WIN,
+    LOSE
+};
+
 void startMission(bool initial); //Start a mission and reset various tank things.
 
 void handleInput(void); //Handles inputs from the keypad
 
 void main(void) {
 	int i;
-	LevelPack lvl_pack;
+	level_pack_t lvl_pack;
 	ti_var_t appVar;
 
 	dbg_sprintf(dbgout, "\n\n[TANKS] Program started.\n");
@@ -70,7 +85,7 @@ void main(void) {
 
 	appVar = ti_Open("TANKSLPK", "r");
 	if(!appVar) goto exit;
-	ti_Read(&lvl_pack, sizeof(LevelPack), 1, appVar);
+	ti_Read(&lvl_pack, sizeof(level_pack_t), 1, appVar);
 	dbg_sprintf(dbgout, "Found %u levels.\n", lvl_pack.num_levels);
 
 	game.status = NEXT_LEVEL;
@@ -78,7 +93,7 @@ void main(void) {
 	for(game.mission = 0; game.mission < lvl_pack.num_levels && game.status == NEXT_LEVEL; game.mission++) {
 		//Level loop
 		uint8_t* comp_tiles; //Compressed tile data
-		SerializedTank* ser_tanks;
+		serialized_tank_t* ser_tanks;
 
 		dbg_sprintf(dbgout, "Loading level %u.\n", game.mission);
 		
@@ -86,9 +101,9 @@ void main(void) {
 		ti_Read(&game.level, sizeof(level_t), 1, appVar);
 		comp_tiles = malloc(game.level.compressed_tile_size);
 		ti_Read(comp_tiles, sizeof(uint8_t), game.level.compressed_tile_size, appVar); //Load tiles
-		ser_tanks = malloc(game.level.num_tanks * sizeof(SerializedTank));
+		ser_tanks = malloc(game.level.num_tanks * sizeof(serialized_tank_t));
 		tanks = malloc(game.level.num_tanks * sizeof(tank_t));
-		ti_Read(ser_tanks, sizeof(SerializedTank), game.level.num_tanks, appVar);
+		ti_Read(ser_tanks, sizeof(serialized_tank_t), game.level.num_tanks, appVar);
 		for(i = 0; i < game.level.num_tanks; i++) {
 			deserializeTank(&tanks[i], &ser_tanks[i]);
 		}

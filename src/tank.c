@@ -1,14 +1,11 @@
-#include "tank.h"
-#include "collision.h"
 #include "ai.h"
-#include "shell.h"
-#include "mine.h"
+#include "collision.h"
 #include "globals.h"
+#include "level.h"
+#include "mine.h"
 #include "profiler.h"
-
-//todo: fix headers
-void processShell(shell_t *shell, tank_t *tank);
-void processMine(mine_t *mine, tank_t *tank);
+#include "shell.h"
+#include "tank.h"
 
 const uint8_t max_shells[]  = 	{5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t max_mines[]   = 	{2, 0, 0, 0, 4, 0, 0, 2, 2, 2};

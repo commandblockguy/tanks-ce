@@ -11,7 +11,6 @@
 #undef NDEBUG
 #include <debug.h>
 
-#include "constants.h"
 #include "collision.h"
 #include "util.h"
 #include "graphx.h" //debug reasons
@@ -21,6 +20,7 @@
 #include "tank.h"
 #include "globals.h"
 #include "profiler.h"
+#include "level.h"
 
 void ai_process_move(tank_t* tank) {
     profiler_add(ai_move);

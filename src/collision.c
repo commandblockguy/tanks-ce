@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "constants.h"
 #include "collision.h"
 #include "level.h"
 #include "util.h"

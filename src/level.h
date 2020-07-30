@@ -11,9 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tank.h"
-#include "constants.h"
-
 typedef uint8_t tile_t;
 //TODO: change formatting to the following:
 //Bits 2-0: Block height in half-blocks, skipping height 0.5
@@ -33,13 +30,6 @@ enum {
 #define TILE_TYPE(tile) (tile & TYPE_MASK)
 
 typedef struct {
-	//A tank as stored in the level file
-	tankType_t type;
-	uint8_t start_x; //Tile the tank starts on
-	uint8_t start_y;
-} SerializedTank;
-
-typedef struct {
 	uint8_t compressed_tile_size; //Compressed size of tile data
 	uint8_t num_tanks; //Number of tanks in the level
 } level_t;
@@ -48,9 +38,11 @@ typedef struct {
 	char name[15];
 	uint8_t num_levels;
 	uint8_t scores[5];
-} LevelPack;
+} level_pack_t;
 
 void createLevels(void); //Temporary function to make a level pack
+
+#define TILE_SIZE 256
 
 #define tileToXPt(x) ((x) * TILE_SIZE)
 #define tileToYPt(y) ((y) * TILE_SIZE)
@@ -59,6 +51,8 @@ void createLevels(void); //Temporary function to make a level pack
 #define ptToXTile(x) ((x) / TILE_SIZE - (x < 0))
 #define ptToYTile(y) ((y) / TILE_SIZE - (y < 0))
 
-void deserializeTank(tank_t *tank, const SerializedTank *ser_tank); //Convert a serialized tank into an actual one
+//Size of the gameplay area in tiles
+#define LEVEL_SIZE_X 22
+#define LEVEL_SIZE_Y 17
 
 #endif

@@ -17,7 +17,6 @@ add_executable(dummy
         src/ai_data.h
         src/collision.c
         src/collision.h
-        src/constants.h
         src/graphics.c
         src/graphics.h
         src/level.c

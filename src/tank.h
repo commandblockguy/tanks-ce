@@ -3,10 +3,22 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "util.h"
 #include "collision.h"
-#include "shell.h"
+#include "graphics.h"
+#include "level.h"
 #include "mine.h"
+#include "shell.h"
+#include "util.h"
+
+#define TANK_SIZE TILE_SIZE
+
+//Distance from center of tank new shells appear
+#define BARREL_LENGTH (TANK_SIZE * 5 / 14)
+
+//148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
+#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) //TODO
+#define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_FPS)
+#define TANK_SPEED_BLACK 5 //TODO
 
 enum {
     PLAYER = 0, //blue
@@ -39,7 +51,18 @@ typedef struct {
     union ai_fire* ai_fire;
 } tank_t;
 
+typedef struct {
+    //A tank as stored in the level file
+    tankType_t type;
+    uint8_t start_x; //Tile the tank starts on
+    uint8_t start_y;
+} serialized_tank_t;
+
+void deserializeTank(tank_t *tank, const serialized_tank_t *ser_tank); //Convert a serialized tank into an actual one
+
 void processTank(tank_t* tank);
+void processMine(mine_t *mine, tank_t *tank);
+void processShell(shell_t* shell, tank_t* tank);
 
 bool fireShell(tank_t* tank); //PEW PEW PEW
 
