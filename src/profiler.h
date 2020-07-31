@@ -26,6 +26,7 @@ typedef union {
         uint24_t shells;
         uint24_t mines;
         uint24_t input;
+        uint24_t frame_wait;
     };
     uint24_t array[0];
 } profiler_set_t;

@@ -12,6 +12,7 @@
 #include <debug.h>
 #include "util.h"
 #include "graphx.h"
+#include "graphics.h"
 
 void gen_lookups(void);
 
@@ -29,6 +30,7 @@ void gen_lookups(void) {
 
 int24_t fast_sin(angle_t angle) {
     //todo: fix angle
+    //todo: learn how to write better todos, as I now have zero idea what that last line even means
     angle = angle >> 16;
 	if(angle < 64) return sin_table[angle];
 	if(angle == 64) return 256;
@@ -87,18 +89,13 @@ uint24_t fast_atan2(int24_t y, int24_t x) {
     }
 }
 
-//ms since last function call
-uint24_t fpsCounter(void) {
-	uint24_t r;
+void init_timer(void) {
+    timer_Control &= ~TIMER1_ENABLE;
+    timer_1_ReloadValue = timer_1_Counter = 32768 / TARGET_FPS;
+    timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
+}
 
-	//Disable timer temporarily
-	timer_Control &= ~TIMER1_ENABLE;
-
-	r = timer_1_Counter / 33;
-
-	timer_1_Counter = 0;
-	/* Reenable the timer, set it to the 32768 kHz clock */
-	timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_NOINT | TIMER1_UP;
-
-	return r;
+void limit_framerate(void) {
+    while(!(timer_IntStatus & TIMER1_RELOADED));
+    timer_IntAcknowledge |= TIMER1_RELOADED;
 }

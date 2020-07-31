@@ -193,4 +193,6 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
             break;
         }
     }
+
+    init_timer();
 }

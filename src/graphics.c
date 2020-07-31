@@ -270,6 +270,7 @@ void render_tank(tank_t *tank) {
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
                 uint8_t world_tile_y = depthmap[tile_y][tile_x];
+                // todo: figure out why hackfix isn't working
                 if(world_tile_y > tank_y && TILE_HEIGHT(tiles[world_tile_y][tile_x])) { // this is a hackfix, but whatever
                     redraw_tile(tile_x, tile_y);
                 }
@@ -321,11 +322,6 @@ void render(level_t *level) {
 		render_tank(&tanks[i]);
 	}
 	profiler_end(render_tanks);
-
-	gfx_SetColor(COL_WHITE);
-	gfx_FillRectangle_NoClip(0, 0, 32, 8);
-	gfx_SetTextXY(0,0);
-	gfx_PrintUInt(fpsCounter(), 4);
 
 	profiler_start(swapdraw);
 	gfx_SwapDraw();

@@ -30,6 +30,7 @@ int24_t fast_sin(angle_t angle);
 
 uint24_t fast_atan2(int24_t y, int24_t x);
 
-uint24_t fpsCounter(void);
+void init_timer(void);
+void limit_framerate(void);
 
 #endif

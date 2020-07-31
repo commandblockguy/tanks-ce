@@ -71,7 +71,6 @@ void main(void) {
 	initGraphics();
 
 	timer_Control = 0;
-	timer_1_MatchValue_1 = 32768 / TARGET_FPS;
 
 	profiler_init();
 
@@ -157,6 +156,9 @@ void main(void) {
             render(&game.level);
 
 			profiler_end(total);
+			profiler_start(frame_wait);
+			limit_framerate();
+            profiler_end(frame_wait);
 			profiler_tick();
 		}
 
@@ -310,7 +312,4 @@ void handleInput() {
 	profiler_end(input);
 }
 
-//TODO: compress sprites
-// ^ Might not be totally necessary b/c program is already compressed
-//TODO: tank sprites
 //TODO: crosshair / direction indicator

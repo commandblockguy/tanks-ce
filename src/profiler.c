@@ -54,6 +54,7 @@ void profiler_print(void) {
     profiler_field_last(    shells, 2);
     profiler_field_last(    mines, 2);
     profiler_field_last(  input, 1);
+    profiler_field_last(frame_wait, 0);
     dbg_sprintf(dbgout, "Average of last 256 frames: %u FPS\n", 8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
     profiler_field_average(  graphics, 1);
@@ -71,6 +72,7 @@ void profiler_print(void) {
     profiler_field_average(    shells, 2);
     profiler_field_average(    mines, 2);
     profiler_field_average(  input, 1);
+    profiler_field_average(frame_wait, 0);
 }
 
 #endif
