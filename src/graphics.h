@@ -13,6 +13,8 @@
 
 #include "collision.h"
 #include "level.h"
+#include "gfx/gfx.h"
+#include "tank.h"
 
 enum colors {
     COL_WHITE = 1,
@@ -50,6 +52,42 @@ enum tileset {
     TS_NONE,
     TS_HOLE_BOT
 };
+
+typedef struct {
+    uint8_t base_0_data[en_base_0_size];
+    uint8_t base_1_data[en_base_1_size];
+    uint8_t base_2_data[en_base_2_size];
+    uint8_t base_3_data[en_base_3_size];
+    uint8_t base_4_data[en_base_4_size];
+    uint8_t base_5_data[en_base_5_size];
+    uint8_t base_6_data[en_base_6_size];
+    uint8_t base_7_data[en_base_7_size];
+    uint8_t base_8_data[en_base_8_size];
+    uint8_t base_9_data[en_base_7_size];
+    uint8_t base_10_data[en_base_6_size];
+    uint8_t base_11_data[en_base_5_size];
+    uint8_t base_12_data[en_base_4_size];
+    uint8_t base_13_data[en_base_3_size];
+    uint8_t base_14_data[en_base_2_size];
+    uint8_t base_15_data[en_base_1_size];
+
+    uint8_t turret_0_data[en_turret_0_size];
+    uint8_t turret_1_data[en_turret_1_size];
+    uint8_t turret_2_data[en_turret_2_size];
+    uint8_t turret_3_data[en_turret_3_size];
+    uint8_t turret_4_data[en_turret_4_size];
+    uint8_t turret_5_data[en_turret_5_size];
+    uint8_t turret_6_data[en_turret_6_size];
+    uint8_t turret_7_data[en_turret_7_size];
+    uint8_t turret_8_data[en_turret_8_size];
+    uint8_t turret_9_data[en_turret_7_size];
+    uint8_t turret_10_data[en_turret_6_size];
+    uint8_t turret_11_data[en_turret_5_size];
+    uint8_t turret_12_data[en_turret_4_size];
+    uint8_t turret_13_data[en_turret_3_size];
+    uint8_t turret_14_data[en_turret_2_size];
+    uint8_t turret_15_data[en_turret_1_size];
+} spriteset_t;
 
 //Target frame rate
 #define TARGET_FPS 30
@@ -94,6 +132,9 @@ void displayUI(void); //Display UI during a mission
 void drawLine(lineSeg_t* ls);
 
 void generate_bg_tilemap(void);
+
+bool init_tank_sprites(tankType_t type);
+void free_tank_sprites(tankType_t type);
 
 extern bool needs_redraw; // set if the entire map should be redrawn
 

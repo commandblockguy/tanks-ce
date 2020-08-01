@@ -1,6 +1,8 @@
 #ifndef TANKS_TANK_H
 #define TANKS_TANK_H
 
+typedef uint8_t tankType_t;
+
 #include <stdbool.h>
 #include <stdint.h>
 #include "collision.h"
@@ -33,8 +35,6 @@ enum {
     BLACK = 9,
     NUM_TANK_TYPES = 10
 };
-
-typedef uint8_t tankType_t;
 
 typedef struct {
     //A tank, used while gameplay occurs

@@ -33,4 +33,6 @@ uint24_t fast_atan2(int24_t y, int24_t x);
 void init_timer(void);
 void limit_framerate(void);
 
+void wait_ms_or_keypress(uint24_t ms);
+
 #endif

@@ -1,8 +1,8 @@
 #ifndef TANKS_DYNAMIC_SPRITES_H
 #define TANKS_DYNAMIC_SPRITES_H
 
-extern gfx_sprite_t * const tank_bases[NUM_TANK_TYPES][16];
-extern gfx_sprite_t * const tank_turrets[NUM_TANK_TYPES][16];
+extern gfx_sprite_t *tank_bases[NUM_TANK_TYPES][16];
+extern gfx_sprite_t *tank_turrets[NUM_TANK_TYPES][16];
 
 gfx_sprite_t * const enemy_bases_unconv[9];
 gfx_sprite_t * const enemy_turrets_unconv[9];

@@ -176,23 +176,4 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
     //TODO: tank sprite
 
     gfx_BlitBuffer();
-
-    //Delay for some time, or wait for a keypress
-    timer_Control &= ~TIMER1_ENABLE;
-    timer_1_ReloadValue = timer_1_Counter = 33 * MISSION_START_TIME;
-    timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
-
-    while(true) {
-        if(timer_IntStatus & TIMER1_RELOADED) {
-            timer_IntAcknowledge = TIMER1_RELOADED;
-            break;
-        }
-        kb_Scan();
-        if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
-            while(kb_Data[1] || kb_Data[6]) kb_Scan();
-            break;
-        }
-    }
-
-    init_timer();
 }

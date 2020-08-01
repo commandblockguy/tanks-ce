@@ -39,6 +39,66 @@ void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t
     }
 }
 
+bool init_tank_sprites(tankType_t type) {
+    // return if sprites were already initialized from the last level
+    if(tank_bases[type][0]) return true;
+
+    spriteset_t *spriteset = malloc(sizeof(spriteset_t));
+    if(!spriteset) return false;
+
+    tank_bases[type][0] = (gfx_sprite_t*)&spriteset->base_0_data;
+    tank_bases[type][1] = (gfx_sprite_t*)&spriteset->base_1_data;
+    tank_bases[type][2] = (gfx_sprite_t*)&spriteset->base_2_data;
+    tank_bases[type][3] = (gfx_sprite_t*)&spriteset->base_3_data;
+    tank_bases[type][4] = (gfx_sprite_t*)&spriteset->base_4_data;
+    tank_bases[type][5] = (gfx_sprite_t*)&spriteset->base_5_data;
+    tank_bases[type][6] = (gfx_sprite_t*)&spriteset->base_6_data;
+    tank_bases[type][7] = (gfx_sprite_t*)&spriteset->base_7_data;
+    tank_bases[type][8] = (gfx_sprite_t*)&spriteset->base_8_data;
+    tank_bases[type][9] = (gfx_sprite_t*)&spriteset->base_9_data;
+    tank_bases[type][10] = (gfx_sprite_t*)&spriteset->base_10_data;
+    tank_bases[type][11] = (gfx_sprite_t*)&spriteset->base_11_data;
+    tank_bases[type][12] = (gfx_sprite_t*)&spriteset->base_12_data;
+    tank_bases[type][13] = (gfx_sprite_t*)&spriteset->base_13_data;
+    tank_bases[type][14] = (gfx_sprite_t*)&spriteset->base_14_data;
+    tank_bases[type][15] = (gfx_sprite_t*)&spriteset->base_15_data;
+
+    tank_turrets[type][0] = (gfx_sprite_t*)&spriteset->turret_0_data;
+    tank_turrets[type][1] = (gfx_sprite_t*)&spriteset->turret_1_data;
+    tank_turrets[type][2] = (gfx_sprite_t*)&spriteset->turret_2_data;
+    tank_turrets[type][3] = (gfx_sprite_t*)&spriteset->turret_3_data;
+    tank_turrets[type][4] = (gfx_sprite_t*)&spriteset->turret_4_data;
+    tank_turrets[type][5] = (gfx_sprite_t*)&spriteset->turret_5_data;
+    tank_turrets[type][6] = (gfx_sprite_t*)&spriteset->turret_6_data;
+    tank_turrets[type][7] = (gfx_sprite_t*)&spriteset->turret_7_data;
+    tank_turrets[type][8] = (gfx_sprite_t*)&spriteset->turret_8_data;
+    tank_turrets[type][9] = (gfx_sprite_t*)&spriteset->turret_9_data;
+    tank_turrets[type][10] = (gfx_sprite_t*)&spriteset->turret_10_data;
+    tank_turrets[type][11] = (gfx_sprite_t*)&spriteset->turret_11_data;
+    tank_turrets[type][12] = (gfx_sprite_t*)&spriteset->turret_12_data;
+    tank_turrets[type][13] = (gfx_sprite_t*)&spriteset->turret_13_data;
+    tank_turrets[type][14] = (gfx_sprite_t*)&spriteset->turret_14_data;
+    tank_turrets[type][15] = (gfx_sprite_t*)&spriteset->turret_15_data;
+
+    uint8_t palette_table[6] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2};
+    for(uint8_t i = 0; i < 3; i++) palette_table[3 + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type;
+
+    for(uint8_t rot = 0; rot < 9; rot++) {
+        repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_table);
+        repalettize_sprite(tank_turrets[type][rot], enemy_turrets_unconv[rot], palette_table);
+    }
+    for(uint8_t i = 1; i < 8; i++) {
+        gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);
+        gfx_FlipSpriteY(tank_turrets[type][i], tank_turrets[type][16 - i]);
+    }
+    return true;
+}
+
+void free_tank_sprites(tankType_t type) {
+    free(tank_bases[type][0]);
+    memset(tank_bases[type], 0, sizeof(tank_bases[type]));
+}
+
 // this is supposed to go in dynamic_sprites.c, but a weird (linker?) issue causes this array to be filled with NULL if I do that
 gfx_sprite_t * const enemy_bases_unconv[9] = {
         en_base_0,
@@ -73,19 +133,6 @@ void initGraphics(void) {
     for(uint8_t i = 1; i < 8; i++) {
         gfx_FlipSpriteY(tank_bases[PLAYER][i], tank_bases[PLAYER][16 - i]);
         gfx_FlipSpriteY(tank_turrets[PLAYER][i], tank_turrets[PLAYER][16 - i]);
-    }
-    for(uint8_t type = PLAYER + 1; type < NUM_TANK_TYPES; type++) {
-        uint8_t palette_table[6] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2};
-        for(uint8_t i = 0; i < 3; i++) palette_table[3 + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type;
-
-        for(uint8_t rot = 0; rot < 9; rot++) {
-            repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_table);
-            repalettize_sprite(tank_turrets[type][rot], enemy_turrets_unconv[rot], palette_table);
-        }
-        for(uint8_t i = 1; i < 8; i++) {
-            gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);
-            gfx_FlipSpriteY(tank_turrets[type][i], tank_turrets[type][16 - i]);
-        }
     }
 }
 

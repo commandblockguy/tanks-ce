@@ -10,6 +10,7 @@
 
 #undef NDEBUG
 #include <debug.h>
+#include <keypadc.h>
 #include "util.h"
 #include "graphx.h"
 #include "graphics.h"
@@ -98,4 +99,22 @@ void init_timer(void) {
 void limit_framerate(void) {
     while(!(timer_IntStatus & TIMER1_RELOADED));
     timer_IntAcknowledge |= TIMER1_RELOADED;
+}
+
+void wait_ms_or_keypress(uint24_t ms) {
+    timer_Control &= ~TIMER1_ENABLE;
+    timer_1_ReloadValue = timer_1_Counter = 33 * ms;
+    timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
+
+    while(true) {
+        if(timer_IntStatus & TIMER1_RELOADED) {
+            timer_IntAcknowledge = TIMER1_RELOADED;
+            break;
+        }
+        kb_Scan();
+        if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
+            while(kb_Data[1] || kb_Data[6]) kb_Scan();
+            break;
+        }
+    }
 }

@@ -53,7 +53,7 @@ enum {
     LOSE
 };
 
-void startMission(bool initial); //Start a mission and reset various tank things.
+bool startMission(bool initial); //Start a mission and reset various tank things.
 
 void handleInput(void); //Handles inputs from the keypad
 
@@ -111,7 +111,10 @@ void main(void) {
 		zx7_Decompress(tiles, comp_tiles);
 		
 		//Display the mission start screen
-		startMission(true);
+		if(!startMission(true)) {
+		    // todo: display an error to the user
+		    return;
+		}
 
         needs_redraw = true;
 
@@ -126,7 +129,10 @@ void main(void) {
 					game.status = LOSE;
 					break;
 				}
-				startMission(false);
+                if(!startMission(false)) {
+                    // todo: display an error to the user
+                    return;
+                }
 				needs_redraw = true;
 			}
 
@@ -190,20 +196,23 @@ void main(void) {
 	ti_CloseAll();
 }
 
-void startMission(bool initial) {
-	int i;
+bool startMission(bool initial) {
 	int remaining_tanks = -1; //Don't count the player tank
+	bool tank_type_used[NUM_TANK_TYPES] = {false};
 	tanks[0].alive = true;
 	//Initialize tanks
-	for(i = 0; i < game.level.num_tanks; i++) {
+	for(uint8_t i = 0; i < game.level.num_tanks; i++) {
 		tank_t* tank = &tanks[i];
 		int j;
 		if(initial) tank->alive = true;
-		if(tank->alive) remaining_tanks++;
-		tank->phys.position_x = tileToXPt(tank->start_x);
-		tank->phys.position_y = tileToYPt(tank->start_y);
-		tank->barrel_rot = 0;
-		tank->tread_rot = DEGREES_TO_ANGLE(270);
+		if(tank->alive) {
+		    remaining_tanks++;
+            tank->phys.position_x = tileToXPt(tank->start_x);
+            tank->phys.position_y = tileToYPt(tank->start_y);
+            tank->barrel_rot = 0;
+            tank->tread_rot = DEGREES_TO_ANGLE(270);
+            tank_type_used[tank->type] = true;
+		}
 		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
 			tank->shells[j].alive = false;
 		}
@@ -218,7 +227,21 @@ void startMission(bool initial) {
                 tiles[y][x] = DESTRUCTIBLE;
         }
 	}
+
     missionStartScreen(game.mission, game.lives, remaining_tanks);
+	for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
+	    if(tank_type_used[type]) {
+	        if(!init_tank_sprites(type)) {
+	            dbg_sprintf(dbgerr, "Ran out of memory when allocating tank sprites\n");
+	            return false;
+	        }
+	    } else {
+	        free_tank_sprites(type);
+	    }
+	}
+    wait_ms_or_keypress(MISSION_START_TIME);
+    init_timer();
+    return true;
 }
 
 void handleInput() {
