@@ -294,6 +294,28 @@ uint8_t screen_to_tm_y(uint24_t screen_y) {
     return (screen_y - TILEMAP_BASE_Y) / HALF_TILE_PIXEL_HEIGHT;
 }
 
+// todo: use sprites instead?
+void draw_aim_dots(void) {
+    profiler_start(aim_indicator);
+    angle_t angle = tanks[0].barrel_rot;
+    int8_t dx = AIM_INDICATOR_DOT_DISTANCE * fast_cos(angle) / 256;
+    int8_t dy = AIM_INDICATOR_DOT_DISTANCE * fast_sin(angle) / 256;
+
+    int24_t x = SCREEN_X(tanks[0].phys.position_x) + dx;
+    int24_t y = SCREEN_Y(tanks[0].phys.position_y) + dy;
+
+    while(x > SCREEN_X(0) && x < SCREEN_X(LEVEL_SIZE_X * TILE_SIZE) &&
+          y > SCREEN_Y(0) && y < SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE)) {
+        gfx_SetColor(COL_LIVES_TXT);
+        pdraw_RectRegion(x - AIM_INDICATOR_RADIUS, y - AIM_INDICATOR_RADIUS,
+                         2 * AIM_INDICATOR_RADIUS + 1, 2 * AIM_INDICATOR_RADIUS + 1);
+        gfx_FillCircle(x, y, AIM_INDICATOR_RADIUS);
+        x += dx;
+        y += dy;
+    }
+    profiler_end(aim_indicator);
+}
+
 void render_tank(tank_t *tank) {
     int j;
 
@@ -369,6 +391,9 @@ void render(level_t *level) {
 		render_tank(&tanks[i]);
 	}
 	profiler_end(render_tanks);
+
+	// todo: move to GUI section?
+    draw_aim_dots();
 
 	profiler_start(swapdraw);
 	gfx_SwapDraw();

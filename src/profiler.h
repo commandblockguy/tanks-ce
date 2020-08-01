@@ -15,6 +15,7 @@ typedef union {
         uint24_t gfx_wait;
         uint24_t tilemap;
         uint24_t render_tanks;
+        uint24_t aim_indicator;
         uint24_t swapdraw;
         uint24_t store_bg;
         uint24_t undraw;

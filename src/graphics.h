@@ -121,6 +121,10 @@ typedef struct {
 #define TANK_SPRITE_SIZE_X 28
 #define TANK_SPRITE_SIZE_Y 24
 
+// todo: get an actual value?
+#define AIM_INDICATOR_DOT_DISTANCE 30
+#define AIM_INDICATOR_RADIUS 2
+
 void initGraphics(void);
 
 void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
