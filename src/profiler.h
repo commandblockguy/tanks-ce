@@ -22,6 +22,8 @@ typedef union {
         uint24_t ai;
         uint24_t ai_move;
         uint24_t ai_fire;
+        uint24_t raycast;
+        uint24_t seg_collision;
         uint24_t tank_collision;
         uint24_t shells;
         uint24_t mines;

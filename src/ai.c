@@ -298,12 +298,14 @@ bool pointingAtTarget(tank_t* tank, physicsBody_t* target, uint8_t max_bounces, 
 	for(bounces = 0; bounces <= max_bounces; bounces++) {
 		bool reflectAxis;
 		lineSeg_t line;
+		profiler_add(raycast);
 		reflectAxis = raycast(posX, posY, angle, &line);
+		profiler_end(raycast);
 		#ifdef DBG_DRAW
 		gfx_SetColor(COL_LIVES_TXT);
         drawLine(&line);
-		#endif
-		if(segCollidesBody(&line, target)) {
+        #endif
+        if(segCollidesBody(&line, target)) {
 			return true;
 		}
 		//move pos to new position and reflect angle

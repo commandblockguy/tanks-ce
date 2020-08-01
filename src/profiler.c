@@ -50,6 +50,8 @@ void profiler_print(void) {
     profiler_field_last(    ai, 2);
     profiler_field_last(      ai_move, 3);
     profiler_field_last(      ai_fire, 3);
+    profiler_field_last(        raycast, 4);
+    profiler_field_last(        seg_collision, 4);
     profiler_field_last(    tank_collision, 2);
     profiler_field_last(    shells, 2);
     profiler_field_last(    mines, 2);
@@ -68,6 +70,8 @@ void profiler_print(void) {
     profiler_field_average(    ai, 2);
     profiler_field_average(      ai_move, 3);
     profiler_field_average(      ai_fire, 3);
+    profiler_field_average(        raycast, 4);
+    profiler_field_average(        seg_collision, 4);
     profiler_field_average(    tank_collision, 2);
     profiler_field_average(    shells, 2);
     profiler_field_average(    mines, 2);
