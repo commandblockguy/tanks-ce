@@ -21,6 +21,7 @@ void move_random(tank_t* tank);
 void move_away(tank_t* tank);
 void move_toward(tank_t* tank);
 
+tile_t get_tile_at_offset(tank_t *tank, angle_t angle_offset, int24_t distance);
 bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result);
 bool pointingAtTarget(tank_t* tank, physicsBody_t* target, uint8_t max_bounces, bool future);
 void pointAtPlayer(tank_t *tank, physicsBody_t *target);

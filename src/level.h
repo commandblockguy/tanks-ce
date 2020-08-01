@@ -48,8 +48,8 @@ void createLevels(void); //Temporary function to make a level pack
 #define tileToYPt(y) ((y) * TILE_SIZE)
 
 // we always want to round down, rather than towards 0, hence the -(x < 0)
-#define ptToXTile(x) ((x) / TILE_SIZE - (x < 0))
-#define ptToYTile(y) ((y) / TILE_SIZE - (y < 0))
+#define ptToXTile(x) ((int8_t)((x) / TILE_SIZE - (x < 0)))
+#define ptToYTile(y) ((int8_t)((y) / TILE_SIZE - (y < 0)))
 
 //Size of the gameplay area in tiles
 #define LEVEL_SIZE_X 16

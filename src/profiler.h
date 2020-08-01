@@ -22,6 +22,7 @@ typedef union {
         uint24_t physics;
         uint24_t ai;
         uint24_t ai_move;
+        uint24_t ai_move_random;
         uint24_t ai_fire;
         uint24_t raycast;
         uint24_t seg_collision;

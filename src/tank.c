@@ -110,3 +110,13 @@ bool layMine(tank_t* tank) {
     }
     return false;
 }
+
+void setVelocity(tank_t* tank, int24_t velocity) {
+    if(velocity == 0) {
+        tank->phys.velocity_x = 0;
+        tank->phys.velocity_y = 0;
+    } else {
+        tank->phys.velocity_x = (int24_t)velocity * fast_cos(tank->tread_rot) / TRIG_SCALE;
+        tank->phys.velocity_y = (int24_t)velocity * fast_sin(tank->tread_rot) / TRIG_SCALE;
+    }
+}

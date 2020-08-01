@@ -50,6 +50,7 @@ void profiler_print(void) {
     profiler_field_last(  physics, 1);
     profiler_field_last(    ai, 2);
     profiler_field_last(      ai_move, 3);
+    profiler_field_last(        ai_move_random, 4);
     profiler_field_last(      ai_fire, 3);
     profiler_field_last(        raycast, 4);
     profiler_field_last(        seg_collision, 4);
@@ -71,6 +72,7 @@ void profiler_print(void) {
     profiler_field_average(  physics, 1);
     profiler_field_average(    ai, 2);
     profiler_field_average(      ai_move, 3);
+    profiler_field_average(        ai_move_random, 4);
     profiler_field_average(      ai_fire, 3);
     profiler_field_average(        raycast, 4);
     profiler_field_average(        seg_collision, 4);

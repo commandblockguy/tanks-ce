@@ -71,6 +71,8 @@ bool layMine(tank_t* tank); //Lay a mine under the tank
 //true if a tank has a slot for a shell
 bool canShoot(tank_t* tank);
 
+void setVelocity(tank_t* tank, int24_t velocity);
+
 //Number of shots each type of tank can have on-screen at any one time
 extern const uint8_t max_shells[];
 //Number of times a shell from a certain tank type can bounce off a wall

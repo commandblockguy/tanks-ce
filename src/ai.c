@@ -65,7 +65,27 @@ void ai_process_fire(tank_t* tank) {
 }
 
 void move_random(tank_t* tank) {
+    profiler_start(ai_move_random);
+    tile_t left1_tile  = get_tile_at_offset(tank, DEGREES_TO_ANGLE(-30), 2 * TANK_SIZE);
+    tile_t right1_tile = get_tile_at_offset(tank, DEGREES_TO_ANGLE( 30), 2 * TANK_SIZE);
+    tile_t left2_tile  = get_tile_at_offset(tank, DEGREES_TO_ANGLE(-30), TANK_SIZE);
+    tile_t right2_tile = get_tile_at_offset(tank, DEGREES_TO_ANGLE( 30), TANK_SIZE);
+    bool left  = TILE_HEIGHT( left1_tile) || TILE_TYPE( left1_tile) == HOLE || TILE_HEIGHT( left2_tile) || TILE_TYPE( left2_tile) == HOLE;
+    bool right = TILE_HEIGHT(right1_tile) || TILE_TYPE(right1_tile) == HOLE || TILE_HEIGHT(right2_tile) || TILE_TYPE(right2_tile) == HOLE;
 
+    if(left && right) {
+        tank->tread_rot += DEGREES_TO_ANGLE(180);
+    } else {
+        if(left) {
+            tank->tread_rot += DEGREES_TO_ANGLE(5);
+        } else if(right) {
+            tank->tread_rot -= DEGREES_TO_ANGLE(5);
+        }
+    }
+    tank->tread_rot += randInt(0, DEGREES_TO_ANGLE(6)) - DEGREES_TO_ANGLE(3);
+    // todo: fast/slow tanks
+    setVelocity(tank, TANK_SPEED_NORMAL);
+    profiler_end(ai_move_random);
 }
 
 void move_away(tank_t* tank) {
@@ -219,6 +239,17 @@ void aim_current(tank_t* tank) {
 
 void aim_future(tank_t* tank) {
 
+}
+
+tile_t get_tile_at_offset(tank_t *tank, angle_t angle_offset, int24_t distance) {
+    angle_t angle = tank->tread_rot + angle_offset;
+    int24_t x = tank->phys.position_x + tank->phys.width  / 2 + distance * fast_cos(angle) / TRIG_SCALE;
+    int24_t y = tank->phys.position_y + tank->phys.height / 2 + distance * fast_sin(angle) / TRIG_SCALE;
+    int8_t tile_x = ptToXTile(x);
+    int8_t tile_y = ptToXTile(y);
+    if(tile_x < 0 || tile_x >= LEVEL_SIZE_X) return 1;
+    if(tile_y < 0 || tile_y >= LEVEL_SIZE_Y) return 1;
+    return tiles[ptToYTile(y)][ptToXTile(x)];
 }
 
 //credit: https://theshoemaker.de/2016/02/ray-casting-in-2d-grids/
