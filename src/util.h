@@ -27,6 +27,8 @@ int24_t fast_sin(angle_t angle);
 #define fast_cos(rot) fast_sin(DEGREES_TO_ANGLE(90) - rot)
 
 #define TRIG_SCALE 256
+#define TRIG_PRECISION_BITS 8
+#define TRIG_PRECISION (1 << TRIG_PRECISION_BITS)
 
 uint24_t fast_atan2(int24_t y, int24_t x);
 

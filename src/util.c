@@ -15,30 +15,25 @@
 #include "graphx.h"
 #include "graphics.h"
 
-void gen_lookups(void);
-
-int24_t sin_table[64];
-
-bool lookups_set = false;
+int24_t sin_table[TRIG_PRECISION / 4];
 
 void gen_lookups(void) {
-	uint8_t i;
-	for(i = 0; i < 64; i++) {
-		sin_table[i] = sin(i * M_PI / 128) * 256;
+	uint24_t i;
+	for(i = 0; i < TRIG_PRECISION / 4; i++) {
+		sin_table[i] = sin(i * M_PI / (TRIG_PRECISION / 2)) * TRIG_SCALE;
 	}
-	lookups_set = true;
 }
 
 int24_t fast_sin(angle_t angle) {
     //todo: fix angle
     //todo: learn how to write better todos, as I now have zero idea what that last line even means
-    angle = angle >> 16;
-	if(angle < 64) return sin_table[angle];
-	if(angle == 64) return 256;
-	if(angle < 128) return sin_table[128 - angle];
-	if(angle < 192) return -sin_table[angle - 128];
-	if(angle == 192) return -256;
-				  return -sin_table[256 - angle];
+    angle >>= 24 - TRIG_PRECISION_BITS;
+	if(angle < TRIG_PRECISION / 4) return sin_table[angle];
+	if(angle == TRIG_PRECISION / 4) return TRIG_SCALE;
+	if(angle < TRIG_PRECISION / 2) return sin_table[TRIG_PRECISION / 2 - angle];
+	if(angle < TRIG_PRECISION * 3/4) return -sin_table[angle - TRIG_PRECISION / 2];
+	if(angle == TRIG_PRECISION * 3/4) return -TRIG_SCALE;
+	return -sin_table[TRIG_PRECISION - angle];
 }
 
 int24_t qmul(int24_t a, int24_t b) {

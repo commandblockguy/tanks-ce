@@ -96,8 +96,8 @@ typedef struct {
 #define TILE_PIXEL_SIZE_Y 10
 
 /* Calculate the screen-space distance for a given world-space distance */
-#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE_X / 256)
-#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE_Y / 256)
+#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE_X / TILE_SIZE)
+#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE_Y / TILE_SIZE)
 
 #define TILE_PIXEL_WIDTH SCREEN_DELTA_X(TILE_SIZE)
 #define TILE_PIXEL_HEIGHT 10
