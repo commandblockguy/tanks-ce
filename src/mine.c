@@ -31,7 +31,7 @@ void detonate(mine_t *mine) {
                                                  MINE_EXPLOSION_RADIUS)) {
             tank->alive = false;
             game.kills[tanks[j].type]++;
-            game.total_kills++;
+            if(tanks[j].type != PLAYER) game.total_kills++;
         }
         for(k = 0; k < max_shells[tank->type]; k++) {
             shell_t* shell = &tank->shells[k];

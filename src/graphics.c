@@ -21,6 +21,7 @@
 #include "profiler.h"
 #include "partial_redraw.h"
 #include "dynamic_sprites.h"
+#include "gui.h"
 
 uint8_t tilemap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // For each tilemap tile, the level Y of the block that it's representing
@@ -282,6 +283,8 @@ void redraw_tile(uint8_t x, uint8_t y) {
 void full_redraw(void) {
     gfx_FillScreen(COL_WHITE);
 	gfx_Tilemap(&tilemap_config, 0, 0);
+    displayGameBanner(game.mission + 1, game.lives);
+    displayGameKillCounter();
 }
 
 // Convert a screenspace coordinate to a redraw tile
@@ -382,9 +385,12 @@ void render(level_t *level) {
 	    gfx_SetDrawBuffer();
 	    full_redraw();
         pdraw_FreeAll();
+        updateGameKillCounter(game.total_kills, true);
         needs_redraw = false;
         profiler_end(tilemap);
 	}
+
+    updateGameKillCounter(game.total_kills, false);
 
 	profiler_start(undraw);
     pdraw_RemoveSprites();

@@ -13,4 +13,8 @@ void displayKillCounts(void);
 
 void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
 
+void updateGameKillCounter(uint8_t kills, bool force);
+void displayGameKillCounter(void);
+void displayGameBanner(uint8_t mission, uint8_t lives);
+
 #endif //TANKS_GUI_H

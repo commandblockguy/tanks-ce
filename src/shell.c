@@ -36,7 +36,7 @@ void processShell(shell_t* shell, tank_t* tank) {
             if(!tanks[j].alive) continue;
 
             if(detectCollision(&shell->phys, &tanks[j].phys)) {
-                game.total_kills++;
+                if(tanks[j].type != PLAYER) game.total_kills++;
                 game.kills[tanks[j].type]++;
                 tanks[j].alive = false;
                 shell->alive = false;
