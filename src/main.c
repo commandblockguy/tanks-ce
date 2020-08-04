@@ -106,6 +106,7 @@ void main(void) {
 		for(i = 0; i < game.level.num_tanks; i++) {
 			deserializeTank(&tanks[i], &ser_tanks[i]);
 		}
+		//todo: check if null
 
 		//Decompress tile data
 		zx7_Decompress(tiles, comp_tiles);
@@ -113,6 +114,7 @@ void main(void) {
 		//Display the mission start screen
 		if(!startMission(true)) {
 		    // todo: display an error to the user
+            dbg_sprintf(dbgout, "error occurred on mission start\n");
 		    return;
 		}
 
@@ -131,6 +133,7 @@ void main(void) {
 				}
                 if(!startMission(false)) {
                     // todo: display an error to the user
+                    dbg_sprintf(dbgout, "error occurred on mission start\n");
                     return;
                 }
 				needs_redraw = true;

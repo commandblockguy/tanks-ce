@@ -22,9 +22,9 @@
 #include "partial_redraw.h"
 #include "dynamic_sprites.h"
 
-uint8_t tilemap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
+uint8_t tilemap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // For each tilemap tile, the level Y of the block that it's representing
-uint8_t depthmap[TILEMAP_HEIGHT][LEVEL_SIZE_X];
+uint8_t depthmap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 
 bool needs_redraw;
 
@@ -137,22 +137,26 @@ void initGraphics(void) {
 }
 
 void generate_bg_tilemap(void) {
-    uint8_t y;
+    int8_t y;
     const bool bottom_is_tall[] = {0, 1, 0, 0, 1, 0, 0, 1};
     const bool bottom_is_alt[] = {0, 0, 1, 0, 0, 1, 0, 0};
 
     for(y = 0; y < TILEMAP_HEIGHT; y++) {
         uint8_t x;
-        for(x = 0; x < LEVEL_SIZE_X; x++) {
+        for(x = 0; x < TILEMAP_WIDTH; x++) {
             tilemap[y][x] = TS_NONE;
-            depthmap[y][x] = y;
+            depthmap[y][x] = y / 2 - TILEMAP_OFFSET;
         }
     }
 
-    for(y = 0; y < LEVEL_SIZE_Y; y++) {
+    for(y = -1; y <= LEVEL_SIZE_Y; y++) {
         uint8_t x;
-        for(x = 0; x < LEVEL_SIZE_X; x++) {
-            tile_t tile = tiles[y][x];
+        for(x = 0; x < TILEMAP_WIDTH; x++) {
+            tile_t tile = tiles[y][x - 1];
+            if(y == -1) tile = BLOCK | 1;
+            if(y == LEVEL_SIZE_Y) tile = BLOCK | 1;
+            if(x == 0) tile = BLOCK | 1;
+            if(x == LEVEL_SIZE_X + 1) tile = BLOCK | 1;
             uint8_t height = TILE_HEIGHT(tile);
             uint8_t type = TILE_TYPE(tile);
             bool tall = bottom_is_tall[height];
@@ -260,34 +264,30 @@ const gfx_tilemap_t tilemap_config = {
         HALF_TILE_PIXEL_HEIGHT,
         14,
         TILEMAP_HEIGHT,
-        LEVEL_SIZE_X,
+        TILEMAP_WIDTH,
         gfx_tile_no_pow2,
         gfx_tile_no_pow2,
         TILEMAP_HEIGHT,
-        LEVEL_SIZE_X,
+        TILEMAP_WIDTH,
         TILEMAP_BASE_Y,
-        SCREEN_X(0)
+        SCREEN_X(-TILE_SIZE)
 };
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];
     uint8_t screen_y = TILEMAP_BASE_Y + HALF_TILE_PIXEL_HEIGHT * y;
-    gfx_Sprite_NoClip(tile, SCREEN_X(TILE_SIZE * x), screen_y);
+    gfx_Sprite(tile, SCREEN_X(TILE_SIZE * (x - 1)), screen_y);
 }
 
 void full_redraw(void) {
-    generate_bg_tilemap();
-
-	gfx_FillScreen(COL_WHITE);
+    gfx_FillScreen(COL_WHITE);
 	gfx_Tilemap(&tilemap_config, 0, 0);
-
-	pdraw_FreeAll();
-    needs_redraw = false;
 }
 
 // Convert a screenspace coordinate to a redraw tile
 uint8_t screen_to_tm_x(uint24_t screen_x) {
-    return (screen_x - SCREEN_X(0)) / SCREEN_DELTA_X(TILE_SIZE);
+    int24_t dx = screen_x - SCREEN_X(0);
+    return dx / SCREEN_DELTA_X(TILE_SIZE) + 1 - (dx < 0);
 }
 
 uint8_t screen_to_tm_y(uint24_t screen_y) {
@@ -336,11 +336,13 @@ void render_tank(tank_t *tank) {
                 base_x + turret_x_offsets[turret_sprite],
                 base_y + turret_y_offsets[turret_sprite]);
 
+        // todo: make this next part use offsets
+        // todo: figure out why the turret is visible through blocks in some cases
+
         for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
             for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
-                uint8_t world_tile_y = depthmap[tile_y][tile_x];
-                // todo: figure out why hackfix isn't working
-                if(world_tile_y > tank_y && TILE_HEIGHT(tiles[world_tile_y][tile_x])) { // this is a hackfix, but whatever
+                int8_t world_tile_y = depthmap[tile_y][tile_x];
+                if(world_tile_y >= tank_y && tilemap[tile_y][tile_x] != TS_NONE) {
                     redraw_tile(tile_x, tile_y);
                 }
             }
@@ -374,10 +376,13 @@ void render(level_t *level) {
 	
 	if(needs_redraw) {
         profiler_start(tilemap);
+        generate_bg_tilemap();
 	    gfx_SetDrawScreen();
 	    full_redraw();
 	    gfx_SetDrawBuffer();
 	    full_redraw();
+        pdraw_FreeAll();
+        needs_redraw = false;
         profiler_end(tilemap);
 	}
 

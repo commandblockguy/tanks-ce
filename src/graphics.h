@@ -104,7 +104,8 @@ typedef struct {
 #define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_HEIGHT / 2)
 
 #define TILEMAP_OFFSET 4
-#define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET)
+#define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET + 2)
+#define TILEMAP_WIDTH (LEVEL_SIZE_X + 2)
 #define TILEMAP_BASE_Y (SCREEN_Y(0) - HALF_TILE_PIXEL_HEIGHT * TILEMAP_OFFSET)
 
 //Offset from sides of screen
@@ -130,8 +131,6 @@ void initGraphics(void);
 void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
 
 void renderPhysicsBody(physicsBody_t *phys);
-
-void displayUI(void); //Display UI during a mission
 
 void drawLine(lineSeg_t* ls);
 
