@@ -298,11 +298,11 @@ uint8_t screen_to_tm_y(uint24_t screen_y) {
 void draw_aim_dots(void) {
     profiler_start(aim_indicator);
     angle_t angle = tanks[0].barrel_rot;
-    int8_t dx = AIM_INDICATOR_DOT_DISTANCE * fast_cos(angle) / 256;
-    int8_t dy = AIM_INDICATOR_DOT_DISTANCE * fast_sin(angle) / 256;
+    int8_t dx = SCREEN_DELTA_X(AIM_INDICATOR_DOT_DISTANCE * fast_cos(angle) / TRIG_SCALE);
+    int8_t dy = SCREEN_DELTA_Y(AIM_INDICATOR_DOT_DISTANCE * fast_sin(angle) / TRIG_SCALE);
 
-    int24_t x = SCREEN_X(tanks[0].phys.position_x) + dx;
-    int24_t y = SCREEN_Y(tanks[0].phys.position_y) + dy;
+    int24_t x = SCREEN_X(centerX(&tanks[0].phys)) + dx;
+    int24_t y = SCREEN_Y(centerY(&tanks[0].phys)) + dy;
 
     while(x > SCREEN_X(0) && x < SCREEN_X(LEVEL_SIZE_X * TILE_SIZE) &&
           y > SCREEN_Y(0) && y < SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE)) {

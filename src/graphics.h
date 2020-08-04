@@ -122,7 +122,7 @@ typedef struct {
 #define TANK_SPRITE_SIZE_Y 24
 
 // todo: get an actual value?
-#define AIM_INDICATOR_DOT_DISTANCE 30
+#define AIM_INDICATOR_DOT_DISTANCE (2 * TILE_SIZE)
 #define AIM_INDICATOR_RADIUS 2
 
 void initGraphics(void);
