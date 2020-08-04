@@ -234,7 +234,6 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result)
 	int8_t tileX = ptToXTile(startX);
 	int8_t tileY = ptToYTile(startY);
 	int24_t t = 0;
-	tile_t *tile_ptr = &tiles[tileY][tileX];
 
 	int24_t dtX = (int24_t)(tileToXPt(tileX + (dirX >= 0 ? 1 : 0)) - startX) / dirX;
 	int24_t dtY = (int24_t)(tileToYPt(tileY + (dirY >= 0 ? 1 : 0)) - startY) / dirY;
@@ -257,7 +256,7 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result)
 
 	//while inside the map
 	while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
-		tile_t tile = *tile_ptr;
+		tile_t tile = tiles[tileY][tileX];
 
 		//dbg_sprintf(dbgout, "tileX: %i, tileY: %i, t: %i, dtX: %i, dtY: %i, tile: %X\n", tileX, tileY, t, dtX, dtY, tile);
 
@@ -269,13 +268,11 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result)
 		if(dtX < dtY) {
 			t += dtX;
 			tileX += dirSignX;
-			tile_ptr++;
 			dtY -= dtX;
 			dtX = dtXr;
 		} else {
 			t += dtY;
 			tileY += dirSignY;
-			tile_ptr += LEVEL_SIZE_X;
 			dtX -= dtY;
 			dtY = dtYr;
 		}
