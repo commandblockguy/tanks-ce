@@ -182,12 +182,12 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 
 #define KILL_COUNTER_END_X (SCREEN_DELTA_X(2.75 * TILE_SIZE))
 #define KILL_COUNTER_INNER_END_X (SCREEN_DELTA_X(2.4 * TILE_SIZE))
-#define KILL_COUNTER_HEIGHT (SCREEN_DELTA_Y(2 * TILE_SIZE))
-#define KILL_COUNTER_INNER_HEIGHT (SCREEN_DELTA_Y(1.5 * TILE_SIZE))
-#define KILL_COUNTER_RADIUS (KILL_COUNTER_HEIGHT / 2)
-#define KILL_COUNTER_INNER_RADIUS (KILL_COUNTER_INNER_HEIGHT / 2)
+#define KILL_COUNTER_RADIUS (SCREEN_DELTA_Y(TILE_SIZE) - 1)
+#define KILL_COUNTER_INNER_RADIUS (SCREEN_DELTA_Y(0.75 * TILE_SIZE))
+#define KILL_COUNTER_HEIGHT (2 * KILL_COUNTER_RADIUS + 1)
+#define KILL_COUNTER_INNER_HEIGHT (2 * KILL_COUNTER_INNER_RADIUS + 1)
 #define KILL_COUNTER_Y (SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE))
-#define KILL_COUNTER_INNER_Y (KILL_COUNTER_Y + KILL_COUNTER_RADIUS - KILL_COUNTER_INNER_RADIUS + 1)
+#define KILL_COUNTER_INNER_Y (KILL_COUNTER_Y + KILL_COUNTER_RADIUS - KILL_COUNTER_INNER_RADIUS)
 
 void updateKillCounterCurrBuf(uint8_t kills) {
     uint8_t digits = 1 + (kills > 9 ) + (kills > 99);
@@ -196,7 +196,7 @@ void updateKillCounterCurrBuf(uint8_t kills) {
     gfx_SetColor(COL_WHITE);
     gfx_FillRectangle_NoClip(x, KILL_COUNTER_INNER_Y, width, KILL_COUNTER_INNER_HEIGHT);
     gfx_SetTextFGColor(COL_LIVES_TXT);
-    gfx_SetTextXY(x, KILL_COUNTER_INNER_Y + 4);
+    gfx_SetTextXY(x, KILL_COUNTER_INNER_Y + 5);
     gfx_PrintUInt(kills, digits);
 }
 
@@ -213,13 +213,14 @@ void updateGameKillCounter(uint8_t kills, bool force) {
 void displayGameKillCounter(void) {
     gfx_SetColor(COL_LIVES_TXT); // todo: add a bluer color
     gfx_FillCircle_NoClip(KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_Y + KILL_COUNTER_RADIUS, KILL_COUNTER_RADIUS);
-    gfx_FillRectangle_NoClip(0, KILL_COUNTER_Y, KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_HEIGHT + 1);
+    gfx_FillRectangle_NoClip(0, KILL_COUNTER_Y, KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_HEIGHT);
 
     gfx_SetColor(COL_WHITE);
-    gfx_FillCircle_NoClip(KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS, KILL_COUNTER_INNER_Y + KILL_COUNTER_INNER_RADIUS - 1, KILL_COUNTER_INNER_RADIUS);
-    gfx_FillRectangle_NoClip(0, KILL_COUNTER_INNER_Y, KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS, KILL_COUNTER_INNER_HEIGHT);
+    gfx_FillCircle_NoClip(KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1, KILL_COUNTER_INNER_Y + KILL_COUNTER_INNER_RADIUS, KILL_COUNTER_INNER_RADIUS);
+    gfx_FillRectangle_NoClip(0, KILL_COUNTER_INNER_Y, KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1, KILL_COUNTER_INNER_HEIGHT);
 }
 
+// todo: apparently this shows the number of alive tanks, not the number of lives
 void displayGameBanner(uint8_t mission, uint8_t lives) {
     // todo: check if the compiler optimizes these properly
     const uint8_t banner_width = SCREEN_DELTA_X(10.5 * TILE_SIZE);
