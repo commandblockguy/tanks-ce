@@ -115,10 +115,10 @@ typedef struct {
 #define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
 #define SCREEN_Y(y) (SCREEN_DELTA_Y(y) + MAP_OFFSET_Y)
 
-#define TANK_SPRITE_OFFSET_X 8
-#define TANK_SPRITE_OFFSET_Y 11
-#define TANK_SPRITE_SIZE_X 28
-#define TANK_SPRITE_SIZE_Y 24
+#define TANK_SPRITE_OFFSET_X 11
+#define TANK_SPRITE_OFFSET_Y 16
+#define TANK_SPRITE_SIZE_X 40
+#define TANK_SPRITE_SIZE_Y 30
 
 // todo: get an actual value?
 #define AIM_INDICATOR_DOT_DISTANCE (2 * TILE_SIZE)

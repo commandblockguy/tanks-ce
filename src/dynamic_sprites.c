@@ -3,8 +3,8 @@
 #include "gfx/offsets/offsets.h"
 #include "tank.h"
 
-#define tank_sprite_total_width 28
-#define tank_sprite_total_height 24
+#define tank_sprite_total_width 40
+#define tank_sprite_total_height 30
 
 gfx_UninitedSprite(pl_base_9, pl_base_7_width, pl_base_7_height);
 gfx_UninitedSprite(pl_base_10, pl_base_6_width, pl_base_6_height);
