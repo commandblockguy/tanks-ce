@@ -263,7 +263,7 @@ const gfx_tilemap_t tilemap_config = {
         (uint8_t*)tilemap,
         tileset_tiles,
         HALF_TILE_PIXEL_HEIGHT,
-        14,
+        TILE_PIXEL_SIZE_X,
         TILEMAP_HEIGHT,
         TILEMAP_WIDTH,
         gfx_tile_no_pow2,

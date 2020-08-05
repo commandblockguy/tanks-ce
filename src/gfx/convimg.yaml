@@ -101,8 +101,8 @@ converts:
   - name: convert
     palette: palette
     tilesets:
-      tile-width: 14
-      tile-height: 5
+      tile-width: 18
+      tile-height: 6
       ptable: true
       - tileset.png
     images:

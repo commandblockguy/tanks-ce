@@ -92,16 +92,14 @@ typedef struct {
 //Target frame rate
 #define TARGET_FPS 30
 
-#define TILE_PIXEL_SIZE_X 14
-#define TILE_PIXEL_SIZE_Y 10
+#define TILE_PIXEL_SIZE_X 18
+#define TILE_PIXEL_SIZE_Y 12
 
 /* Calculate the screen-space distance for a given world-space distance */
 #define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE_X / TILE_SIZE)
 #define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE_Y / TILE_SIZE)
 
-#define TILE_PIXEL_WIDTH SCREEN_DELTA_X(TILE_SIZE)
-#define TILE_PIXEL_HEIGHT 10
-#define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_HEIGHT / 2)
+#define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_SIZE_Y / 2)
 
 #define TILEMAP_OFFSET 4
 #define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET + 2)
@@ -111,7 +109,7 @@ typedef struct {
 //Offset from sides of screen
 #define MAP_OFFSET_X ((LCD_WIDTH  - SCREEN_DELTA_X(LEVEL_SIZE_X * TILE_SIZE)) / 2)
 // Offset from top of the screen
-#define MAP_OFFSET_Y ((LCD_HEIGHT - SCREEN_DELTA_Y(LEVEL_SIZE_Y * TILE_SIZE)) / 2)
+#define MAP_OFFSET_Y 24
 
 /* Calculate the screen-space position for a given world-space point */
 #define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
