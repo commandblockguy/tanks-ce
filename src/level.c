@@ -26,26 +26,26 @@ void createLevels(void) {
 	#ifdef CREATE_LEVEL_APPVAR
 	#define s(n) {sizeof(lvl##n##_compressed), sizeof(ser_tanks##n)/sizeof(ser_tanks##n[0])}
 	const serialized_tank_t* ser_tanks; //TODO: change to a 2D array somehow?
-	const serialized_tank_t ser_tanks1[]  = {{PLAYER, 2, 6}, {IMMOBILE, 19, 6}};
-	const serialized_tank_t ser_tanks2[]  = {{PLAYER, 2, 13}, {BASIC, 19, 3}};
-	const serialized_tank_t ser_tanks3[]  = {{PLAYER, 2, 8}, {BASIC, 5, 1}, {BASIC, 18, 15}, {IMMOBILE, 19, 8}};
-	const serialized_tank_t ser_tanks4[]  = {{PLAYER, 3, 14}, {BASIC, 10, 8}, {BASIC, 18, 2}, {IMMOBILE, 18, 8}, {IMMOBILE, 11, 2}};
-	const serialized_tank_t ser_tanks5[]  = {{PLAYER, 2, 14}, {MISSILE, 14, 1}, {MISSILE, 20, 9}};
-	const serialized_tank_t ser_tanks6[]  = {{PLAYER, 2, 8}, {BASIC, 17, 4}, {BASIC, 17, 15}, {MISSILE, 19, 8}, {MISSILE, 20, 13}};
-	const serialized_tank_t ser_tanks7[]  = {{PLAYER, 2, 14}, {MISSILE, 1, 1}, {MISSILE, 19, 2}, {MISSILE, 2, 7}, {MISSILE, 19, 15}};
-	const serialized_tank_t ser_tanks8[]  = {{PLAYER, 1, 8}, {MISSILE, 21, 2}, {MISSILE, 21, 14}, {MINE, 15, 4}, {MINE, 18, 8}, {MINE, 14, 14}};
-	const serialized_tank_t ser_tanks9[]  = {{PLAYER, 2, 13}, {MINE, 3, 3}, {MINE, 19, 13}, {BASIC, 7, 1}, {BASIC, 13, 5}, {BASIC, 14, 15}, {BASIC, 19, 3}};
-	const serialized_tank_t ser_tanks10[] = {{PLAYER, 1, 12}, {RED, 11, 1}, {RED, 20, 4}};
-	const serialized_tank_t ser_tanks11[] = {{PLAYER, 2, 2}, {BASIC, 3, 13}, {BASIC, 14, 1}, {MISSILE, 7, 0}, {MISSILE, 19, 14}, {RED, 19, 4}, {RED, 10, 8}};
-	const serialized_tank_t ser_tanks12[] = {{PLAYER, 2, 7}, {RED, 12, 1}, {RED, 10, 14}, {IMMOB_MISSILE, 17, 15}, {IMMOB_MISSILE, 19, 4}};
-	const serialized_tank_t ser_tanks13[] = {{PLAYER, 0, 8}, {MINE, 5, 15}, {MINE, 8, 1}, {MINE, 12, 10}, {MISSILE, 20, 1}, {MISSILE, 20, 15}, {MISSILE, 21, 8}};
-	const serialized_tank_t ser_tanks14[] = {{PLAYER, 1, 15}, {RED, 1, 7}, {RED, 15, 1}, {RED, 20, 11}, {IMMOB_MISSILE, 6, 6}, {IMMOB_MISSILE, 15, 11}, {IMMOB_MISSILE, 20, 1}};
-	const serialized_tank_t ser_tanks15[] = {{PLAYER, 2, 15}, {FAST, 6, 5}, {FAST, 19, 2}, {FAST, 19, 15}};
-	const serialized_tank_t ser_tanks16[] = {{PLAYER, 1, 15}, {FAST, 9, 1}, {IMMOB_MISSILE, 20, 1}, {FAST, 13, 8}, {IMMOB_MISSILE, 8, 11}, {FAST, 1, 11}};
-	const serialized_tank_t ser_tanks17[] = {{PLAYER, 1, 13}, {IMMOB_MISSILE, 3, 2}, {IMMOB_MISSILE, 20, 3}, {IMMOB_MISSILE, 10, 8}, {IMMOB_MISSILE, 20, 9}, {IMMOB_MISSILE, 19, 14}};
-	const serialized_tank_t ser_tanks18[] = {{PLAYER, 2, 13}, {MISSILE, 4, 2}, {FAST, 14, 2}, {RED, 7, 4}, {IMMOB_MISSILE, 11, 8}, {MISSILE, 19, 14}, {FAST, 14, 15}};
-	const serialized_tank_t ser_tanks19[] = {{PLAYER, 1, 15}, {FAST, 1, 1}, {FAST, 8, 1}, {FAST, 17, 1}, {FAST, 9, 5}, {FAST, 19, 6}, {FAST, 1, 8}, {FAST, 20, 11}, {FAST, 17, 15}};
-	const serialized_tank_t ser_tanks20[] = {{PLAYER, 2, 8}, {INVISIBLE, 17, 6}, {INVISIBLE, 19, 8}};
+	const serialized_tank_t ser_tanks1[]  = {{PLAYER, 1, 6}, {IMMOBILE, 14, 6}};
+	const serialized_tank_t ser_tanks2[]  = {{PLAYER, 1, 13}, {BASIC, 14, 3}};
+	const serialized_tank_t ser_tanks3[]  = {{PLAYER, 1, 8}, {BASIC, 3, 1}, {BASIC, 13, 15}, {IMMOBILE, 14, 8}};
+	const serialized_tank_t ser_tanks4[]  = {{PLAYER, 2, 14}, {BASIC, 7, 8}, {BASIC, 13, 2}, {IMMOBILE, 13, 8}, {IMMOBILE, 8, 2}};
+	const serialized_tank_t ser_tanks5[]  = {{PLAYER, 2, 14}, {MISSILE, 12, 1}, {MISSILE, 15, 9}};
+	const serialized_tank_t ser_tanks6[]  = {{PLAYER, 1, 8}, {BASIC, 12, 4}, {BASIC, 12, 15}, {MISSILE, 14, 8}, {MISSILE, 14, 13}};
+	const serialized_tank_t ser_tanks7[]  = {{PLAYER, 1, 14}, {MISSILE, 1, 1}, {MISSILE, 14, 2}, {MISSILE, 1, 7}, {MISSILE, 14, 15}};
+	const serialized_tank_t ser_tanks8[]  = {{PLAYER, 0, 8}, {MISSILE, 15, 2}, {MISSILE, 15, 14}, {MINE, 11, 4}, {MINE, 15, 8}, {MINE, 10, 14}};
+	const serialized_tank_t ser_tanks9[]  = {{PLAYER, 2, 13}, {MINE, 2, 3}, {MINE, 14, 13}, {BASIC, 5, 1}, {BASIC, 10, 5}, {BASIC, 11, 15}, {BASIC, 14, 3}};
+	const serialized_tank_t ser_tanks10[] = {{PLAYER, 0, 12}, {RED, 8, 1}, {RED, 15, 4}};
+	const serialized_tank_t ser_tanks11[] = {{PLAYER, 1, 2}, {BASIC, 2, 13}, {BASIC, 10, 1}, {MISSILE, 5, 0}, {MISSILE, 14, 14}, {RED, 14, 4}, {RED, 7, 8}};
+	const serialized_tank_t ser_tanks12[] = {{PLAYER, 1, 7}, {RED, 10, 1}, {RED, 6, 14}, {IMMOB_MISSILE, 13, 15}, {IMMOB_MISSILE, 14, 4}};
+	const serialized_tank_t ser_tanks13[] = {{PLAYER, 0, 8}, {MINE, 4, 15}, {MINE, 7, 1}, {MINE, 9, 10}, {MISSILE, 14, 1}, {MISSILE, 14, 15}, {MISSILE, 15, 8}};
+	const serialized_tank_t ser_tanks14[] = {{PLAYER, 1, 15}, {RED, 1, 7}, {RED, 10, 1}, {RED, 14, 11}, {IMMOB_MISSILE, 5, 6}, {IMMOB_MISSILE, 10, 11}, {IMMOB_MISSILE, 14, 1}};
+	const serialized_tank_t ser_tanks15[] = {{PLAYER, 1, 15}, {FAST, 4, 5}, {FAST, 14, 2}, {FAST, 14, 15}};
+	const serialized_tank_t ser_tanks16[] = {{PLAYER, 1, 15}, {FAST, 7, 1}, {IMMOB_MISSILE, 14, 1}, {FAST, 10, 8}, {IMMOB_MISSILE, 6, 11}, {FAST, 15, 11}};
+	const serialized_tank_t ser_tanks17[] = {{PLAYER, 1, 13}, {IMMOB_MISSILE, 2, 2}, {IMMOB_MISSILE, 14, 3}, {IMMOB_MISSILE, 1, 8}, {IMMOB_MISSILE, 7, 8}, {IMMOB_MISSILE, 14, 9}, {IMMOB_MISSILE, 14, 14}};
+	const serialized_tank_t ser_tanks18[] = {{PLAYER, 2, 13}, {MISSILE, 3, 2}, {FAST, 10, 2}, {RED, 5, 4}, {IMMOB_MISSILE, 8, 8}, {MISSILE, 13, 14}, {FAST, 10, 15}};
+	const serialized_tank_t ser_tanks19[] = {{PLAYER, 1, 15}, {FAST, 1, 1}, {FAST, 7, 1}, {FAST, 12, 1}, {FAST, 8, 5}, {FAST, 14, 6}, {FAST, 1, 8}, {FAST, 14, 11}, {FAST, 12, 15}};
+	const serialized_tank_t ser_tanks20[] = {{PLAYER, 2, 8}, {INVISIBLE, 11, 6}, {INVISIBLE, 13, 8}};
 	level_t lvls[] = {s(1), s(2), s(3), s(4), s(5), s(6), s(7), s(8), s(9), s(10), s(11), s(12), s(13), s(14), s(15), s(16), s(17), s(18), s(19), s(20)};
 	level_pack_t lvl_pack = {"TANKS!", sizeof(lvls) / sizeof(lvls[0]), {0, 0, 0, 0, 0}};
 	ti_var_t appVar;

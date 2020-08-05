@@ -52,7 +52,7 @@ void createLevels(void); //Temporary function to make a level pack
 #define ptToYTile(y) ((y) / TILE_SIZE - (y < 0))
 
 //Size of the gameplay area in tiles
-#define LEVEL_SIZE_X 22
+#define LEVEL_SIZE_X 16
 #define LEVEL_SIZE_Y 17
 
 #endif
