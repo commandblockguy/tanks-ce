@@ -46,8 +46,8 @@ typedef struct {
 	uint32_t updateTime;
 } physicsBody_t;
 
-uint24_t centerX(physicsBody_t* p); //Get the center coords of a AABB
-uint24_t centerY(physicsBody_t* p);
+uint24_t centerX(const physicsBody_t *p); //Get the center coords of a AABB
+uint24_t centerY(const physicsBody_t *p);
 
 //Determine if two bounding boxes are intersecting
 bool detectCollision(physicsBody_t* p1, physicsBody_t* p2);

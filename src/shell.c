@@ -62,12 +62,19 @@ bool shellRicochet(shell_t* shell, direction_t dir) {
     //shell_t is still alive
     if(dir & UP || dir & DOWN) {
         shell->phys.velocity_y *= -1;
+        updateShellDirection(shell);
         shell->bounces--;
     }
     if(dir & LEFT || dir & RIGHT) {
         shell->phys.velocity_x *= -1;
+        updateShellDirection(shell);
         shell->bounces--;
     }
 
     return true;
+}
+
+void updateShellDirection(shell_t* shell) {
+    angle_t angle = fast_atan2(shell->phys.velocity_y, shell->phys.velocity_x);
+    shell->direction = angleToShellDirection(angle);
 }

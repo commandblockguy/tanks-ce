@@ -134,6 +134,7 @@ void initGraphics(void) {
     for(uint8_t i = 1; i < 8; i++) {
         gfx_FlipSpriteY(tank_bases[PLAYER][i], tank_bases[PLAYER][16 - i]);
         gfx_FlipSpriteY(tank_turrets[PLAYER][i], tank_turrets[PLAYER][16 - i]);
+        gfx_FlipSpriteY(shell_sprites[i], shell_sprites[16 - i]);
     }
 }
 
@@ -319,45 +320,53 @@ void draw_aim_dots(void) {
     profiler_end(aim_indicator);
 }
 
+void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y, const physicsBody_t *phys, uint8_t rotation) {
+    uint24_t base_x = SCREEN_X(centerX(phys)) - SPRITE_OFFSET_X;
+    uint8_t base_y = SCREEN_Y(centerY(phys)) - SPRITE_OFFSET_Y;
+    uint8_t tile_x, tile_y;
+    uint8_t end_x = screen_to_tm_x(base_x + SPRITE_SIZE_X);
+    uint8_t end_y = screen_to_tm_y(base_y + SPRITE_SIZE_Y);
+    uint8_t tank_y = ptToYTile(phys->position_y + phys->height - 1); // -1 is to round down if exactly on the edge
+
+    pdraw_TransparentSprite_NoClip(sprites[rotation],
+                                   base_x + offsets_x[rotation],
+                                   base_y + offsets_y[rotation]);
+
+    // todo: make this next part use offsets
+    for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
+        for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
+            int8_t world_tile_y = depthmap[tile_y][tile_x];
+            if(world_tile_y >= tank_y && tilemap[tile_y][tile_x] != TS_NONE) {
+                redraw_tile(tile_x, tile_y);
+            }
+        }
+    }
+}
+
+void render_shell(shell_t *shell) {
+    if(shell->alive) {
+        uint8_t sprite = shell->direction;
+        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, &shell->phys, sprite);
+    }
+}
+
 void render_tank(tank_t *tank) {
     int j;
 
     if(tank->alive) {
-        uint24_t base_x = SCREEN_X(tank->phys.position_x) - TANK_SPRITE_OFFSET_X;
-        uint8_t base_y = SCREEN_Y(tank->phys.position_y) - TANK_SPRITE_OFFSET_Y;
         uint8_t base_sprite = (((uint8_t)-((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
         uint8_t turret_sprite = ((uint8_t)-((tank->barrel_rot >> 16) - 64)) >> 4;
-        uint8_t tile_x, tile_y;
-        uint8_t end_x = screen_to_tm_x(base_x + TANK_SPRITE_SIZE_X);
-        uint8_t end_y = screen_to_tm_y(base_y + TANK_SPRITE_SIZE_Y);
-        uint8_t tank_y = ptToYTile(tank->phys.position_y + TANK_SIZE - 1); // -1 is to round down if exactly on the edge
 
-        pdraw_TransparentSprite_NoClip(tank_bases[tank->type][base_sprite],
-                base_x + base_x_offsets[base_sprite],
-                base_y + base_y_offsets[base_sprite]);
-        pdraw_TransparentSprite_NoClip(tank_turrets[tank->type][turret_sprite],
-                base_x + turret_x_offsets[turret_sprite],
-                base_y + turret_y_offsets[turret_sprite]);
+        render_obscured_object(tank_bases[tank->type], base_x_offsets, base_y_offsets, &tank->phys, base_sprite);
+        render_obscured_object(tank_turrets[tank->type], turret_x_offsets, turret_y_offsets, &tank->phys, turret_sprite);
 
-        // todo: make this next part use offsets
         // todo: figure out why the turret is visible through blocks in some cases
-
-        for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
-            for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
-                int8_t world_tile_y = depthmap[tile_y][tile_x];
-                if(world_tile_y >= tank_y && tilemap[tile_y][tile_x] != TS_NONE) {
-                    redraw_tile(tile_x, tile_y);
-                }
-            }
-        }
     }
 
     //draw shell hitboxes until I can get sprites
     for(j = max_shells[tank->type] - 1; j >= 0; j--) {
         shell_t* shell = &tank->shells[j];
-        if(!(shell->alive)) continue;
-        gfx_SetColor(COL_BLACK);
-        renderPhysicsBody(&shell->phys);
+        if(shell->alive) render_shell(shell);
     }
     //draw mine hitboxes
     for(j = max_mines[tank->type] - 1; j >= 0; j--) {

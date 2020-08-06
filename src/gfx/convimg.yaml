@@ -107,6 +107,7 @@ converts:
       - tileset.png
     images:
       - trimmed/pl_*.png
+      - trimmed/shell_*.png
   - name: enemy
     palette: enemy_palette
       images:

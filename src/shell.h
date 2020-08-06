@@ -27,10 +27,16 @@ typedef struct {
     physicsBody_t phys;
     uint8_t bounces; //Number of times the shell can bounce off a wall without exploding
     bool left_tank_hitbox; //Whether the shell has exited the tank hitbox yet. Used to stop shells from blowing up the tank that fired them.
+    uint8_t direction;
 } shell_t;
 
 //Bounce a shell off a wall
 //Returns whether or not the shell is still alive
 bool shellRicochet(shell_t* shell, direction_t dir);
+
+uint8_t inline angleToShellDirection(angle_t angle) {
+    return ((uint8_t)-((angle >> 16) - 64)) >> 4;
+}
+void updateShellDirection(shell_t* shell);
 
 #endif //TANKS_SHELL_H

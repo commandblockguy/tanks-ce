@@ -17,7 +17,7 @@ tiles:
 	@$(MAKE) -C src/tiles --no-print-directory
 
 SHELL = bash
-IMAGE_NAMES = {pl,en}_{base,turret}_{0..8}
+IMAGE_NAMES = {{pl,en}_{base,turret},shell}_{0..8}
 CONVIMG_INPUT = $(shell echo src/gfx/trimmed/$(IMAGE_NAMES).png) src/gfx/tileset.png
 CONVIMG_OUTPUT = $(shell echo src/gfx/$(IMAGE_NAMES).{c,h}) src/gfx/tileset.c src/gfx/tileset.h src/gfx/palette.c src/gfx/palette.h src/gfx/gfx.h
 BLENDER_OUTPUT = $(shell echo src/gfx/rendered/$(IMAGE_NAMES).png)
@@ -38,7 +38,7 @@ src/gfx/trimmed/%.png src/gfx/offsets/%.h: src/gfx/rendered/%.png
 src/gfx/offsets/offsets.h: $(OFFSET_FILES)
 	echo \#ifndef H_OFFSETS > src/gfx/offsets/offsets.h
 	echo \#define H_OFFSETS >> src/gfx/offsets/offsets.h
-	for CURRENT_TYPE in {pl,en}_{base,turret}_{0..8}; do \
+	for CURRENT_TYPE in $(IMAGE_NAMES); do \
 		echo \#include \"$$CURRENT_TYPE.h\" ; \
 	done >> src/gfx/offsets/offsets.h
 	echo \#endif >> src/gfx/offsets/offsets.h

@@ -79,6 +79,7 @@ bool fireShell(tank_t* tank) {
             shell->phys.velocity_x = SHELL_SPEED_STANDARD * vector_x / TRIG_SCALE;
             shell->phys.velocity_y = SHELL_SPEED_STANDARD * vector_y / TRIG_SCALE;
         }
+        shell->direction = angleToShellDirection(tank->barrel_rot);
         return true;
     }
     return false;

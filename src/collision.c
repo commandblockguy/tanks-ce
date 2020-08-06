@@ -17,11 +17,11 @@
 #undef NDEBUG
 #include <debug.h>
 
-uint24_t centerX(physicsBody_t* p) {
+uint24_t centerX(const physicsBody_t *p) {
 	return p->position_x + p->width / 2;
 }
 
-uint24_t centerY(physicsBody_t* p) {
+uint24_t centerY(const physicsBody_t *p) {
 	return p->position_y + p->height / 2;
 }
 
