@@ -6,9 +6,6 @@
 #ifndef H_UTIL
 #define H_UTIL
 
-/* *is immediately stabbed* */
-#define max(a, b) a < b ? a : b
-
 typedef uint24_t angle_t;
 
 /* Converts a constant integer number of degrees to an angle_t */
@@ -36,5 +33,8 @@ void init_timer(void);
 void limit_framerate(void);
 
 void wait_ms_or_keypress(uint24_t ms);
+
+inline uint24_t min(uint24_t a, uint24_t b) { return (a > b) ? b : a; }
+inline uint24_t max(uint24_t a, uint24_t b) { return (a > b) ? a : b; }
 
 #endif

@@ -331,7 +331,7 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
     uint24_t sprite_end_x = sprite_x + sprite->width;
     uint8_t sprite_end_y = sprite_y + sprite->height;
 
-    pdraw_TransparentSprite_NoClip(sprite, sprite_x, sprite_y);
+    pdraw_TransparentSprite(sprite, sprite_x, sprite_y);
 
     // todo: make this next part use offsets
     for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= screen_to_tm_x(sprite_end_x); tile_x++) {
@@ -407,9 +407,12 @@ void render(level_t *level) {
 
 	profiler_start(render_tanks);
     // todo: z-sorting
+    // restrict drawing to only the play area, to prevent the banners from being overwritten
+    gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE), SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE));
 	for(i = 0; i < level->num_tanks; i++) {
 		render_tank(&tanks[i]);
 	}
+    gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
 	profiler_end(render_tanks);
 
 	// todo: move to GUI section?
