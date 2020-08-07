@@ -277,8 +277,9 @@ const gfx_tilemap_t tilemap_config = {
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];
+    uint24_t screen_x = SCREEN_X(TILE_SIZE * (x - 1));
     uint8_t screen_y = TILEMAP_BASE_Y + HALF_TILE_PIXEL_HEIGHT * y;
-    gfx_Sprite(tile, SCREEN_X(TILE_SIZE * (x - 1)), screen_y);
+    gfx_Sprite(tile, screen_x, screen_y);
 }
 
 void full_redraw(void) {
@@ -289,12 +290,12 @@ void full_redraw(void) {
 }
 
 // Convert a screenspace coordinate to a redraw tile
-uint8_t screen_to_tm_x(uint24_t screen_x) {
+uint8_t inline screen_to_tm_x(uint24_t screen_x) {
     int24_t dx = screen_x - SCREEN_X(0);
     return dx / SCREEN_DELTA_X(TILE_SIZE) + 1 - (dx < 0);
 }
 
-uint8_t screen_to_tm_y(uint24_t screen_y) {
+uint8_t inline screen_to_tm_y(uint24_t screen_y) {
     return (screen_y - TILEMAP_BASE_Y) / HALF_TILE_PIXEL_HEIGHT;
 }
 
@@ -323,20 +324,21 @@ void draw_aim_dots(void) {
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y, const physicsBody_t *phys, uint8_t rotation) {
     uint24_t base_x = SCREEN_X(centerX(phys)) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(centerY(phys)) - SPRITE_OFFSET_Y;
-    uint8_t tile_x, tile_y;
-    uint8_t end_x = screen_to_tm_x(base_x + SPRITE_SIZE_X);
-    uint8_t end_y = screen_to_tm_y(base_y + SPRITE_SIZE_Y);
-    uint8_t tank_y = ptToYTile(phys->position_y + phys->height - 1); // -1 is to round down if exactly on the edge
+    uint8_t obj_y = ptToYTile(phys->position_y); // -1 is to round down if exactly on the edge
+    gfx_sprite_t *sprite = sprites[rotation];
+    uint24_t sprite_x = base_x + offsets_x[rotation];
+    uint8_t sprite_y = base_y + offsets_y[rotation];
+    uint24_t sprite_end_x = sprite_x + sprite->width;
+    uint8_t sprite_end_y = sprite_y + sprite->height;
 
-    pdraw_TransparentSprite_NoClip(sprites[rotation],
-                                   base_x + offsets_x[rotation],
-                                   base_y + offsets_y[rotation]);
+    pdraw_TransparentSprite_NoClip(sprite, sprite_x, sprite_y);
 
     // todo: make this next part use offsets
-    for(tile_x = screen_to_tm_x(base_x); tile_x <= end_x; tile_x++) {
-        for(tile_y = screen_to_tm_y(base_y); tile_y <= end_y; tile_y++) {
+    for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= screen_to_tm_x(sprite_end_x); tile_x++) {
+        for(uint8_t tile_y = screen_to_tm_y(sprite_y); tile_y <= screen_to_tm_y(sprite_end_y); tile_y++) {
             int8_t world_tile_y = depthmap[tile_y][tile_x];
-            if(world_tile_y >= tank_y && tilemap[tile_y][tile_x] != TS_NONE) {
+            // todo: this really feels like a hackfix
+            if(world_tile_y >= obj_y && tilemap[tile_y][tile_x] != TS_NONE && tilemap[tile_y][tile_x] != TS_HOLE_BOT && tilemap[tile_y][tile_x] != TS_HOLE_TOP) {
                 redraw_tile(tile_x, tile_y);
             }
         }
@@ -359,8 +361,6 @@ void render_tank(tank_t *tank) {
 
         render_obscured_object(tank_bases[tank->type], base_x_offsets, base_y_offsets, &tank->phys, base_sprite);
         render_obscured_object(tank_turrets[tank->type], turret_x_offsets, turret_y_offsets, &tank->phys, turret_sprite);
-
-        // todo: figure out why the turret is visible through blocks in some cases
     }
 
     //draw shell hitboxes until I can get sprites
