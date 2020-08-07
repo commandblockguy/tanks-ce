@@ -1,9 +1,8 @@
 #include <string.h>
 #include <tice.h>
-#undef NDEBUG
-#include <debug.h>
 
 #include "profiler.h"
+#include "util.h"
 
 #if USE_PROFILER
 
@@ -33,11 +32,11 @@ void profiler_tick(void) {
 }
 
 #define as_decimal(x) (uint24_t)(x),((uint24_t)((x)*1000) % 1000)
-#define profiler_field_last(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u.%03u ms\n", 2*(1+depth), "                    ", #name, as_decimal(profiler_frames[profiler_frame_index - 1].name / 33.0))
-#define profiler_field_average(name, depth) dbg_sprintf(dbgout, "%.*s%s: %u.%03u ms\n", 2*(1+depth), "                    ", #name, as_decimal(profiler_sum.name / 8388.608))
+#define profiler_field_last(name, depth) printf_("%.*s%s: %u.%03u ms\n", 2*(1+(depth)), "                    ", #name, as_decimal(profiler_frames[profiler_frame_index - 1].name / 33.0))
+#define profiler_field_average(name, depth) printf_("%.*s%s: %u.%03u ms\n", 2*(1+(depth)), "                    ", #name, as_decimal(profiler_sum.name / 8388.608))
 
 void profiler_print(void) {
-    dbg_sprintf(dbgout, "Last frame (%u): %u FPS\n", profiler_frame_index - 1, 32768 / profiler_frames[profiler_frame_index - 1].total);
+    printf_("Last frame (%u): %u FPS\n", profiler_frame_index - 1, 32768 / profiler_frames[profiler_frame_index - 1].total);
     profiler_field_last(total, 0);
     profiler_field_last(  graphics, 1);
     profiler_field_last(    gfx_wait, 2);
@@ -59,7 +58,7 @@ void profiler_print(void) {
     profiler_field_last(    mines, 2);
     profiler_field_last(  input, 1);
     profiler_field_last(frame_wait, 0);
-    dbg_sprintf(dbgout, "Average of last 256 frames: %u FPS\n", 8388608 / profiler_sum.total);
+    printf_("Average of last 256 frames: %u FPS\n", (uint24_t)8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
     profiler_field_average(  graphics, 1);
     profiler_field_average(    gfx_wait, 2);

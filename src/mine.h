@@ -29,7 +29,7 @@
 
 typedef struct {
     bool alive; //Whether this mine is processed
-    physicsBody_t phys;
+    physics_body_t phys;
     uint24_t countdown; //Number of physics loops until explosions occur
 } mine_t;
 

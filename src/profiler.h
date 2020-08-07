@@ -42,7 +42,9 @@ typedef union {
 #define profiler_end(name) current_profiler.name = (uint24_t)timer_2_Counter - current_profiler.name
 
 void profiler_init(void);
+
 void profiler_tick(void);
+
 void profiler_print(void);
 
 extern profiler_set_t current_profiler;

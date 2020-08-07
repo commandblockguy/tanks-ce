@@ -124,18 +124,19 @@ typedef struct {
 #define AIM_INDICATOR_DOT_DISTANCE (2 * TILE_SIZE)
 #define AIM_INDICATOR_RADIUS 2
 
-void initGraphics(void);
+void init_graphics(void);
 
 void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
 
-void renderPhysicsBody(physicsBody_t *phys);
+void render_physics_body(physics_body_t *phys);
 
-void drawLine(lineSeg_t* ls);
+void draw_line(line_seg_t *ls);
 
 void generate_bg_tilemap(void);
 
-bool init_tank_sprites(tankType_t type);
-void free_tank_sprites(tankType_t type);
+bool init_tank_sprites(tank_type_t type);
+
+void free_tank_sprites(tank_type_t type);
 
 extern bool needs_redraw; // set if the entire map should be redrawn
 

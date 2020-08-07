@@ -14,24 +14,30 @@
 #include "level.h"
 #include "tank.h"
 
-void ai_process_move(tank_t* tank);
-void ai_process_fire(tank_t* tank);
+void ai_process_move(tank_t *tank);
 
-void move_random(tank_t* tank);
-void move_away(tank_t* tank);
-void move_toward(tank_t* tank);
+void ai_process_fire(tank_t *tank);
+
+void move_random(tank_t *tank);
+
+void move_away(tank_t *tank);
+
+void move_toward(tank_t *tank);
 
 tile_t get_tile_at_offset(tank_t *tank, angle_t angle_offset, int24_t distance);
-bool raycast(uint24_t startX, uint24_t startY, angle_t angle, lineSeg_t* result);
-bool pointingAtTarget(tank_t* tank, physicsBody_t* target, uint8_t max_bounces, bool future);
-void pointAtPlayer(tank_t *tank, physicsBody_t *target);
 
-void aim_random(tank_t* tank);
+bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result);
 
-void aim_reflect(tank_t* tank);
+bool pointing_at_target(tank_t *tank, physics_body_t *target, uint8_t max_bounces, bool future);
 
-void aim_current(tank_t* tank);
+void point_at_player(tank_t *tank, physics_body_t *target);
 
-void aim_future(tank_t* tank);
+void aim_random(tank_t *tank);
+
+void aim_reflect(tank_t *tank);
+
+void aim_current(tank_t *tank);
+
+void aim_future(tank_t *tank);
 
 #endif /* H_AI */

@@ -8,11 +8,9 @@
 */
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <tice.h>
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,17 +19,12 @@
 #include <keypadc.h>
 #include <compression.h>
 #include <fileioc.h>
-#undef NDEBUG
-#include <debug.h>
 
 #include "collision.h"
 #include "level.h"
 #include "graphics.h"
-#include "gfx/gfx.h"
 #include "util.h"
-#include "ai.h"
 #include "tank.h"
-#include "shell.h"
 #include "globals.h"
 #include "profiler.h"
 #include "gui.h"
@@ -46,297 +39,290 @@
 
 // Game status
 enum {
-    IN_PROGRESS,
-    QUIT,
-    NEXT_LEVEL,
-    WIN,
-    LOSE
+    IN_PROGRESS, QUIT, NEXT_LEVEL, WIN, LOSE
 };
 
-bool startMission(bool initial); //Start a mission and reset various tank things.
+bool start_mission(bool initial); //Start a mission and reset various tank things.
 
-void handleInput(void); //Handles inputs from the keypad
+void handle_input(void); //Handles inputs from the keypad
 
 void main(void) {
-	int i;
-	level_pack_t lvl_pack;
-	ti_var_t appVar;
+    level_pack_t lvl_pack;
+    ti_var_t appVar;
 
-	dbg_sprintf(dbgout, "\n\n[TANKS] Program started.\n");
+    printf_("\n\n[TANKS] Program started.\n");
 
-	ti_CloseAll();
-	
-	createLevels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
+    ti_CloseAll();
 
-	initGraphics();
+    create_levels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
 
-	timer_Control = 0;
+    init_graphics();
 
-	profiler_init();
+    timer_Control = 0;
 
-	gen_lookups();
+    profiler_init();
 
-	game.lives = 3;
-	game.total_kills = 0;
-	memset(game.kills, 0, sizeof(game.kills));
+    gen_lookups();
 
-	displayScores();
+    game.lives = 3;
+    game.total_kills = 0;
+    memset(game.kills, 0, sizeof(game.kills));
 
-	appVar = ti_Open("TANKSLPK", "r");
-	if(!appVar) goto exit;
-	ti_Read(&lvl_pack, sizeof(level_pack_t), 1, appVar);
-	dbg_sprintf(dbgout, "Found %u levels.\n", lvl_pack.num_levels);
+    display_scores();
 
-	game.status = NEXT_LEVEL;
+    appVar = ti_Open("TANKSLPK", "r");
+    if(!appVar) goto exit;
+    ti_Read(&lvl_pack, sizeof(level_pack_t), 1, appVar);
+    printf_("Found %u levels.\n", lvl_pack.num_levels);
 
-	for(game.mission = 0; game.mission < lvl_pack.num_levels && game.status == NEXT_LEVEL; game.mission++) {
-		//Level loop
-		uint8_t* comp_tiles; //Compressed tile data
-		serialized_tank_t* ser_tanks;
+    game.status = NEXT_LEVEL;
 
-		dbg_sprintf(dbgout, "Loading level %u.\n", game.mission);
-		
-		//Read level from appvar
-		ti_Read(&game.level, sizeof(level_t), 1, appVar);
-		comp_tiles = malloc(game.level.compressed_tile_size);
-		ti_Read(comp_tiles, sizeof(uint8_t), game.level.compressed_tile_size, appVar); //Load tiles
-		ser_tanks = malloc(game.level.num_tanks * sizeof(serialized_tank_t));
-		tanks = malloc(game.level.num_tanks * sizeof(tank_t));
-		ti_Read(ser_tanks, sizeof(serialized_tank_t), game.level.num_tanks, appVar);
-		for(i = 0; i < game.level.num_tanks; i++) {
-			deserializeTank(&tanks[i], &ser_tanks[i]);
-		}
-		//todo: check if null
+    for(game.mission = 0; game.mission < lvl_pack.num_levels && game.status == NEXT_LEVEL; game.mission++) {
+        //Level loop
+        uint8_t *comp_tiles; //Compressed tile data
+        serialized_tank_t *ser_tanks;
 
-		//Decompress tile data
-		zx7_Decompress(tiles, comp_tiles);
-		
-		//Display the mission start screen
-		if(!startMission(true)) {
-		    // todo: display an error to the user
-            dbg_sprintf(dbgout, "error occurred on mission start\n");
-		    return;
-		}
+        printf_("Loading level %u.\n", game.mission);
+
+        //Read level from appvar
+        ti_Read(&game.level, sizeof(level_t), 1, appVar);
+        comp_tiles = malloc(game.level.compressed_tile_size);
+        ti_Read(comp_tiles, sizeof(uint8_t), game.level.compressed_tile_size, appVar); //Load tiles
+        ser_tanks = malloc(game.level.num_tanks * sizeof(serialized_tank_t));
+        tanks = malloc(game.level.num_tanks * sizeof(tank_t));
+        ti_Read(ser_tanks, sizeof(serialized_tank_t), game.level.num_tanks, appVar);
+        for(uint8_t i = 0; i < game.level.num_tanks; i++) {
+            deserialize_tank(&tanks[i], &ser_tanks[i]);
+        }
+        //todo: check if null
+
+        //Decompress tile data
+        zx7_Decompress(tiles, comp_tiles);
+
+        //Display the mission start screen
+        if(!start_mission(true)) {
+            // todo: display an error to the user
+            printf_("error occurred on mission start\n");
+            return;
+        }
 
         needs_redraw = true;
 
-		game.status = IN_PROGRESS;
-		//Game loop
-		while(game.status == IN_PROGRESS) {
-		    profiler_start(total);
-			int alive_tanks = 0;
-			if(!tanks[0].alive) {
+        game.status = IN_PROGRESS;
+        //Game loop
+        while(game.status == IN_PROGRESS) {
+            profiler_start(total);
+            int alive_tanks = 0;
+            if(!tanks[0].alive) {
                 game.lives--;
-				if(!game.lives) {
-					game.status = LOSE;
-					break;
-				}
-                if(!startMission(false)) {
+                if(!game.lives) {
+                    game.status = LOSE;
+                    break;
+                }
+                if(!start_mission(false)) {
                     // todo: display an error to the user
-                    dbg_sprintf(dbgout, "error occurred on mission start\n");
+                    printf_("error occurred on mission start\n");
                     return;
                 }
-				needs_redraw = true;
-			}
+                needs_redraw = true;
+            }
 
-			if(game.shotCooldown) {
-				game.shotCooldown--;
-			}
-			if(game.mineCooldown) {
-				game.mineCooldown--;
-			}
+            if(game.shotCooldown) {
+                game.shotCooldown--;
+            }
+            if(game.mineCooldown) {
+                game.mineCooldown--;
+            }
 
-			//handle player input
-			handleInput();
-			//process physics
+            //handle player input
+            handle_input();
+            //process physics
 
-			profiler_start(physics);
-			for(i = 0; i < game.level.num_tanks; i++) {
-				processTank(&tanks[i]);
-				if(i && tanks[i].alive) {
-					alive_tanks++;
-				}
-			}
-			if(!alive_tanks) {
-				game.status = NEXT_LEVEL;
-			}
-			profiler_end(physics);
+            profiler_start(physics);
+            for(uint8_t i = 0; i < game.level.num_tanks; i++) {
+                process_tank(&tanks[i]);
+                if(i && tanks[i].alive) {
+                    alive_tanks++;
+                }
+            }
+            if(!alive_tanks) {
+                game.status = NEXT_LEVEL;
+            }
+            profiler_end(physics);
 
             render(&game.level);
 
-			profiler_end(total);
-			profiler_start(frame_wait);
-			limit_framerate();
+            profiler_end(total);
+            profiler_start(frame_wait);
+            limit_framerate();
             profiler_end(frame_wait);
-			profiler_tick();
-		}
+            profiler_tick();
+        }
 
-		if(game.mission % 5 == 4 && game.mission != lvl_pack.num_levels - 1) {
-			//TODO: display lives++ screen
-			game.lives++;
-		}
+        if(game.mission % 5 == 4 && game.mission != lvl_pack.num_levels - 1) {
+            //TODO: display lives++ screen
+            game.lives++;
+        }
 
-		for(i = 0; i < game.level.num_tanks; i++) {
-			free(tanks[i].ai_move);
-			free(tanks[i].ai_fire);
-		}
+        for(uint8_t i = 0; i < game.level.num_tanks; i++) {
+            free(tanks[i].ai_move);
+            free(tanks[i].ai_fire);
+        }
 
-		free(ser_tanks); //Free memory so that we don't have issues
-		free(tanks);    //(hopefully this does not cause issues)
-		free(comp_tiles); 
-		
-	}
+        free(ser_tanks); //Free memory so that we don't have issues
+        free(tanks);    //(hopefully this does not cause issues)
+        free(comp_tiles);
 
-	if(game.status == LOSE) {
-        displayKillCounts();
-		displayScores();
-	}
+    }
+
+    if(game.status == LOSE) {
+        display_kill_counts();
+        display_scores();
+    }
 
     exit:
 
-	gfx_End();
+    gfx_End();
 
-	ti_CloseAll();
+    ti_CloseAll();
 }
 
-bool startMission(bool initial) {
-	int remaining_tanks = -1; //Don't count the player tank
-	bool tank_type_used[NUM_TANK_TYPES] = {false};
-	tanks[0].alive = true;
-	//Initialize tanks
-	for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-		tank_t* tank = &tanks[i];
-		int j;
-		if(initial) tank->alive = true;
-		if(tank->alive) {
-		    remaining_tanks++;
-            tank->phys.position_x = tileToXPt(tank->start_x);
-            tank->phys.position_y = tileToYPt(tank->start_y);
+bool start_mission(bool initial) {
+    int remaining_tanks = -1; //Don't count the player tank
+    bool tank_type_used[NUM_TANK_TYPES] = {false};
+    tanks[0].alive = true;
+    //Initialize tanks
+    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
+        tank_t *tank = &tanks[i];
+        int j;
+        if(initial) tank->alive = true;
+        if(tank->alive) {
+            remaining_tanks++;
+            tank->phys.position_x = TILE_TO_X_COORD(tank->start_x);
+            tank->phys.position_y = TILE_TO_Y_COORD(tank->start_y);
             tank->barrel_rot = 0;
             tank->tread_rot = DEGREES_TO_ANGLE(270);
             tank_type_used[tank->type] = true;
-		}
-		for(j = max_shells[tank->type] - 1; j >= 0; j--) {
-			tank->shells[j].alive = false;
-		}
-		for(j = max_mines[tank->type] - 1; j >= 0; j--) {
-			tank->mines[j].countdown = 0;
-			tank->mines[j].alive = false;
-		}
-	}
-	for(uint8_t x = 0; x < LEVEL_SIZE_X; x++) {
-	    for(uint8_t y = 0; y < LEVEL_SIZE_Y; y++) {
+        }
+        for(j = max_shells[tank->type] - 1; j >= 0; j--) {
+            tank->shells[j].alive = false;
+        }
+        for(j = max_mines[tank->type] - 1; j >= 0; j--) {
+            tank->mines[j].countdown = 0;
+            tank->mines[j].alive = false;
+        }
+    }
+    for(uint8_t x = 0; x < LEVEL_SIZE_X; x++) {
+        for(uint8_t y = 0; y < LEVEL_SIZE_Y; y++) {
             if(tiles[y][x] == DESTROYED)
                 tiles[y][x] = DESTRUCTIBLE;
         }
-	}
+    }
 
-    missionStartScreen(game.mission, game.lives, remaining_tanks);
-	for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
-	    if(tank_type_used[type]) {
-	        if(!init_tank_sprites(type)) {
-	            dbg_sprintf(dbgerr, "Ran out of memory when allocating tank sprites\n");
-	            return false;
-	        }
-	    } else {
-	        free_tank_sprites(type);
-	    }
-	}
+    draw_mission_start_screen(game.mission, game.lives, remaining_tanks);
+    for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
+        if(tank_type_used[type]) {
+            if(!init_tank_sprites(type)) {
+                dbg_sprintf((char*)dbgerr, "Ran out of memory when allocating tank sprites\n");
+                return false;
+            }
+        } else {
+            free_tank_sprites(type);
+        }
+    }
     wait_ms_or_keypress(MISSION_START_TIME);
     init_timer();
     return true;
 }
 
-void handleInput() {
+void handle_input() {
     profiler_start(input);
 	tank_t* player = &tanks[0];
 	bool moving = true;
 	angle_t target_rot = 0;
 	uint8_t keys = 0;
 
-	kb_Scan();
+    kb_Scan();
 
-	if(kb_IsDown(kb_KeyDown))  keys |= DOWN;
-	if(kb_IsDown(kb_KeyLeft))  keys |= LEFT;
-	if(kb_IsDown(kb_KeyRight)) keys |= RIGHT;
-	if(kb_IsDown(kb_KeyUp))    keys |= UP;
+    if(kb_IsDown(kb_KeyDown)) keys |= DOWN;
+    if(kb_IsDown(kb_KeyLeft)) keys |= LEFT;
+    if(kb_IsDown(kb_KeyRight)) keys |= RIGHT;
+    if(kb_IsDown(kb_KeyUp)) keys |= UP;
 
-	switch(keys) {
-		default:
-			moving = false;
-			break;
-		case UP:
-			target_rot = DEGREES_TO_ANGLE(270);
-			break;
-		case DOWN:
-			target_rot = DEGREES_TO_ANGLE(90);
-			break;
-		case LEFT:
-			target_rot = DEGREES_TO_ANGLE(180);
-			break;
-		case RIGHT:
-			target_rot = DEGREES_TO_ANGLE(0);
-			break;
-		case UP|RIGHT:
-			target_rot = DEGREES_TO_ANGLE(315);
-			break;
-		case DOWN|RIGHT:
-			target_rot = DEGREES_TO_ANGLE(45);
-			break;
-		case UP|LEFT:
-			target_rot = DEGREES_TO_ANGLE(225);
-			break;
-		case DOWN|LEFT:
-			target_rot = DEGREES_TO_ANGLE(135);
-	}
+    switch(keys) {
+        default:
+            moving = false;
+            break;
+        case UP:
+            target_rot = DEGREES_TO_ANGLE(270);
+            break;
+        case DOWN:
+            target_rot = DEGREES_TO_ANGLE(90);
+            break;
+        case LEFT:
+            target_rot = DEGREES_TO_ANGLE(180);
+            break;
+        case RIGHT:
+            target_rot = DEGREES_TO_ANGLE(0);
+            break;
+        case UP | RIGHT:
+            target_rot = DEGREES_TO_ANGLE(315);
+            break;
+        case DOWN | RIGHT:
+            target_rot = DEGREES_TO_ANGLE(45);
+            break;
+        case UP | LEFT:
+            target_rot = DEGREES_TO_ANGLE(225);
+            break;
+        case DOWN | LEFT:
+            target_rot = DEGREES_TO_ANGLE(135);
+    }
 
-	if(moving) {
-		int24_t diff = player->tread_rot - target_rot;
-		if(abs(diff) > DEGREES_TO_ANGLE(90)) {
-			player->tread_rot += DEGREES_TO_ANGLE(180);
-			diff = (int24_t)(player->tread_rot - target_rot);
-		}
-		if(diff < -(int24_t)PLAYER_TREAD_ROTATION) {
-			player->tread_rot += PLAYER_TREAD_ROTATION;
-		} else if(diff > (int24_t)PLAYER_TREAD_ROTATION) {
-			player->tread_rot -= PLAYER_TREAD_ROTATION;
-		} else {
-			player->tread_rot = target_rot;
-		}
-
-		if(abs(diff) <= DEGREES_TO_ANGLE(45)) {
-			setVelocity(player, TANK_SPEED_NORMAL);
-		} else {
-            setVelocity(player, 0);
+    if(moving) {
+        int24_t diff = player->tread_rot - target_rot;
+        if(abs(diff) > DEGREES_TO_ANGLE(90)) {
+            player->tread_rot += DEGREES_TO_ANGLE(180);
+            diff = (int24_t) (player->tread_rot - target_rot);
         }
-	} else {
-	    setVelocity(player, 0);
-	}
+        if(diff < -(int24_t) PLAYER_TREAD_ROTATION) {
+            player->tread_rot += PLAYER_TREAD_ROTATION;
+        } else if(diff > (int24_t) PLAYER_TREAD_ROTATION) {
+            player->tread_rot -= PLAYER_TREAD_ROTATION;
+        } else {
+            player->tread_rot = target_rot;
+        }
 
-	if(kb_IsDown(kb_Key2nd) && !game.shotCooldown) {
-        fireShell(player);
-		game.shotCooldown = SHOT_COOLDOWN;
-	}
-	if(kb_IsDown(kb_KeyAlpha) && !game.mineCooldown) {
-        layMine(player);
-		game.mineCooldown = MINE_COOLDOWN;
-	}
-	if(kb_IsDown(kb_KeyMode)) {
-		player->barrel_rot -= PLAYER_BARREL_ROTATION;
-	}
-	if(kb_IsDown(kb_KeyGraphVar)) {
-		player->barrel_rot += PLAYER_BARREL_ROTATION;
-	}
-	if(kb_IsDown(kb_KeyDel)) { // TODO: remove
-		game.status = NEXT_LEVEL;
-	}
-	if(kb_IsDown(kb_KeyClear)) {
-		game.status = QUIT;
-	}
-	if(kb_IsDown(kb_KeyYequ)) {
-	    profiler_print();
-	}
-	profiler_end(input);
+        if(abs(diff) <= DEGREES_TO_ANGLE(45)) {
+            set_velocity(player, TANK_SPEED_NORMAL);
+        } else {
+            set_velocity(player, 0);
+        }
+    } else {
+        set_velocity(player, 0);
+    }
+
+    if(kb_IsDown(kb_Key2nd) && !game.shotCooldown) {
+        fire_shell(player);
+        game.shotCooldown = SHOT_COOLDOWN;
+    }
+    if(kb_IsDown(kb_KeyAlpha) && !game.mineCooldown) {
+        lay_mine(player);
+        game.mineCooldown = MINE_COOLDOWN;
+    }
+    if(kb_IsDown(kb_KeyMode)) {
+        player->barrel_rot -= PLAYER_BARREL_ROTATION;
+    }
+    if(kb_IsDown(kb_KeyGraphVar)) {
+        player->barrel_rot += PLAYER_BARREL_ROTATION;
+    }
+    if(kb_IsDown(kb_KeyDel)) { // TODO: remove
+        game.status = NEXT_LEVEL;
+    }
+    if(kb_IsDown(kb_KeyClear)) {
+        game.status = QUIT;
+    }
+    if(kb_IsDown(kb_KeyYequ)) {
+        profiler_print();
+    }
+    profiler_end(input);
 }
-
-//TODO: crosshair / direction indicator

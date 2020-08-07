@@ -2,20 +2,18 @@
 #include <stdint.h>
 #include <tice.h>
 #include <keypadc.h>
-#undef NDEBUG
-#include <debug.h>
 
 
 #include "gui.h"
 #include "graphics.h"
 #include "globals.h"
 
-void displayScores(void) {
+void display_scores(void) {
 
 }
 
 // todo: improve
-void displayKillCounts(void) {
+void display_kill_counts(void) {
     uint8_t i;
     const uint24_t bg_width = 120;
     const uint24_t base_x = (LCD_WIDTH - bg_width) / 2;
@@ -23,7 +21,7 @@ void displayKillCounts(void) {
     const uint8_t bands_base_y = 17;
     const uint8_t band_height = 3;
     const uint8_t num_bands = 4;
-    const uint8_t bands_total_height = num_bands * 2*band_height - band_height;
+    const uint8_t bands_total_height = num_bands * 2 * band_height - band_height;
 
     const uint8_t text_base_y = bands_base_y + bands_total_height + 20;
     const uint8_t line_spacing = 18;
@@ -41,13 +39,11 @@ void displayKillCounts(void) {
     const char results[] = "Results";
 
     gfx_SetColor(COL_BG);
-    gfx_FillRectangle(base_x, 0,
-                      bg_width, LCD_HEIGHT);
+    gfx_FillRectangle(base_x, 0, bg_width, LCD_HEIGHT);
 
     gfx_SetColor(COL_OLIVE_BANDS);
     for(i = 0; i < num_bands; i++)
-        gfx_FillRectangle(base_x, bands_base_y + i * 2 * band_height,
-                          bg_width, band_height);
+        gfx_FillRectangle(base_x, bands_base_y + i * 2 * band_height, bg_width, band_height);
 
     gfx_FillRectangle(base_x, bottom_band_y, bg_width, band_height);
 
@@ -57,7 +53,7 @@ void displayKillCounts(void) {
     gfx_FillCircle(final_box_x + final_box_width, final_box_y + final_box_height / 2, final_box_height / 2);
 
     gfx_SetTextFGColor(COL_BLACK);
-    gfx_SetTextScale(2,2);
+    gfx_SetTextScale(2, 2);
     gfx_PrintStringXY(results, (LCD_WIDTH - gfx_GetStringWidth(results)) / 2, bands_base_y + band_height);
 
 
@@ -68,12 +64,10 @@ void displayKillCounts(void) {
 
         /* TODO: tank sprite */
         if(num_kills >= 10) {
-            gfx_SetTextXY(text_center_point - char_width,
-                          text_base_y + line_spacing * i);
+            gfx_SetTextXY(text_center_point - char_width, text_base_y + line_spacing * i);
             gfx_PrintUInt(num_kills, 2);
         } else {
-            gfx_SetTextXY(text_center_point - char_width / 2,
-                          text_base_y + line_spacing * i);
+            gfx_SetTextXY(text_center_point - char_width / 2, text_base_y + line_spacing * i);
             gfx_PrintUInt(num_kills, 1);
         }
         gfx_BlitBuffer();
@@ -113,7 +107,7 @@ void displayKillCounts(void) {
 //50 (17) (16) pixels between text and bottom band
 //Text shadow (134,36,37) has 8px (3px) offset
 //# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
-void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
+void draw_mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
     int x, y;
     gfx_FillScreen(COL_BG);
 
@@ -189,8 +183,8 @@ void missionStartScreen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 #define KILL_COUNTER_Y (SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE))
 #define KILL_COUNTER_INNER_Y (KILL_COUNTER_Y + KILL_COUNTER_RADIUS - KILL_COUNTER_INNER_RADIUS)
 
-void updateKillCounterCurrBuf(uint8_t kills) {
-    uint8_t digits = 1 + (kills > 9 ) + (kills > 99);
+void update_game_kill_counter_current_buffer(uint8_t kills) {
+    uint8_t digits = 1 + (kills > 9) + (kills > 99);
     uint8_t width = gfx_GetCharWidth('1') * digits;
     uint8_t x = KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - width;
     gfx_SetColor(COL_WHITE);
@@ -200,28 +194,31 @@ void updateKillCounterCurrBuf(uint8_t kills) {
     gfx_PrintUInt(kills, digits);
 }
 
-void updateGameKillCounter(uint8_t kills, bool force) {
+void update_game_kill_counter(uint8_t kills, bool force) {
     static uint8_t last = -1;
     if(!force && last == kills) return;
     last = kills;
     gfx_SetDrawScreen();
-    updateKillCounterCurrBuf(kills);
+    update_game_kill_counter_current_buffer(kills);
     gfx_SetDrawBuffer();
-    updateKillCounterCurrBuf(kills);
+    update_game_kill_counter_current_buffer(kills);
 }
 
-void displayGameKillCounter(void) {
+void display_game_kill_counter(void) {
     gfx_SetColor(COL_LIVES_TXT); // todo: add a bluer color
-    gfx_FillCircle_NoClip(KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_Y + KILL_COUNTER_RADIUS, KILL_COUNTER_RADIUS);
+    gfx_FillCircle_NoClip(KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_Y + KILL_COUNTER_RADIUS,
+                          KILL_COUNTER_RADIUS);
     gfx_FillRectangle_NoClip(0, KILL_COUNTER_Y, KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_HEIGHT);
 
     gfx_SetColor(COL_WHITE);
-    gfx_FillCircle_NoClip(KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1, KILL_COUNTER_INNER_Y + KILL_COUNTER_INNER_RADIUS, KILL_COUNTER_INNER_RADIUS);
-    gfx_FillRectangle_NoClip(0, KILL_COUNTER_INNER_Y, KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1, KILL_COUNTER_INNER_HEIGHT);
+    gfx_FillCircle_NoClip(KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1,
+                          KILL_COUNTER_INNER_Y + KILL_COUNTER_INNER_RADIUS, KILL_COUNTER_INNER_RADIUS);
+    gfx_FillRectangle_NoClip(0, KILL_COUNTER_INNER_Y, KILL_COUNTER_INNER_END_X - KILL_COUNTER_INNER_RADIUS - 1,
+                             KILL_COUNTER_INNER_HEIGHT);
 }
 
 // todo: apparently this shows the number of alive tanks, not the number of lives
-void displayGameBanner(uint8_t mission, uint8_t lives) {
+void display_game_banner(uint8_t mission, uint8_t lives) {
     // todo: check if the compiler optimizes these properly
     const uint8_t banner_width = SCREEN_DELTA_X(10.5 * TILE_SIZE);
     const uint8_t banner_height = 14;
@@ -239,8 +236,10 @@ void displayGameBanner(uint8_t mission, uint8_t lives) {
 
     gfx_SetColor(COL_RHOM_2);
     for(uint24_t x = base_x; x < base_x + banner_width; x += rhomb_width) {
-        gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1, x + rhomb_width / 2, base_y);
-        gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1, x + rhomb_width / 2, base_y + banner_height - 1);
+        gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1,
+                                x + rhomb_width / 2, base_y);
+        gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1,
+                                x + rhomb_width / 2, base_y + banner_height - 1);
     }
 
     gfx_SetTextXY(text_x + 1, text_y + 1);

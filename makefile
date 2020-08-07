@@ -1,3 +1,4 @@
+# todo: seems to be calculating the list of C files prior to running convimg
 
 NAME        ?= TANKS
 COMPRESSED  ?= YES

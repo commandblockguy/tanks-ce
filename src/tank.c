@@ -7,14 +7,12 @@
 #include "shell.h"
 #include "tank.h"
 
-const uint8_t max_shells[]  = 	{5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
-const uint8_t max_mines[]   = 	{2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
-const uint8_t max_bounces[] = 	{1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
+const uint8_t max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
+const uint8_t max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
+const uint8_t max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
 
 //Process tank physics
-void processTank(tank_t* tank) {
-    int i;
-
+void process_tank(tank_t *tank) {
     if(tank->alive) {
         profiler_add(ai);
         ai_process_move(tank);
@@ -25,35 +23,34 @@ void processTank(tank_t* tank) {
         tank->phys.position_y += tank->phys.velocity_y;
 
         profiler_add(tank_collision);
-        processReflection(&tank->phys, true);
+        process_reflection(&tank->phys, true);
 
-        for(i = game.level.num_tanks - 1; i >= 0; i--) {
+        for(int8_t i = game.level.num_tanks - 1; i >= 0; i--) {
             if(tanks[i].alive)
-                collideAndPush(&tank->phys, &tanks[i].phys);
+                collide_and_push(&tank->phys, &tanks[i].phys);
         }
         profiler_end(tank_collision);
     }
 
     //Loop through all shells
     profiler_add(shells);
-    for(i = max_shells[tank->type] - 1; i >= 0; i--) {
-        processShell(&tank->shells[i], tank);
+    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
+        process_shell(&tank->shells[i], tank);
     }
     profiler_end(shells);
     //Loop through mines
     profiler_add(mines);
     if(max_mines[tank->type]) {
-        for(i = max_mines[tank->type] - 1; i >= 0; i--) {
-            processMine(&tank->mines[i], tank);
+        for(int8_t i = max_mines[tank->type] - 1; i >= 0; i--) {
+            process_mine(&tank->mines[i], tank);
         }
     }
     profiler_end(mines);
 }
 
-bool fireShell(tank_t* tank) {
-    int i;
-    for(i = max_shells[tank->type] - 1; i >= 0; i--) {
-        shell_t* shell = &tank->shells[i];
+bool fire_shell(tank_t *tank) {
+    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
+        shell_t *shell = &tank->shells[i];
         int24_t vector_x, vector_y;
 
         if(shell->alive) continue;
@@ -65,13 +62,10 @@ bool fireShell(tank_t* tank) {
         vector_x = fast_cos(tank->barrel_rot);
         vector_y = fast_sin(tank->barrel_rot);
 
-        shell->phys.position_x =
-                centerX(&tank->phys) + BARREL_LENGTH * vector_x / TRIG_SCALE;
-        shell->phys.position_y =
-                centerY(&tank->phys) + BARREL_LENGTH * vector_y / TRIG_SCALE;
+        shell->phys.position_x = center_x(&tank->phys) + BARREL_LENGTH * vector_x / TRIG_SCALE;
+        shell->phys.position_y = center_y(&tank->phys) + BARREL_LENGTH * vector_y / TRIG_SCALE;
 
         shell->phys.width = shell->phys.height = SHELL_SIZE;
-        shell->phys.type = ShellPhysics;
         if(tank->type == MISSILE || tank->type == IMMOB_MISSILE) {
             shell->phys.velocity_x = SHELL_SPEED_MISSILE * vector_x / TRIG_SCALE;
             shell->phys.velocity_y = SHELL_SPEED_MISSILE * vector_y / TRIG_SCALE;
@@ -79,15 +73,14 @@ bool fireShell(tank_t* tank) {
             shell->phys.velocity_x = SHELL_SPEED_STANDARD * vector_x / TRIG_SCALE;
             shell->phys.velocity_y = SHELL_SPEED_STANDARD * vector_y / TRIG_SCALE;
         }
-        shell->direction = angleToShellDirection(tank->barrel_rot);
+        shell->direction = angle_to_shell_direction(tank->barrel_rot);
         return true;
     }
     return false;
 }
 
-bool canShoot(tank_t* tank) {
-    int i;
-    for(i = max_shells[tank->type] - 1; i >= 0; i--) {
+bool can_shoot(tank_t *tank) {
+    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
         if(!tank->shells[i].alive) {
             return true;
         }
@@ -95,11 +88,10 @@ bool canShoot(tank_t* tank) {
     return false;
 }
 
-bool layMine(tank_t* tank) {
-    int i;
+bool lay_mine(tank_t *tank) {
     if(!max_mines[tank->type]) return false;
-    for(i = max_mines[tank->type] - 1; i >= 0; i--) {
-        mine_t* mine = &tank->mines[i];
+    for(int8_t i = max_mines[tank->type] - 1; i >= 0; i--) {
+        mine_t *mine = &tank->mines[i];
         if(mine->alive) continue;
         mine->alive = true;
         mine->countdown = MINE_COUNTDOWN;
@@ -111,12 +103,12 @@ bool layMine(tank_t* tank) {
     return false;
 }
 
-void setVelocity(tank_t* tank, int24_t velocity) {
+void set_velocity(tank_t *tank, int24_t velocity) {
     if(velocity == 0) {
         tank->phys.velocity_x = 0;
         tank->phys.velocity_y = 0;
     } else {
-        tank->phys.velocity_x = (int24_t)velocity * fast_cos(tank->tread_rot) / TRIG_SCALE;
-        tank->phys.velocity_y = (int24_t)velocity * fast_sin(tank->tread_rot) / TRIG_SCALE;
+        tank->phys.velocity_x = (int24_t) velocity * fast_cos(tank->tread_rot) / TRIG_SCALE;
+        tank->phys.velocity_y = (int24_t) velocity * fast_sin(tank->tread_rot) / TRIG_SCALE;
     }
 }
