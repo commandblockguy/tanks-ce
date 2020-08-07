@@ -28,8 +28,7 @@ bool center_distance_less_than(physics_body_t *p1, physics_body_t *p2, uint24_t 
     delta_x = (center_x(p1) - center_x(p2)) >> 8;
     delta_y = (center_y(p1) - center_y(p2)) >> 8;
 
-    // todo: why is this using a floating point function
-    return sqrt(delta_x * delta_x + delta_y * delta_y) < dis >> 8;
+    return delta_x * delta_x + delta_y * delta_y < (dis >> 8) * (dis >> 8);
 }
 
 //Check if a point is colliding with a tile

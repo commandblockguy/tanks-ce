@@ -10,6 +10,8 @@
 const uint8_t max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
 const uint8_t max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
+const uint8_t tank_velocities[] = {TANK_SPEED_NORMAL, 0, TANK_SPEED_SLOW, TANK_SPEED_SLOW,TANK_SPEED_HIGH,
+                                   TANK_SPEED_NORMAL, 0, TANK_SPEED_HIGH, TANK_SPEED_NORMAL, TANK_SPEED_BLACK};
 
 //Process tank physics
 void process_tank(tank_t *tank) {

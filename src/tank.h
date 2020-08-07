@@ -18,9 +18,10 @@ typedef uint8_t tank_type_t;
 #define BARREL_LENGTH (TANK_SIZE * 5 / 14)
 
 //148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
-#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) //TODO
+#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) // todo
 #define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_FPS)
-#define TANK_SPEED_BLACK 5 //TODO
+#define TANK_SPEED_HIGH (4 * TILE_SIZE / TARGET_FPS) // todo
+#define TANK_SPEED_BLACK (5 * TILE_SIZE / TARGET_FPS) // todo
 
 enum {
     PLAYER = 0, //blue
@@ -79,5 +80,6 @@ extern const uint8_t max_shells[];
 extern const uint8_t max_bounces[];
 //Number of mines each type of tank can have on-screen at any one time
 extern const uint8_t max_mines[];
+extern const uint8_t tank_velocities[];
 
 #endif //TANKS_TANK_H

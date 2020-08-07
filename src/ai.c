@@ -81,16 +81,16 @@ void move_random(tank_t *tank) {
     }
     tank->tread_rot += randInt(0, DEGREES_TO_ANGLE(6)) - DEGREES_TO_ANGLE(3);
     // todo: fast/slow tanks
-    set_velocity(tank, TANK_SPEED_NORMAL);
+    set_velocity(tank, tank_velocities[tank->type]);
     profiler_end(ai_move_random);
 }
 
 void move_away(tank_t *tank) {
-
+    move_random(tank); // todo: fix
 }
 
 void move_toward(tank_t *tank) {
-
+    move_random(tank); // todo: fix
 }
 
 //Spin randomly rotation speed:
