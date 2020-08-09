@@ -5,6 +5,7 @@ typedef uint8_t tank_type_t;
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "ai_state.h"
 #include "collision.h"
 #include "graphics.h"
 #include "level.h"
@@ -46,8 +47,8 @@ typedef struct {
     angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
     shell_t shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
     mine_t mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
-    union ai_move *ai_move;
-    union ai_fire *ai_fire;
+    ai_move_state_t ai_move;
+    ai_fire_state_t ai_fire;
 } tank_t;
 
 typedef struct {

@@ -7,7 +7,6 @@
 #include "util.h"
 #include "graphics.h"
 #include "ai.h"
-#include "ai_data.h"
 #include "tank.h"
 #include "globals.h"
 #include "profiler.h"
@@ -100,8 +99,8 @@ void move_toward(tank_t *tank) {
 //t: 1 s
 //Basically 1 << 16 rot unit per frame.
 void aim_random(tank_t *tank) {
-    if(!randInt(0, TARGET_FPS - 1)) tank->ai_fire->random.clockwise = !tank->ai_fire->random.clockwise;
-    if(tank->ai_fire->random.clockwise) {
+    if(!randInt(0, TARGET_FPS - 1)) tank->ai_fire.random.clockwise = !tank->ai_fire.random.clockwise;
+    if(tank->ai_fire.random.clockwise) {
         tank->barrel_rot += 0x010000;
     } else {
         tank->barrel_rot -= 0x010000;
@@ -115,10 +114,10 @@ void aim_random(tank_t *tank) {
 //todo: add some visualizations as I have absolutely no idea wtf is going on here
 //it worked well in my head, okay?
 void aim_reflect(tank_t *tank) {
-    struct ai_fire_reflect *ai = &tank->ai_fire->reflect;
+    ai_fire_reflect_state_t *ai = &tank->ai_fire.reflect;
     if(!can_shoot(tank)) return;
     //Loop through all X values, then all Y values
-    if(ai->scan_dir == 0) {
+    if(tank->ai_fire.reflect.scan_dir == 0) {
         //Reflect off of x values
         uint8_t x, xT, yT;
         uint24_t rX;

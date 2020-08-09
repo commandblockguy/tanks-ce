@@ -164,11 +164,6 @@ void main(void) {
             game.lives++;
         }
 
-        for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-            free(tanks[i].ai_move);
-            free(tanks[i].ai_fire);
-        }
-
         free(ser_tanks); //Free memory so that we don't have issues
         free(tanks);    //(hopefully this does not cause issues)
         free(comp_tiles);

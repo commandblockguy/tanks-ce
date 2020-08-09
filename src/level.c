@@ -14,7 +14,6 @@
 
 #endif
 
-#include "ai_data.h"
 #include "tank.h"
 
 
@@ -246,48 +245,4 @@ void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank) {
     tank->phys.width = TANK_SIZE;
     tank->barrel_rot = 0;
     tank->tread_rot = 0;
-    //allocate AI
-    // todo: not this
-    switch(tank->type) {
-        default:
-        case (PLAYER):
-            tank->ai_move = NULL;
-            tank->ai_fire = NULL;
-            break;
-        case (IMMOBILE):
-            tank->ai_move = NULL;
-            tank->ai_fire = calloc(sizeof(struct ai_fire_random), 1);
-            break;
-        case (BASIC):
-            tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
-            break;
-        case (MISSILE):
-            tank->ai_move = calloc(sizeof(struct ai_move_away), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_current), 1);
-            break;
-        case (MINE):
-            tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
-            break;
-        case (RED):
-            tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_reflect), 1);
-            break;
-        case (IMMOB_MISSILE):
-            tank->ai_move = NULL;
-            tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
-            break;
-        case (FAST):
-            tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
-            break;
-        case (INVISIBLE):
-            tank->ai_move = calloc(sizeof(struct ai_move_random), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
-            break;
-        case (BLACK):
-            tank->ai_move = calloc(sizeof(struct ai_move_toward), 1);
-            tank->ai_fire = calloc(sizeof(struct ai_fire_future), 1);
-    }
 }
