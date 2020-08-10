@@ -30,10 +30,12 @@ enum {
     BASIC = 2, //grey
     MISSILE = 3, //turquoise
     MINE = 4, //yellow
-    RED = 5, IMMOB_MISSILE = 6, //green
+    RED = 5,
+    IMMOB_MISSILE = 6, //green
     FAST = 7, //purple
     INVISIBLE = 8, //white
-    BLACK = 9, NUM_TANK_TYPES = 10
+    BLACK = 9,
+    NUM_TANK_TYPES = 10
 };
 
 typedef struct {

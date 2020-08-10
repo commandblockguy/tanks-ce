@@ -55,4 +55,6 @@ src/gfx/*.h
 src/gfx/rendered
 src/gfx/trimmed
 src/gfx/offsets
+src/gfx/*.txt
+src/gfx/*.bin
 tank.blend1

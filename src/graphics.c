@@ -18,6 +18,7 @@
 #include "partial_redraw.h"
 #include "dynamic_sprites.h"
 #include "gui.h"
+#include "gfx/enemy_pal.h"
 
 uint8_t tilemap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // For each tilemap tile, the level Y of the block that it's representing
@@ -77,9 +78,9 @@ bool init_tank_sprites(tank_type_t type) {
     tank_turrets[type][14] = (gfx_sprite_t *) &spriteset->turret_14_data;
     tank_turrets[type][15] = (gfx_sprite_t *) &spriteset->turret_15_data;
 
-    uint8_t palette_table[6] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2};
-    for(uint8_t i = 0; i < 3; i++)
-        palette_table[3 + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type;
+    uint8_t palette_table[NUM_NON_DYNAMIC_COLORS + NUM_DYNAMIC_COLORS] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2, COL_ENEMY_TANK_WOOD_3};
+    for(uint8_t i = 0; i < NUM_DYNAMIC_COLORS; i++)
+        palette_table[NUM_NON_DYNAMIC_COLORS + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type + i;
 
     for(uint8_t rot = 0; rot < 9; rot++) {
         repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_table);
@@ -107,6 +108,7 @@ gfx_sprite_t *const enemy_turrets_unconv[9] = {en_turret_0, en_turret_1, en_turr
 void init_graphics(void) {
     gfx_Begin(); //Set up draw bits
     gfx_SetPalette(palette, sizeof_palette, 0);
+    gfx_SetPalette(enemy_pal, sizeof_enemy_pal, 256 - sizeof_enemy_pal / 2);
     gfx_SetDrawBuffer();
     gfx_SetTextFGColor(COL_RIB_SHADOW); // todo: verify
 
@@ -325,9 +327,17 @@ void render_tank(tank_t *tank) {
         uint8_t base_sprite = (((uint8_t) -((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
         uint8_t turret_sprite = ((uint8_t) -((tank->barrel_rot >> 16) - 64)) >> 4;
 
-        render_obscured_object(tank_bases[tank->type], base_x_offsets, base_y_offsets, &tank->phys, base_sprite);
-        render_obscured_object(tank_turrets[tank->type], turret_x_offsets, turret_y_offsets, &tank->phys,
-                               turret_sprite);
+        if(tank->type == PLAYER) {
+            render_obscured_object(tank_bases[tank->type], pl_base_x_offsets, pl_base_y_offsets, &tank->phys,
+                                   base_sprite);
+            render_obscured_object(tank_turrets[tank->type], pl_turret_x_offsets, pl_turret_y_offsets, &tank->phys,
+                                   turret_sprite);
+        } else {
+            render_obscured_object(tank_bases[tank->type], en_base_x_offsets, en_base_y_offsets, &tank->phys,
+                                   base_sprite);
+            render_obscured_object(tank_turrets[tank->type], en_turret_x_offsets, en_turret_y_offsets, &tank->phys,
+                                   turret_sprite);
+        }
     }
 
     //draw shell hitboxes until I can get sprites

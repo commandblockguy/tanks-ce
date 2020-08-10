@@ -91,7 +91,7 @@ gfx_sprite_t * const shell_sprites[16] = {
         (gfx_sprite_t*)shell_15_data,
 };
 
-const uint8_t base_x_offsets[16] = {
+const uint8_t pl_base_x_offsets[16] = {
         pl_base_0_offset_x,
         pl_base_1_offset_x,
         pl_base_2_offset_x,
@@ -110,7 +110,7 @@ const uint8_t base_x_offsets[16] = {
         tank_sprite_total_width - pl_base_1_offset_x - pl_base_1_width,
 };
 
-const uint8_t base_y_offsets[16] = {
+const uint8_t pl_base_y_offsets[16] = {
         pl_base_0_offset_y,
         pl_base_1_offset_y,
         pl_base_2_offset_y,
@@ -129,7 +129,45 @@ const uint8_t base_y_offsets[16] = {
         pl_base_1_offset_y,
 };
 
-const uint8_t turret_x_offsets[16] = {
+const uint8_t en_base_x_offsets[16] = {
+        en_base_0_offset_x,
+        en_base_1_offset_x,
+        en_base_2_offset_x,
+        en_base_3_offset_x,
+        en_base_4_offset_x,
+        en_base_5_offset_x,
+        en_base_6_offset_x,
+        en_base_7_offset_x,
+        en_base_8_offset_x,
+        tank_sprite_total_width - en_base_7_offset_x - en_base_7_width,
+        tank_sprite_total_width - en_base_6_offset_x - en_base_6_width,
+        tank_sprite_total_width - en_base_5_offset_x - en_base_5_width,
+        tank_sprite_total_width - en_base_4_offset_x - en_base_4_width,
+        tank_sprite_total_width - en_base_3_offset_x - en_base_3_width,
+        tank_sprite_total_width - en_base_2_offset_x - en_base_2_width,
+        tank_sprite_total_width - en_base_1_offset_x - en_base_1_width,
+};
+
+const uint8_t en_base_y_offsets[16] = {
+        en_base_0_offset_y,
+        en_base_1_offset_y,
+        en_base_2_offset_y,
+        en_base_3_offset_y,
+        en_base_4_offset_y,
+        en_base_5_offset_y,
+        en_base_6_offset_y,
+        en_base_7_offset_y,
+        en_base_8_offset_y,
+        en_base_7_offset_y,
+        en_base_6_offset_y,
+        en_base_5_offset_y,
+        en_base_4_offset_y,
+        en_base_3_offset_y,
+        en_base_2_offset_y,
+        en_base_1_offset_y,
+};
+
+const uint8_t pl_turret_x_offsets[16] = {
         pl_turret_0_offset_x,
         pl_turret_1_offset_x,
         pl_turret_2_offset_x,
@@ -148,7 +186,7 @@ const uint8_t turret_x_offsets[16] = {
         tank_sprite_total_width - pl_turret_1_offset_x - pl_turret_1_width,
 };
 
-const uint8_t turret_y_offsets[16] = {
+const uint8_t pl_turret_y_offsets[16] = {
         pl_turret_0_offset_y,
         pl_turret_1_offset_y,
         pl_turret_2_offset_y,
@@ -165,6 +203,44 @@ const uint8_t turret_y_offsets[16] = {
         pl_turret_3_offset_y,
         pl_turret_2_offset_y,
         pl_turret_1_offset_y,
+};
+
+const uint8_t en_turret_x_offsets[16] = {
+        en_turret_0_offset_x,
+        en_turret_1_offset_x,
+        en_turret_2_offset_x,
+        en_turret_3_offset_x,
+        en_turret_4_offset_x,
+        en_turret_5_offset_x,
+        en_turret_6_offset_x,
+        en_turret_7_offset_x,
+        en_turret_8_offset_x,
+        tank_sprite_total_width - en_turret_7_offset_x - en_turret_7_width,
+        tank_sprite_total_width - en_turret_6_offset_x - en_turret_6_width,
+        tank_sprite_total_width - en_turret_5_offset_x - en_turret_5_width,
+        tank_sprite_total_width - en_turret_4_offset_x - en_turret_4_width,
+        tank_sprite_total_width - en_turret_3_offset_x - en_turret_3_width,
+        tank_sprite_total_width - en_turret_2_offset_x - en_turret_2_width,
+        tank_sprite_total_width - en_turret_1_offset_x - en_turret_1_width,
+};
+
+const uint8_t en_turret_y_offsets[16] = {
+        en_turret_0_offset_y,
+        en_turret_1_offset_y,
+        en_turret_2_offset_y,
+        en_turret_3_offset_y,
+        en_turret_4_offset_y,
+        en_turret_5_offset_y,
+        en_turret_6_offset_y,
+        en_turret_7_offset_y,
+        en_turret_8_offset_y,
+        en_turret_7_offset_y,
+        en_turret_6_offset_y,
+        en_turret_5_offset_y,
+        en_turret_4_offset_y,
+        en_turret_3_offset_y,
+        en_turret_2_offset_y,
+        en_turret_1_offset_y,
 };
 
 const uint8_t shell_x_offsets[16] = {

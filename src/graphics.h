@@ -29,9 +29,11 @@ enum colors {
     COL_LIVES_TXT = 10,
     COL_OLIVE_BANDS = 11,
     COL_ENEMY_TANK_WOOD_1 = 12,
-    COL_ENEMY_TANK_WOOD_2 = 13
+    COL_ENEMY_TANK_WOOD_2 = 13,
+    COL_ENEMY_TANK_WOOD_3 = 14,
 };
 
+#define NUM_NON_DYNAMIC_COLORS 4
 #define NUM_DYNAMIC_COLORS 5
 
 enum tileset {
@@ -117,8 +119,6 @@ typedef struct {
 
 #define SPRITE_OFFSET_X 20
 #define SPRITE_OFFSET_Y 22
-#define SPRITE_SIZE_X 40
-#define SPRITE_SIZE_Y 30
 
 // todo: get an actual value?
 #define AIM_INDICATOR_DOT_DISTANCE (2 * TILE_SIZE)
