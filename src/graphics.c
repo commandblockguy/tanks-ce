@@ -251,13 +251,6 @@ void redraw_tile(uint8_t x, uint8_t y) {
     gfx_Sprite(tile, screen_x, screen_y);
 }
 
-void full_redraw(void) {
-    gfx_FillScreen(COL_WHITE);
-    gfx_Tilemap(&tilemap_config, 0, 0);
-    display_game_banner(game.mission + 1, game.lives);
-    display_game_kill_counter();
-}
-
 // Convert a screenspace coordinate to a redraw tile
 uint8_t inline screen_to_tm_x(uint24_t screen_x) {
     int24_t dx = screen_x - SCREEN_X(0);
@@ -365,10 +358,10 @@ void render(level_t *level) {
     if(needs_redraw) {
         profiler_start(tilemap);
         generate_bg_tilemap();
-        gfx_SetDrawScreen();
-        full_redraw();
-        gfx_SetDrawBuffer();
-        full_redraw();
+        gfx_Tilemap(&tilemap_config, 0, 0);
+        display_game_banner(game.mission + 1, game.lives);
+        display_game_kill_counter();
+        gfx_BlitBuffer();
         pdraw_FreeAll();
         update_game_kill_counter(game.total_kills, true);
         needs_redraw = false;
