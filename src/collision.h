@@ -52,6 +52,8 @@ bool collide_and_push(physics_body_t *p1, physics_body_t *p2);
 
 bool center_distance_less_than(physics_body_t *p1, physics_body_t *p2, uint24_t dis);
 
+bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result);
+
 bool seg_collides_body(line_seg_t *ls, physics_body_t *phys);
 
 bool seg_collides_seg(line_seg_t *l1, line_seg_t *l2, int24_t *intercept_x, int24_t *intercept_y);

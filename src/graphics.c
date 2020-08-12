@@ -264,19 +264,23 @@ uint8_t inline screen_to_tm_y(uint24_t screen_y) {
 // todo: use sprites instead?
 void draw_aim_dots(void) {
     profiler_start(aim_indicator);
+    const uint8_t num_dots = 8;
+    line_seg_t line;
     angle_t angle = tanks[0].barrel_rot;
-    int8_t dx = SCREEN_DELTA_X(AIM_INDICATOR_DOT_DISTANCE * fast_cos(angle) / TRIG_SCALE);
-    int8_t dy = SCREEN_DELTA_Y(AIM_INDICATOR_DOT_DISTANCE * fast_sin(angle) / TRIG_SCALE);
 
-    int24_t x = SCREEN_X(center_x(&tanks[0].phys)) + dx;
-    int24_t y = SCREEN_Y(center_y(&tanks[0].phys)) + dy;
+    raycast(center_x(&tanks[0].phys), center_y(&tanks[0].phys), angle, &line);
 
-    while(x > SCREEN_X(0) && x < SCREEN_X(LEVEL_SIZE_X * TILE_SIZE) && y > SCREEN_Y(0) &&
-          y < SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE)) {
+    int24_t dx = (line.x2 - line.x1) / num_dots;
+    int24_t dy = (line.y2 - line.y1) / num_dots;
+
+    int24_t x = line.x1 + dx;
+    int24_t y = line.y1 + dy;
+
+    for(uint8_t dot = 0; dot < num_dots; dot++) {
         gfx_SetColor(COL_LIVES_TXT);
-        pdraw_RectRegion(x - AIM_INDICATOR_RADIUS, y - AIM_INDICATOR_RADIUS, 2 * AIM_INDICATOR_RADIUS + 1,
-                         2 * AIM_INDICATOR_RADIUS + 1);
-        gfx_FillCircle(x, y, AIM_INDICATOR_RADIUS);
+        pdraw_RectRegion(SCREEN_X(x) - AIM_INDICATOR_RADIUS, SCREEN_Y(y) - AIM_INDICATOR_RADIUS,
+                         2 * AIM_INDICATOR_RADIUS + 1, 2 * AIM_INDICATOR_RADIUS + 1);
+        gfx_FillCircle(SCREEN_X(x), SCREEN_Y(y), AIM_INDICATOR_RADIUS);
         x += dx;
         y += dy;
     }

@@ -26,8 +26,6 @@ void move_toward(tank_t *tank);
 
 tile_t get_tile_at_offset(tank_t *tank, angle_t angle_offset, int24_t distance);
 
-bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result);
-
 bool pointing_at_target(tank_t *tank, physics_body_t *target, uint8_t max_bounces, bool future);
 
 void point_at_player(tank_t *tank, physics_body_t *target);
