@@ -264,7 +264,9 @@ void draw_aim_dots(void) {
     line_seg_t line;
     angle_t angle = tanks[0].barrel_rot;
 
+    profiler_add(raycast);
     raycast(center_x(&tanks[0].phys), center_y(&tanks[0].phys), angle, &line);
+    profiler_end(raycast);
 
     int24_t dx = (line.x2 - line.x1) / num_dots;
     int24_t dy = (line.y2 - line.y1) / num_dots;

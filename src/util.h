@@ -20,8 +20,10 @@ typedef uint24_t angle_t;
 void gen_lookups(void);
 
 int24_t fast_sin(angle_t angle);
-
 #define fast_cos(rot) fast_sin(DEGREES_TO_ANGLE(90) - (rot))
+
+int24_t fast_sec(angle_t angle);
+#define fast_csc(rot) fast_sec(DEGREES_TO_ANGLE(90) - (rot))
 
 #define TRIG_SCALE 256
 #define TRIG_PRECISION_BITS 8

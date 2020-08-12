@@ -8,10 +8,12 @@
 #include "graphics.h"
 
 int24_t sin_table[TRIG_PRECISION / 4];
+int24_t sec_table[TRIG_PRECISION / 4];
 
 void gen_lookups(void) {
     for(uint24_t i = 0; i < TRIG_PRECISION / 4; i++) {
         sin_table[i] = sin(i * M_PI / (TRIG_PRECISION / 2)) * TRIG_SCALE;
+        sec_table[i] = 1.0 / cos(i * M_PI / (TRIG_PRECISION / 2)) * TRIG_SCALE;
     }
 }
 
@@ -23,6 +25,16 @@ int24_t fast_sin(angle_t angle) {
     if(angle < TRIG_PRECISION * 3 / 4) return -sin_table[angle - TRIG_PRECISION / 2];
     if(angle == TRIG_PRECISION * 3 / 4) return -TRIG_SCALE;
     return -sin_table[TRIG_PRECISION - angle];
+}
+
+int24_t fast_sec(angle_t angle) {
+    angle >>= 24 - TRIG_PRECISION_BITS;
+    if(angle < TRIG_PRECISION / 4) return sec_table[angle];
+    if(angle == TRIG_PRECISION / 4) return INT24_MAX;
+    if(angle < TRIG_PRECISION / 2) return -sec_table[TRIG_PRECISION / 2 - angle];
+    if(angle < TRIG_PRECISION * 3 / 4) return -sec_table[angle - TRIG_PRECISION / 2];
+    if(angle == TRIG_PRECISION * 3 / 4) return INT24_MIN;
+    return sec_table[TRIG_PRECISION - angle];
 }
 
 #define Q_FROM_FLOAT(f) ((int24_t)((float)(f) * (float)(1l << 23l)))

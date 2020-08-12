@@ -142,8 +142,8 @@ bool collide_and_push(physics_body_t *p1, physics_body_t *p2) {
 //though I've rewritten a lot of it
 //returns 0 if hits across x axis, non-zero if y axis
 bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result) {
-    int24_t dirX = fast_cos(angle) / 32;
-    int24_t dirY = fast_sin(angle) / 32;
+    int24_t dirX = fast_sec(angle);
+    int24_t dirY = fast_csc(angle);
 
     int8_t dirSignX = dirX >= 0 ? 1 : -1;
     int8_t dirSignY = dirY >= 0 ? 1 : -1;
@@ -152,18 +152,20 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result
     int8_t tileY = COORD_TO_Y_TILE(startY);
     int24_t t = 0;
 
-    int24_t dtX = (int24_t) (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) / dirX;
-    int24_t dtY = (int24_t) (TILE_TO_Y_COORD(tileY + (dirY >= 0)) - startY) / dirY;
+    int24_t dtX = (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) * dirX;
+    int24_t dtY = (TILE_TO_Y_COORD(tileY + (dirY >= 0)) - startY) * dirY;
 
-    int24_t dtXr = dirSignX * TILE_SIZE / dirX;
-    int24_t dtYr = dirSignY * TILE_SIZE / dirY;
+    int24_t dtXr = dirSignX > 0 ? TILE_SIZE * dirX : TILE_SIZE * -dirX;
+    int24_t dtYr = dirSignY > 0 ? TILE_SIZE * dirY : TILE_SIZE * -dirY;
 
-    if(dirX == 0) {
+    //dbg_sprintf(dbgout, "%i,%i %u %i,%i %i,%i %i,%i %i,%i %i,%i\n", startX, startY, angle, dirX, dirY, dirSignX, dirSignY, tileX, tileY, dtX, dtY, dtXr, dtYr);
+
+    if(dirX == INT24_MAX || dirX == INT24_MIN) {
         dtXr = INT24_MAX;
         dtX = INT24_MAX;
     }
 
-    if(dirY == 0) {
+    if(dirY == INT24_MAX || dirY == INT24_MIN) {
         dtYr = INT24_MAX;
         dtY = INT24_MAX;
     }
@@ -194,9 +196,10 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result
     if(result != NULL) {
         result->x1 = startX;
         result->y1 = startY;
-        result->x2 = dirX * t + startX;//curX + dirX * dt;
-        result->y2 = dirY * t + startY;//curY + dirY * dt;
+        result->x2 = t / dirX + startX;
+        result->y2 = t / dirY + startY;
     }
+    //dbg_sprintf(dbgout, "%i %i\n", result->x2, result->y2);
     if(angle == 0 || angle == 128) return 0; //return 0 if angle is horizontal - not sure why
     if(angle == 64 || angle == 192) return 1;
     return dtX != dtXr; //if dtX == dtXr, last movement was X
