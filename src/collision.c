@@ -146,8 +146,8 @@ bool collide_and_push(physics_body_t *p1, physics_body_t *p2) {
 
 //todo: optimize?
 bool seg_collides_seg_(line_seg_t *l1, line_seg_t *l2, int24_t *intercept_x, int24_t *intercept_y) {
-    int24_t p0_x = l1->x1 >> 4, p1_x = l1->x2 >> 4, p2_x = l2->x1 >> 4, p3_x = l2->x2 >> 4;
-    int24_t p0_y = l1->y1 >> 4, p1_y = l1->y2 >> 4, p2_y = l2->y1 >> 4, p3_y = l2->y2 >> 4;
+    int24_t p0_x = l1->x1, p1_x = l1->x2, p2_x = l2->x1, p3_x = l2->x2;
+    int24_t p0_y = l1->y1, p1_y = l1->y2, p2_y = l2->y1, p3_y = l2->y2;
     int24_t s1_x, s1_y, s2_x, s2_y;
     int24_t d, s, t;
     s1_x = p1_x - p0_x;
