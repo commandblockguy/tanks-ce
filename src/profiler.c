@@ -42,6 +42,10 @@ void profiler_print(void) {
     profiler_field_last(    gfx_wait, 2);
     profiler_field_last(    tilemap, 2);
     profiler_field_last(    render_tanks, 2);
+    profiler_field_last(      render_shells, 3);
+    profiler_field_last(      render_mines, 3);
+    profiler_field_last(      render_obscured, 3);
+    profiler_field_last(        redraw_tile, 4);
     profiler_field_last(    aim_indicator, 2);
     profiler_field_last(    swapdraw, 2);
     profiler_field_last(    undraw, 2);
@@ -50,7 +54,9 @@ void profiler_print(void) {
     profiler_field_last(    ai, 2);
     profiler_field_last(      ai_move, 3);
     profiler_field_last(        ai_move_random, 4);
-    profiler_field_last(      ai_fire, 3);
+    profiler_field_last(      ai_aim, 3);
+    profiler_field_last(        ai_aim_random, 4);
+    profiler_field_last(        ai_aim_reflect, 4);
     profiler_field_last(        raycast, 4);
     profiler_field_last(        seg_collision, 4);
     profiler_field_last(    tank_collision, 2);
@@ -64,6 +70,10 @@ void profiler_print(void) {
     profiler_field_average(    gfx_wait, 2);
     profiler_field_average(    tilemap, 2);
     profiler_field_average(    render_tanks, 2);
+    profiler_field_average(      render_shells, 3);
+    profiler_field_average(      render_mines, 3);
+    profiler_field_average(      render_obscured, 3);
+    profiler_field_average(        redraw_tile, 4);
     profiler_field_average(    aim_indicator, 2);
     profiler_field_average(    swapdraw, 2);
     profiler_field_average(    undraw, 2);
@@ -72,7 +82,9 @@ void profiler_print(void) {
     profiler_field_average(    ai, 2);
     profiler_field_average(      ai_move, 3);
     profiler_field_average(        ai_move_random, 4);
-    profiler_field_average(      ai_fire, 3);
+    profiler_field_average(      ai_aim, 3);
+    profiler_field_average(        ai_aim_random, 4);
+    profiler_field_average(        ai_aim_reflect, 4);
     profiler_field_average(        raycast, 4);
     profiler_field_average(        seg_collision, 4);
     profiler_field_average(    tank_collision, 2);

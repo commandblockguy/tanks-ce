@@ -285,6 +285,7 @@ void draw_aim_dots(void) {
 
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
                             const physics_body_t *phys, uint8_t rotation) {
+    profiler_add(render_obscured);
     uint24_t base_x = SCREEN_X(center_x(phys)) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(center_y(phys)) - SPRITE_OFFSET_Y;
     uint8_t obj_y = COORD_TO_Y_TILE(phys->position_y); // -1 is to round down if exactly on the edge
@@ -296,16 +297,19 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
 
     pdraw_TransparentSprite(sprite, sprite_x, sprite_y);
 
+    profiler_add(redraw_tile);
     for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= screen_to_tm_x(sprite_end_x); tile_x++) {
         for(uint8_t tile_y = screen_to_tm_y(sprite_y); tile_y <= screen_to_tm_y(sprite_end_y); tile_y++) {
             int8_t world_tile_y = depthmap[tile_y][tile_x];
             // todo: this really feels like a hackfix
             if(world_tile_y >= obj_y && tilemap[tile_y][tile_x] != TS_NONE && tilemap[tile_y][tile_x] != TS_HOLE_BOT &&
-               tilemap[tile_y][tile_x] != TS_HOLE_TOP) {
+                tilemap[tile_y][tile_x] != TS_HOLE_TOP) {
                 redraw_tile(tile_x, tile_y);
             }
         }
     }
+    profiler_end(redraw_tile);
+    profiler_end(render_obscured);
 }
 
 void render_shell(shell_t *shell) {
@@ -320,6 +324,7 @@ void render_tank(tank_t *tank) {
         uint8_t base_sprite = (((uint8_t) -((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
         uint8_t turret_sprite = ((uint8_t) -((tank->barrel_rot >> 16) - 64)) >> 4;
 
+        // todo: a lot of this seems to be running twice as often as it needs to
         if(tank->type == PLAYER) {
             render_obscured_object(tank_bases[tank->type], pl_base_x_offsets, pl_base_y_offsets, &tank->phys,
                                    base_sprite);
@@ -334,11 +339,14 @@ void render_tank(tank_t *tank) {
     }
 
     //draw shell hitboxes until I can get sprites
+    profiler_add(render_shells);
     for(int8_t j = max_shells[tank->type] - 1; j >= 0; j--) {
         shell_t *shell = &tank->shells[j];
         if(shell->alive) render_shell(shell);
     }
+    profiler_end(render_shells);
     //draw mine hitboxes
+    profiler_add(render_mines);
     for(int8_t j = max_mines[tank->type] - 1; j >= 0; j--) {
         mine_t *mine = &tank->mines[j];
         if(!mine->countdown) continue;
@@ -346,6 +354,7 @@ void render_tank(tank_t *tank) {
         if(mine->alive) gfx_SetColor(COL_BLACK);
         render_physics_body(&mine->phys);
     }
+    profiler_end(render_mines);
 }
 
 void render(level_t *level) {

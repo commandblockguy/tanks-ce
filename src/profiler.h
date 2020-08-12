@@ -15,6 +15,10 @@ typedef union {
         uint24_t gfx_wait;
         uint24_t tilemap;
         uint24_t render_tanks;
+        uint24_t render_shells;
+        uint24_t render_mines;
+        uint24_t render_obscured;
+        uint24_t redraw_tile;
         uint24_t aim_indicator;
         uint24_t swapdraw;
         uint24_t store_bg;
@@ -23,7 +27,9 @@ typedef union {
         uint24_t ai;
         uint24_t ai_move;
         uint24_t ai_move_random;
-        uint24_t ai_fire;
+        uint24_t ai_aim;
+        uint24_t ai_aim_random;
+        uint24_t ai_aim_reflect;
         uint24_t raycast;
         uint24_t seg_collision;
         uint24_t tank_collision;

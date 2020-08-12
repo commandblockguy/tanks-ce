@@ -34,17 +34,21 @@ void ai_process_move(tank_t *tank) {
 }
 
 void ai_process_fire(tank_t *tank) {
-    profiler_add(ai_fire);
+    profiler_add(ai_aim);
     switch(tank->type) {
         default:
             break;
         case (IMMOBILE):
+            profiler_add(ai_aim_random);
             aim_random(tank);
+            profiler_end(ai_aim_random);
             break;
         case (BASIC):
         case (MINE):
         case (RED):
+            profiler_add(ai_aim_reflect);
             aim_reflect(tank);
+            profiler_end(ai_aim_reflect);
             break;
         case (MISSILE):
             aim_current(tank);
@@ -55,11 +59,11 @@ void ai_process_fire(tank_t *tank) {
         case (BLACK):
             aim_future(tank);
     }
-    profiler_end(ai_fire);
+    profiler_end(ai_aim);
 }
 
 void move_random(tank_t *tank) {
-    profiler_start(ai_move_random);
+    profiler_add(ai_move_random);
     tile_t left1_tile = get_tile_at_offset(tank, DEGREES_TO_ANGLE(-30), 2 * TANK_SIZE);
     tile_t right1_tile = get_tile_at_offset(tank, DEGREES_TO_ANGLE(30), 2 * TANK_SIZE);
     tile_t left2_tile = get_tile_at_offset(tank, DEGREES_TO_ANGLE(-30), TANK_SIZE);
