@@ -234,11 +234,12 @@ void create_levels(void) {
 
 void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank) {
     tank->type = ser_tank->type;
-    tank->start_x = ser_tank->start_x;
-    tank->start_y = ser_tank->start_y;
+    // add 1 because the level system uses coordinates from the first non-border block
+    tank->start_x = ser_tank->start_x + 1;
+    tank->start_y = ser_tank->start_y + 1;
     // todo: physics probably shouldn't be initialized here
-    tank->phys.position_x = TILE_TO_X_COORD(ser_tank->start_x);
-    tank->phys.position_y = TILE_TO_Y_COORD(ser_tank->start_y);
+    tank->phys.position_x = TILE_TO_X_COORD(ser_tank->start_x + 1);
+    tank->phys.position_y = TILE_TO_Y_COORD(ser_tank->start_y + 1);
     tank->phys.velocity_x = 0;
     tank->phys.velocity_y = 0;
     tank->phys.height = TANK_SIZE;

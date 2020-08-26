@@ -48,13 +48,6 @@ direction_t process_reflection(physics_body_t *p, bool respect_holes) {
 
     bool double_x, double_y;
 
-    if(p->position_y < 0) top_right = top_left = true;
-    if(p->position_x < 0) top_left = bottom_left = true;
-    if(p->position_x + p->width > LEVEL_SIZE_X * TILE_SIZE)
-        top_right = bottom_right = true;
-    if(p->position_y + p->height > LEVEL_SIZE_Y * TILE_SIZE)
-        bottom_left = bottom_right = true;
-
     double_x = (bottom_left && top_left) || (top_right && bottom_right);
     double_y = (top_right && top_left) || (bottom_right && bottom_left);
 
@@ -176,7 +169,7 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result
     }
 
     //while inside the map
-    while(tileX >= 0 && tileX < LEVEL_SIZE_X && tileY >= 0 && tileY < LEVEL_SIZE_Y) {
+    while(true) {
         tile_t tile = tiles[tileY][tileX];
 
         if(TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) {

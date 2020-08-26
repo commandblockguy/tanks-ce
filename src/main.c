@@ -98,6 +98,13 @@ void main(void) {
 
         //Decompress tile data
         zx7_Decompress(tiles, comp_tiles);
+        for(uint8_t row = LEVEL_SIZE_Y - 2; row > 0; row--) {
+            tile_t (*orig_tiles)[LEVEL_SIZE_X - 2] = (void*)tiles;
+            memmove(&tiles[row][1], orig_tiles[row - 1], LEVEL_SIZE_X - 2);
+            tiles[row][0] = tiles[row][LEVEL_SIZE_X - 1] = 1;
+        }
+        memset(tiles[0], 1, LEVEL_SIZE_X);
+        memset(tiles[LEVEL_SIZE_Y - 1], 1, LEVEL_SIZE_X);
 
         //Display the mission start screen
         if(!start_mission(true)) {
@@ -207,8 +214,8 @@ bool start_mission(bool initial) {
             tank->mines[j].alive = false;
         }
     }
-    for(uint8_t x = 0; x < LEVEL_SIZE_X; x++) {
-        for(uint8_t y = 0; y < LEVEL_SIZE_Y; y++) {
+    for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
+        for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
             if(tiles[y][x] == DESTROYED)
                 tiles[y][x] = DESTRUCTIBLE;
         }

@@ -130,8 +130,8 @@ void aim_reflect(tank_t *tank) {
         line_seg_t line;
         tile_t tile;
 
-        if(ai->scan_pos > LEVEL_SIZE_X) {
-            ai->scan_pos = 0;
+        if(ai->scan_pos > LEVEL_SIZE_X - 1) {
+            ai->scan_pos = 1;
             ai->scan_dir = 1;
             point_at_player(tank, &tanks[0].phys);
             if(pointing_at_target(tank, &tanks[0].phys, max_bounces[tank->type], false)) {
@@ -183,8 +183,8 @@ void aim_reflect(tank_t *tank) {
         line_seg_t line;
         tile_t tile;
 
-        if(ai->scan_pos > LEVEL_SIZE_Y) {
-            ai->scan_pos = 0;
+        if(ai->scan_pos > LEVEL_SIZE_Y - 1) {
+            ai->scan_pos = 1;
             ai->scan_dir = 0;
             point_at_player(tank, &tanks[0].phys);
             if(pointing_at_target(tank, &tanks[0].phys, max_bounces[tank->type], false)) {

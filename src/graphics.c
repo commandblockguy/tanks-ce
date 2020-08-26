@@ -131,14 +131,10 @@ void generate_bg_tilemap(void) {
         }
     }
 
-    for(int8_t y = -1; y <= LEVEL_SIZE_Y; y++) {
+    for(int8_t y = 0; y < LEVEL_SIZE_Y; y++) {
         uint8_t x;
         for(x = 0; x < TILEMAP_WIDTH; x++) {
-            tile_t tile = tiles[y][x - 1];
-            if(y == -1) tile = BLOCK | 1;
-            if(y == LEVEL_SIZE_Y) tile = BLOCK | 1;
-            if(x == 0) tile = BLOCK | 1;
-            if(x == LEVEL_SIZE_X + 1) tile = BLOCK | 1;
+            tile_t tile = tiles[y][x];
             uint8_t height = TILE_HEIGHT(tile);
             uint8_t type = TILE_TYPE(tile);
             bool tall = bottom_is_tall[height];
@@ -242,11 +238,11 @@ void generate_bg_tilemap(void) {
 
 const gfx_tilemap_t tilemap_config = {(uint8_t *) tilemap, tileset_tiles, HALF_TILE_PIXEL_HEIGHT, TILE_PIXEL_SIZE_X,
                                       TILEMAP_HEIGHT, TILEMAP_WIDTH, gfx_tile_no_pow2, gfx_tile_no_pow2, TILEMAP_HEIGHT,
-                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, SCREEN_X(-TILE_SIZE)};
+                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, SCREEN_X(0)};
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];
-    uint24_t screen_x = SCREEN_X(TILE_SIZE * (x - 1));
+    uint24_t screen_x = SCREEN_X(TILE_SIZE * x);
     uint8_t screen_y = TILEMAP_BASE_Y + HALF_TILE_PIXEL_HEIGHT * y;
     gfx_Sprite(tile, screen_x, screen_y);
 }
@@ -254,7 +250,7 @@ void redraw_tile(uint8_t x, uint8_t y) {
 // Convert a screenspace coordinate to a redraw tile
 uint8_t inline screen_to_tm_x(uint24_t screen_x) {
     int24_t dx = screen_x - SCREEN_X(0);
-    return dx / SCREEN_DELTA_X(TILE_SIZE) + 1 - (dx < 0);
+    return dx / SCREEN_DELTA_X(TILE_SIZE) - (dx < 0);
 }
 
 uint8_t inline screen_to_tm_y(uint24_t screen_y) {
@@ -390,6 +386,7 @@ void render(level_t *level) {
     profiler_start(render_tanks);
     // todo: z-sorting
     // restrict drawing to only the play area, to prevent the banners from being overwritten
+    // todo: deal with this
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE));
     for(uint8_t i = 0; i < level->num_tanks; i++) {

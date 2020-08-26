@@ -180,7 +180,7 @@ void draw_mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks
 #define KILL_COUNTER_INNER_RADIUS (SCREEN_DELTA_Y(0.75 * TILE_SIZE))
 #define KILL_COUNTER_HEIGHT (2 * KILL_COUNTER_RADIUS + 1)
 #define KILL_COUNTER_INNER_HEIGHT (2 * KILL_COUNTER_INNER_RADIUS + 1)
-#define KILL_COUNTER_Y (SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE))
+#define KILL_COUNTER_Y (SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE))
 #define KILL_COUNTER_INNER_Y (KILL_COUNTER_Y + KILL_COUNTER_RADIUS - KILL_COUNTER_INNER_RADIUS)
 
 void update_game_kill_counter_current_buffer(uint8_t kills) {
@@ -223,7 +223,7 @@ void display_game_banner(uint8_t mission, uint8_t lives) {
     const uint8_t banner_width = SCREEN_DELTA_X(10.5 * TILE_SIZE);
     const uint8_t banner_height = 14;
     const uint24_t base_x = (LCD_WIDTH - banner_width) / 2;
-    const uint8_t base_y = SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE) + 3;
+    const uint8_t base_y = SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE) + 3;
     const uint8_t text_x = base_x + 18;
     const uint24_t text2_x = base_x + 122;
     const uint8_t text_y = base_y + 3;
