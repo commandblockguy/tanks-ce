@@ -388,9 +388,8 @@ void render(level_t *level) {
     profiler_start(render_tanks);
     // todo: z-sorting
     // restrict drawing to only the play area, to prevent the banners from being overwritten
-    // todo: deal with this
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
-                      SCREEN_Y(LEVEL_SIZE_Y * TILE_SIZE - TILE_SIZE));
+                      SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
     for(uint8_t i = 0; i < level->num_tanks; i++) {
         render_tank(&tanks[i]);
     }
