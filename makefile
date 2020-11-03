@@ -1,16 +1,22 @@
 # todo: seems to be calculating the list of C files prior to running convimg
 
-NAME        ?= TANKS
-COMPRESSED  ?= YES
-ICONSRC     ?= iconc.png
-OUTPUT_MAP   ?= YES
+NAME ?= TANKS
+ICON ?= iconc.png
 DESCRIPTION ?= "Tanks! CE"
+COMPRESSED ?= YES
+ARCHIVED ?= YES
+
+OUTPUT_MAP ?= YES
+
+CFLAGS ?= -Wall -Wextra -Oz
 
 # ----------------------------
 
-default: all_gfx all
+ifndef CEDEV
+$(error CEDEV environment path variable is not set)
+endif
 
-include $(CEDEV)/include/.makefile
+include $(CEDEV)/meta/makefile.mk
 
 # ----------------------------
 
