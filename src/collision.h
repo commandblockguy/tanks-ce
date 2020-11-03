@@ -42,7 +42,7 @@ inline uint24_t center_y(const physics_body_t *p) { return p->position_y + p->he
 bool detect_collision(physics_body_t *p1, physics_body_t *p2);
 
 //Check if a point is inside a bounding box
-bool is_point_inside_body(physics_body_t *p, uint24_t x, uint24_t y);
+bool is_point_inside_body(physics_body_t *p, int24_t x, int24_t y);
 
 //Determine if a collision occurs with the tilemap
 direction_t process_reflection(physics_body_t *p, bool respect_holes);

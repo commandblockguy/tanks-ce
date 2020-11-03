@@ -282,7 +282,7 @@ void handle_input() {
 
     if(moving) {
         int24_t diff = player->tread_rot - target_rot;
-        if(abs(diff) > DEGREES_TO_ANGLE(90)) {
+        if((uint24_t)abs(diff) > DEGREES_TO_ANGLE(90)) {
             player->tread_rot += DEGREES_TO_ANGLE(180);
             diff = (int24_t) (player->tread_rot - target_rot);
         }
@@ -294,7 +294,7 @@ void handle_input() {
             player->tread_rot = target_rot;
         }
 
-        if(abs(diff) <= DEGREES_TO_ANGLE(45)) {
+        if((uint24_t)abs(diff) <= DEGREES_TO_ANGLE(45)) {
             set_velocity(player, TANK_SPEED_NORMAL);
         } else {
             set_velocity(player, 0);

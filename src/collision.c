@@ -14,21 +14,23 @@
 
 
 bool detect_collision(physics_body_t *p1, physics_body_t *p2) {
-    return p1->position_x < p2->position_x + p2->width && p1->position_x + p1->width > p2->position_x &&
-           p1->position_y < p2->position_y + p2->height && p1->position_y + p1->height > p2->position_y;
+    return p1->position_x < p2->position_x + (int24_t)p2->width  &&
+           p1->position_x + (int24_t)p1->width  > p2->position_x &&
+           p1->position_y < p2->position_y + (int24_t)p2->height &&
+           p1->position_y + (int24_t)p1->height > p2->position_y;
 }
 
 bool center_distance_less_than(physics_body_t *p1, physics_body_t *p2, uint24_t dis) {
     int24_t delta_x;
     int24_t delta_y;
 
-    if(abs((int24_t) center_x(p1) - (int24_t) center_x(p2)) > dis) return false;
-    if(abs((int24_t) center_y(p1) - (int24_t) center_y(p2)) > dis) return false;
+    if((uint24_t)abs((int24_t) center_x(p1) - (int24_t) center_x(p2)) > dis) return false;
+    if((uint24_t)abs((int24_t) center_y(p1) - (int24_t) center_y(p2)) > dis) return false;
 
     delta_x = (center_x(p1) - center_x(p2)) >> 8;
     delta_y = (center_y(p1) - center_y(p2)) >> 8;
 
-    return delta_x * delta_x + delta_y * delta_y < (dis >> 8) * (dis >> 8);
+    return (uint24_t)(delta_x * delta_x + delta_y * delta_y) < (dis >> 8) * (dis >> 8);
 }
 
 //Check if a point is colliding with a tile
@@ -85,8 +87,10 @@ direction_t process_reflection(physics_body_t *p, bool respect_holes) {
     return dir;
 }
 
-bool is_point_inside_body(physics_body_t *p, uint24_t x, uint24_t y) {
-    return p->position_x <= x && p->position_y <= y && p->position_x + p->width >= x && p->position_y + p->height >= y;
+bool is_point_inside_body(physics_body_t *p, int24_t x, int24_t y) {
+    return p->position_x <= x && p->position_y <= y &&
+           p->position_x + (int24_t)p->width >= x &&
+           p->position_y + (int24_t)p->height >= y;
 }
 
 bool collide_and_push(physics_body_t *p1, physics_body_t *p2) {
