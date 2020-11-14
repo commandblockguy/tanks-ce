@@ -19,4 +19,6 @@ void display_game_kill_counter(void);
 
 void display_game_banner(uint8_t mission, uint8_t lives);
 
+void bang(void);
+
 #endif //TANKS_GUI_H

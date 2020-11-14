@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "tank.h"
 #include "graphics.h"
+#include "gui.h"
 
 
 void detonate(mine_t *mine) {
@@ -44,6 +45,8 @@ void detonate(mine_t *mine) {
             }
         }
     }
+
+    bang();
 
     generate_bg_tilemap();
 }
