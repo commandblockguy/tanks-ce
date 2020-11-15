@@ -1,3 +1,4 @@
+#include <keypadc.h>
 #include "ai.h"
 #include "collision.h"
 #include "globals.h"
@@ -25,7 +26,8 @@ void process_tank(tank_t *tank) {
         tank->phys.position_y += tank->phys.velocity_y;
 
         profiler_add(tank_collision);
-        process_reflection(&tank->phys, true);
+        if(!(kb_IsDown(kb_Key1) && tank == tanks))
+            process_reflection(&tank->phys, true);
 
         for(int8_t i = game.level.num_tanks - 1; i >= 0; i--) {
             if(tanks[i].alive)
