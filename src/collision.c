@@ -12,7 +12,6 @@
 #include "globals.h"
 #include "profiler.h"
 
-
 bool detect_collision(physics_body_t *p1, physics_body_t *p2) {
     return p1->position_x < p2->position_x + (int24_t)p2->width  &&
            p1->position_x + (int24_t)p1->width  > p2->position_x &&
@@ -174,7 +173,6 @@ bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result
         dtY = INT24_MAX;
     }
 
-    //while inside the map
     while(true) {
         tile_t tile = tiles[tileY][tileX];
 

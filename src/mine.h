@@ -8,18 +8,18 @@
 #define MINE_SIZE TILE_SIZE
 
 //10 seconds until detonation
-#define MINE_COUNTDOWN (10 * TARGET_FPS + EXPLOSION_ANIM)
+#define MINE_COUNTDOWN (10 * TARGET_TICK_RATE + EXPLOSION_ANIM)
 //2 seconds spent pulsing
-#define MINE_WARNING (2 * TARGET_FPS + EXPLOSION_ANIM)
+#define MINE_WARNING (2 * TARGET_TICK_RATE + EXPLOSION_ANIM)
 //TODO: better data for this
 //time after a enemy enters the range of a mine
-#define MINE_TRIGGERED (TARGET_FPS * 2 / 5 + EXPLOSION_ANIM)
+#define MINE_TRIGGERED (TARGET_TICK_RATE * 2 / 5 + EXPLOSION_ANIM)
 //2/15ths of a second per pulse
-#define PULSE_TIME ((uint8_t)(2 * TARGET_FPS / 15))
+#define PULSE_TIME ((uint8_t)(2 * TARGET_TICK_RATE / 15))
 
 //Amount of time the explosion takes
 //1/2 second in the original, may reduce to save sprite size
-#define EXPLOSION_ANIM (TARGET_FPS / 2)
+#define EXPLOSION_ANIM (TARGET_TICK_RATE / 2)
 
 //TODO:
 #define MINE_DETECT_RANGE (2 * TILE_SIZE)

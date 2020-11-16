@@ -91,9 +91,6 @@ typedef struct {
     uint8_t turret_15_data[en_turret_1_size];
 } spriteset_t;
 
-//Target frame rate
-#define TARGET_FPS 30
-
 #define TILE_PIXEL_SIZE_X 18
 #define TILE_PIXEL_SIZE_Y 12
 

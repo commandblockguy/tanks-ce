@@ -19,10 +19,10 @@ typedef uint8_t tank_type_t;
 #define BARREL_LENGTH (TANK_SIZE * 5 / 14)
 
 //148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
-#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_FPS) // todo
-#define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_FPS)
-#define TANK_SPEED_HIGH (4 * TILE_SIZE / TARGET_FPS) // todo
-#define TANK_SPEED_BLACK (5 * TILE_SIZE / TARGET_FPS) // todo
+#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_TICK_RATE) // todo
+#define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_TICK_RATE)
+#define TANK_SPEED_HIGH (4 * TILE_SIZE / TARGET_TICK_RATE) // todo
+#define TANK_SPEED_BLACK (5 * TILE_SIZE / TARGET_TICK_RATE) // todo
 
 enum {
     PLAYER = 0, //blue
@@ -61,6 +61,8 @@ typedef struct {
 } serialized_tank_t;
 
 void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank); //Convert a serialized tank into an actual one
+
+void init_tank(tank_t *tank);
 
 void process_tank(tank_t *tank);
 

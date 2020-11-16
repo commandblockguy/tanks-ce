@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "physics.h"
 
 typedef struct {
     int24_t x1;
@@ -19,24 +20,6 @@ typedef struct {
     int24_t x2;
     int24_t y2;
 } line_seg_t;
-
-typedef enum {
-    NONE = 0, UP = 1, DOWN = 2, LEFT = 4, RIGHT = 8
-} direction_t;
-
-typedef struct {
-    int24_t position_x;
-    int24_t position_y;
-    int24_t velocity_x;
-    int24_t velocity_y;
-    uint24_t width;
-    uint24_t height;
-    uint32_t updateTime;
-} physics_body_t;
-
-inline uint24_t center_x(const physics_body_t *p) { return p->position_x + p->width / 2; }
-
-inline uint24_t center_y(const physics_body_t *p) { return p->position_y + p->height / 2; }
 
 //Determine if two bounding boxes are intersecting
 bool detect_collision(physics_body_t *p1, physics_body_t *p2);

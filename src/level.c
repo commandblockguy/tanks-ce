@@ -237,13 +237,5 @@ void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank) {
     // add 1 because the level system uses coordinates from the first non-border block
     tank->start_x = ser_tank->start_x + 1;
     tank->start_y = ser_tank->start_y + 1;
-    // todo: physics probably shouldn't be initialized here
-    tank->phys.position_x = TILE_TO_X_COORD(ser_tank->start_x + 1);
-    tank->phys.position_y = TILE_TO_Y_COORD(ser_tank->start_y + 1);
-    tank->phys.velocity_x = 0;
-    tank->phys.velocity_y = 0;
-    tank->phys.height = TANK_SIZE;
-    tank->phys.width = TANK_SIZE;
-    tank->barrel_rot = 0;
-    tank->tread_rot = 0;
+    init_tank(tank);
 }

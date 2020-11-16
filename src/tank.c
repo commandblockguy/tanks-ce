@@ -11,8 +11,20 @@
 const uint8_t max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
 const uint8_t max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
-const uint8_t tank_velocities[] = {TANK_SPEED_NORMAL, 0, TANK_SPEED_SLOW, TANK_SPEED_SLOW,TANK_SPEED_HIGH,
+const uint8_t tank_velocities[] = {TANK_SPEED_NORMAL, 0, TANK_SPEED_SLOW, TANK_SPEED_SLOW, TANK_SPEED_HIGH,
                                    TANK_SPEED_NORMAL, 0, TANK_SPEED_HIGH, TANK_SPEED_NORMAL, TANK_SPEED_BLACK};
+
+void init_tank(tank_t *tank) {
+    tank->phys.type = PHYS_TANK;
+    tank->phys.position_x = TILE_TO_X_COORD(tank->start_x);
+    tank->phys.position_y = TILE_TO_Y_COORD(tank->start_y);
+    tank->phys.velocity_x = 0;
+    tank->phys.velocity_y = 0;
+    tank->phys.height = TANK_SIZE;
+    tank->phys.width = TANK_SIZE;
+    tank->barrel_rot = 0;
+    tank->tread_rot = 0;
+}
 
 //Process tank physics
 void process_tank(tank_t *tank) {
@@ -69,6 +81,7 @@ bool fire_shell(tank_t *tank) {
         shell->phys.position_x = center_x(&tank->phys) + BARREL_LENGTH * vector_x / TRIG_SCALE;
         shell->phys.position_y = center_y(&tank->phys) + BARREL_LENGTH * vector_y / TRIG_SCALE;
 
+        shell->phys.type = PHYS_SHELL;
         shell->phys.width = shell->phys.height = SHELL_SIZE;
         if(tank->type == MISSILE || tank->type == IMMOB_MISSILE) {
             shell->phys.velocity_x = SHELL_SPEED_MISSILE * vector_x / TRIG_SCALE;
@@ -99,6 +112,7 @@ bool lay_mine(tank_t *tank) {
         if(mine->alive) continue;
         mine->alive = true;
         mine->countdown = MINE_COUNTDOWN;
+        mine->phys.type = PHYS_MINE;
         mine->phys.position_x = tank->phys.position_x + (TANK_SIZE - MINE_SIZE) / 2;
         mine->phys.position_y = tank->phys.position_y + (TANK_SIZE - MINE_SIZE) / 2;
         mine->phys.width = mine->phys.height = MINE_SIZE;

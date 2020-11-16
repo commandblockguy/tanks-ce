@@ -90,7 +90,7 @@ uint24_t fast_atan2(int24_t y, int24_t x) {
 
 void init_timer(void) {
     timer_Control &= ~TIMER1_ENABLE;
-    timer_1_ReloadValue = timer_1_Counter = 32768 / TARGET_FPS;
+    timer_1_ReloadValue = timer_1_Counter = 32768 / TARGET_TICK_RATE;
     timer_Control |= TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
 }
 

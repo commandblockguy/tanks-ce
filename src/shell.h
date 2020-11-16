@@ -13,14 +13,14 @@
 //d = 12.4302748271 tile
 //123 frames=2.05 seconds
 //6.06354869615 tiles/second
-#define SHELL_SPEED_STANDARD (6.06354869615 * TILE_SIZE / TARGET_FPS)
+#define SHELL_SPEED_STANDARD (6.06354869615 * TILE_SIZE / TARGET_TICK_RATE)
 //Fast
 //238 px X / 48 px/tile = 4.95833333333 tiles
 //37  px Y / 32 px/tile = 1.15625 tiles
 //d = 5.09136361959 tiles
 //30 frames = 1/2 second
 //10.1827272392 tiles/second
-#define SHELL_SPEED_MISSILE (10.1827272392 * TILE_SIZE / TARGET_FPS)
+#define SHELL_SPEED_MISSILE (10.1827272392 * TILE_SIZE / TARGET_TICK_RATE)
 
 typedef struct {
     bool alive; //Whether this shell is processed

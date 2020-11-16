@@ -8,7 +8,7 @@ ARCHIVED ?= YES
 
 OUTPUT_MAP ?= YES
 
-CFLAGS ?= -Wall -Wextra -Oz
+CFLAGS ?= -Wall -Wextra -O3
 
 # ----------------------------
 

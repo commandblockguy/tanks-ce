@@ -35,7 +35,7 @@
 
 #define PLAYER_BARREL_ROTATION DEGREES_TO_ANGLE(5)
 //1/3 of a second for 90 degree rotation
-#define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_FPS / 3))
+#define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_TICK_RATE / 3))
 
 // Game status
 enum {

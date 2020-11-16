@@ -290,7 +290,7 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
     profiler_add(render_obscured);
     uint24_t base_x = SCREEN_X(center_x(phys)) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(center_y(phys)) - SPRITE_OFFSET_Y;
-    uint8_t obj_y = COORD_TO_Y_TILE(phys->position_y); // -1 is to round down if exactly on the edge
+    uint8_t obj_y = COORD_TO_Y_TILE(phys->position_y);
     gfx_sprite_t *sprite = sprites[rotation];
     uint24_t sprite_x = base_x + offsets_x[rotation];
     uint8_t sprite_y = base_y + offsets_y[rotation];

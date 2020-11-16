@@ -103,7 +103,7 @@ void move_toward(tank_t *tank) {
 //t: 1 s
 //Basically 1 << 16 rot unit per frame.
 void aim_random(tank_t *tank) {
-    if(!randInt(0, TARGET_FPS - 1)) tank->ai_fire.random.clockwise = !tank->ai_fire.random.clockwise;
+    if(!randInt(0, TARGET_TICK_RATE - 1)) tank->ai_fire.random.clockwise = !tank->ai_fire.random.clockwise;
     if(tank->ai_fire.random.clockwise) {
         tank->barrel_rot += 0x010000;
     } else {
