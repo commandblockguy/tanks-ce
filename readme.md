@@ -1,6 +1,6 @@
-*Does not run on OS 5.5.* It's not possible for me to fix this, so don't update your calculator's OS.
-
 ### Tanks! CE
+
+![Screenshot](screenshot.png)
 
 A clone of Tanks! from Wii Play for the TI-84 Plus CE.
 I do not own the copyrights for Wii Play.
