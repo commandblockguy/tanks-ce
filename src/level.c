@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <fileioc.h>
+#include <compression.h>
 
 #include "level.h"
 #include "util.h"
@@ -15,6 +16,7 @@
 #endif
 
 #include "tank.h"
+#include "globals.h"
 
 
 // todo: maybe just invoke the level creator once that's finished instead of doing this
@@ -228,6 +230,7 @@ void create_levels(void) {
     }
 
     ti_CloseAll();
+    ti_SetArchiveStatus("TANKSLPK", true);
 
 #endif
 }
@@ -238,4 +241,16 @@ void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank) {
     tank->start_x = ser_tank->start_x + 1;
     tank->start_y = ser_tank->start_y + 1;
     init_tank(tank);
+}
+
+void decompress_tiles(const void *comp_tiles) {
+    //Decompress tile data
+    zx7_Decompress(tiles, comp_tiles);
+    for(uint8_t row = LEVEL_SIZE_Y - 2; row > 0; row--) {
+        tile_t (*orig_tiles)[LEVEL_SIZE_X - 2] = (void*)tiles;
+        memmove(&tiles[row][1], orig_tiles[row - 1], LEVEL_SIZE_X - 2);
+        tiles[row][0] = tiles[row][LEVEL_SIZE_X - 1] = 1;
+    }
+    memset(tiles[0], 1, LEVEL_SIZE_X);
+    memset(tiles[LEVEL_SIZE_Y - 1], 1, LEVEL_SIZE_X);
 }

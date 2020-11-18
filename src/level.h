@@ -41,6 +41,8 @@ typedef struct {
 
 void create_levels(void); //Temporary function to make a level pack
 
+void decompress_tiles(const void *comp_tiles);
+
 #define TILE_SIZE 256
 
 #define TILE_TO_X_COORD(x) ((x) * TILE_SIZE)

@@ -359,7 +359,7 @@ void render_tank(tank_t *tank) {
     profiler_end(render_mines);
 }
 
-void render(level_t *level) {
+void render(void) {
     profiler_start(graphics);
 
     profiler_start(gfx_wait);
@@ -390,7 +390,7 @@ void render(level_t *level) {
     // restrict drawing to only the play area, to prevent the banners from being overwritten
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
-    for(uint8_t i = 0; i < level->num_tanks; i++) {
+    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         render_tank(&tanks[i]);
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);

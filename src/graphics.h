@@ -124,7 +124,7 @@ typedef struct {
 
 void init_graphics(void);
 
-void render(level_t *level); //Render tilemap, tanks, and UI during the game loop
+void render(void); //Render tilemap, tanks, and UI during the game loop
 
 void render_physics_body(physics_body_t *phys);
 
