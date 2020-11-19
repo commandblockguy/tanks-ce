@@ -22,7 +22,7 @@
 
 uint8_t tilemap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // For each tilemap tile, the level Y of the block that it's representing
-uint8_t depthmap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
+uint8_t heightmap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 
 bool needs_redraw;
 
@@ -127,7 +127,7 @@ void generate_bg_tilemap(void) {
         uint8_t x;
         for(x = 0; x < TILEMAP_WIDTH; x++) {
             tilemap[y][x] = TS_NONE;
-            depthmap[y][x] = y / 2 - TILEMAP_OFFSET;
+            heightmap[y][x] = 0;
         }
     }
 
@@ -147,22 +147,16 @@ void generate_bg_tilemap(void) {
                 case DESTROYED:
                     tilemap[tm_y][x] = TS_NONE;
                     tilemap[tm_y + 1][x] = TS_NONE;
-                    depthmap[tm_y][x] = y;
-                    depthmap[tm_y + 1][x] = y;
                     break;
                 case HOLE:
                     tilemap[tm_y][x] = TS_HOLE_TOP;
                     tilemap[tm_y + 1][x] = TS_HOLE_BOT;
-                    depthmap[tm_y][x] = y;
-                    depthmap[tm_y + 1][x] = y;
                     break;
                 case BLOCK: {
                     int8_t z;
                     if(!TILE_HEIGHT(tile)) {
                         tilemap[tm_y][x] = TS_NONE;
                         tilemap[tm_y + 1][x] = TS_NONE;
-                        depthmap[tm_y][x] = y;
-                        depthmap[tm_y + 1][x] = y;
                         break;
                     }
 
@@ -171,22 +165,22 @@ void generate_bg_tilemap(void) {
                             if(alt) {
                                 tilemap[tm_y - z - 1][x] = TS_SIDE_ALT_TOP;
                                 tilemap[tm_y - z][x] = TS_SIDE_ALT_BOT;
-                                depthmap[tm_y - z - 1][x] = y;
-                                depthmap[tm_y - z][x] = y;
+                                heightmap[tm_y - z - 1][x] = z + 2;
+                                heightmap[tm_y - z][x] = z + 1;
                             } else {
                                 tilemap[tm_y - z - 1][x] = TS_SIDE_TOP;
                                 tilemap[tm_y - z][x] = TS_SIDE_BOT;
-                                depthmap[tm_y - z - 1][x] = y;
-                                depthmap[tm_y - z][x] = y;
+                                heightmap[tm_y - z - 1][x] = z + 2;
+                                heightmap[tm_y - z][x] = z + 1;
                             }
                             z++;
                         } else {
                             if(alt) {
                                 tilemap[tm_y - z][x] = TS_SIDE_ALT_HALF;
-                                depthmap[tm_y - z][x] = y;
+                                heightmap[tm_y - z][x] = z + 1;
                             } else {
                                 tilemap[tm_y - z][x] = TS_SIDE_HALF;
-                                depthmap[tm_y - z][x] = y;
+                                heightmap[tm_y - z][x] = z + 1;
                             }
                         }
                         alt = !alt;
@@ -195,8 +189,8 @@ void generate_bg_tilemap(void) {
 
                     tilemap[tm_y - z - 1][x] = TS_TOP_TOP;
                     tilemap[tm_y - z][x] = TS_TOP_BOT;
-                    depthmap[tm_y - z - 1][x] = y;
-                    depthmap[tm_y - z][x] = y;
+                    heightmap[tm_y - z - 1][x] = z + 1;
+                    heightmap[tm_y - z][x] = z + 1;
 
                     break;
                 }
@@ -205,8 +199,6 @@ void generate_bg_tilemap(void) {
                     if(!TILE_HEIGHT(tile)) {
                         tilemap[tm_y][x] = TS_NONE;
                         tilemap[tm_y + 1][x] = TS_NONE;
-                        depthmap[tm_y][x] = y;
-                        depthmap[tm_y + 1][x] = y;
                         break;
                     }
 
@@ -214,20 +206,20 @@ void generate_bg_tilemap(void) {
                         if(tall) {
                             tilemap[tm_y - z - 1][x] = TS_DEST_SIDE_TOP;
                             tilemap[tm_y - z][x] = TS_DEST_SIDE_BOT;
-                            depthmap[tm_y - z - 1][x] = y;
-                            depthmap[tm_y - z][x] = y;
+                            heightmap[tm_y - z - 1][x] = z + 2;
+                            heightmap[tm_y - z][x] = z + 1;
                             z++;
                         } else {
                             tilemap[tm_y - z][x] = TS_DEST_SIDE_HALF;
-                            depthmap[tm_y - z][x] = y;
+                            heightmap[tm_y - z][x] = z + 1;
                         }
                         tall = !tall;
                     }
 
                     tilemap[tm_y - z - 1][x] = TS_DEST_TOP_TOP;
                     tilemap[tm_y - z][x] = TS_DEST_TOP_BOT;
-                    depthmap[tm_y - z - 1][x] = y;
-                    depthmap[tm_y - z][x] = y;
+                    heightmap[tm_y - z - 1][x] = z + 1;
+                    heightmap[tm_y - z][x] = z + 1;
 
                     break;
                 }
@@ -286,11 +278,10 @@ void draw_aim_dots(void) {
 }
 
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
-                            const physics_body_t *phys, uint8_t rotation) {
+                            const physics_body_t *phys, uint8_t rotation, uint8_t height) {
     profiler_add(render_obscured);
     uint24_t base_x = SCREEN_X(center_x(phys)) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(center_y(phys)) - SPRITE_OFFSET_Y;
-    uint8_t obj_y = COORD_TO_Y_TILE(phys->position_y);
     gfx_sprite_t *sprite = sprites[rotation];
     uint24_t sprite_x = base_x + offsets_x[rotation];
     uint8_t sprite_y = base_y + offsets_y[rotation];
@@ -300,12 +291,12 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
     pdraw_TransparentSprite(sprite, sprite_x, sprite_y);
 
     profiler_add(redraw_tile);
-    for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= screen_to_tm_x(sprite_end_x); tile_x++) {
-        for(uint8_t tile_y = screen_to_tm_y(sprite_y); tile_y <= screen_to_tm_y(sprite_end_y); tile_y++) {
-            int8_t world_tile_y = depthmap[tile_y][tile_x];
-            // todo: this really feels like a hackfix
-            if(world_tile_y >= obj_y && tilemap[tile_y][tile_x] != TS_NONE && tilemap[tile_y][tile_x] != TS_HOLE_BOT &&
-                tilemap[tile_y][tile_x] != TS_HOLE_TOP) {
+    uint8_t tile_end_x = screen_to_tm_x(sprite_end_x);
+    uint8_t tile_end_y = screen_to_tm_y(sprite_end_y);
+    for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= tile_end_x; tile_x++) {
+        for(uint8_t tile_y = screen_to_tm_y(sprite_y); tile_y <= tile_end_y; tile_y++) {
+            int8_t tile_height = heightmap[tile_y][tile_x];
+            if(tile_height > height) {
                 redraw_tile(tile_x, tile_y);
             }
         }
@@ -317,7 +308,7 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
 void render_shell(shell_t *shell) {
     if(shell->alive) {
         uint8_t sprite = shell->direction;
-        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, &shell->phys, sprite);
+        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, &shell->phys, sprite, 0);
     }
 }
 
@@ -329,14 +320,14 @@ void render_tank(tank_t *tank) {
         // todo: a lot of this seems to be running twice as often as it needs to
         if(tank->type == PLAYER) {
             render_obscured_object(tank_bases[tank->type], pl_base_x_offsets, pl_base_y_offsets, &tank->phys,
-                                   base_sprite);
+                                   base_sprite, 0);
             render_obscured_object(tank_turrets[tank->type], pl_turret_x_offsets, pl_turret_y_offsets, &tank->phys,
-                                   turret_sprite);
+                                   turret_sprite, 0);
         } else {
             render_obscured_object(tank_bases[tank->type], en_base_x_offsets, en_base_y_offsets, &tank->phys,
-                                   base_sprite);
+                                   base_sprite, 0);
             render_obscured_object(tank_turrets[tank->type], en_turret_x_offsets, en_turret_y_offsets, &tank->phys,
-                                   turret_sprite);
+                                   turret_sprite, 0);
         }
     }
 
