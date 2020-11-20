@@ -45,9 +45,16 @@ src/gfx/trimmed/%.png src/gfx/offsets/%.h: src/gfx/rendered/%.png
 src/gfx/offsets/offsets.h: $(OFFSET_FILES)
 	echo \#ifndef H_OFFSETS > src/gfx/offsets/offsets.h
 	echo \#define H_OFFSETS >> src/gfx/offsets/offsets.h
+	echo \#define H_OFFSETS >> src/gfx/offsets/offsets.h
+	echo \#ifdef __cplusplus >> src/gfx/offsets/offsets.h
+	echo extern \"C\" \{ >> src/gfx/offsets/offsets.h
+	echo \#endif >> src/gfx/offsets/offsets.h
 	for CURRENT_TYPE in $(IMAGE_NAMES); do \
 		echo \#include \"$$CURRENT_TYPE.h\" ; \
 	done >> src/gfx/offsets/offsets.h
+	echo \#ifdef __cplusplus >> src/gfx/offsets/offsets.h
+	echo \} >> src/gfx/offsets/offsets.h
+	echo \#endif >> src/gfx/offsets/offsets.h
 	echo \#endif >> src/gfx/offsets/offsets.h
 
 src/gfx/enemy_pal.c src/gfx/enemy_pal.h: src/gfx/enemy_palette.bin src/gfx/generate_enemy_palette.py

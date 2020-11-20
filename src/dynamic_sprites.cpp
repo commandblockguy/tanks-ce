@@ -30,7 +30,7 @@ gfx_UninitedSprite(shell_13, shell_3_width, shell_3_height);
 gfx_UninitedSprite(shell_14, shell_2_width, shell_2_height);
 gfx_UninitedSprite(shell_15, shell_1_width, shell_1_height);
 
-gfx_sprite_t * const tank_bases[NUM_TANK_TYPES][16] = {
+extern gfx_sprite_t * const tank_bases[NUM_TANK_TYPES][16] = {
         {
                 pl_base_0,
                 pl_base_1,
@@ -51,7 +51,7 @@ gfx_sprite_t * const tank_bases[NUM_TANK_TYPES][16] = {
         }
 };
 
-gfx_sprite_t * const tank_turrets[NUM_TANK_TYPES][16] = {
+extern gfx_sprite_t * const tank_turrets[NUM_TANK_TYPES][16] = {
         {
                 pl_turret_0,
                 pl_turret_1,
@@ -72,7 +72,7 @@ gfx_sprite_t * const tank_turrets[NUM_TANK_TYPES][16] = {
         }
 };
 
-gfx_sprite_t * const shell_sprites[16] = {
+extern gfx_sprite_t * const shell_sprites[16] = {
         shell_0,
         shell_1,
         shell_2,
@@ -91,7 +91,7 @@ gfx_sprite_t * const shell_sprites[16] = {
         (gfx_sprite_t*)shell_15_data,
 };
 
-const uint8_t pl_base_x_offsets[16] = {
+extern const uint8_t pl_base_x_offsets[16] = {
         pl_base_0_offset_x,
         pl_base_1_offset_x,
         pl_base_2_offset_x,
@@ -110,7 +110,7 @@ const uint8_t pl_base_x_offsets[16] = {
         tank_sprite_total_width - pl_base_1_offset_x - pl_base_1_width,
 };
 
-const uint8_t pl_base_y_offsets[16] = {
+extern const uint8_t pl_base_y_offsets[16] = {
         pl_base_0_offset_y,
         pl_base_1_offset_y,
         pl_base_2_offset_y,
@@ -129,7 +129,7 @@ const uint8_t pl_base_y_offsets[16] = {
         pl_base_1_offset_y,
 };
 
-const uint8_t en_base_x_offsets[16] = {
+extern const uint8_t en_base_x_offsets[16] = {
         en_base_0_offset_x,
         en_base_1_offset_x,
         en_base_2_offset_x,
@@ -148,7 +148,7 @@ const uint8_t en_base_x_offsets[16] = {
         tank_sprite_total_width - en_base_1_offset_x - en_base_1_width,
 };
 
-const uint8_t en_base_y_offsets[16] = {
+extern const uint8_t en_base_y_offsets[16] = {
         en_base_0_offset_y,
         en_base_1_offset_y,
         en_base_2_offset_y,
@@ -167,7 +167,7 @@ const uint8_t en_base_y_offsets[16] = {
         en_base_1_offset_y,
 };
 
-const uint8_t pl_turret_x_offsets[16] = {
+extern const uint8_t pl_turret_x_offsets[16] = {
         pl_turret_0_offset_x,
         pl_turret_1_offset_x,
         pl_turret_2_offset_x,
@@ -186,7 +186,7 @@ const uint8_t pl_turret_x_offsets[16] = {
         tank_sprite_total_width - pl_turret_1_offset_x - pl_turret_1_width,
 };
 
-const uint8_t pl_turret_y_offsets[16] = {
+extern const uint8_t pl_turret_y_offsets[16] = {
         pl_turret_0_offset_y,
         pl_turret_1_offset_y,
         pl_turret_2_offset_y,
@@ -205,7 +205,7 @@ const uint8_t pl_turret_y_offsets[16] = {
         pl_turret_1_offset_y,
 };
 
-const uint8_t en_turret_x_offsets[16] = {
+extern const uint8_t en_turret_x_offsets[16] = {
         en_turret_0_offset_x,
         en_turret_1_offset_x,
         en_turret_2_offset_x,
@@ -224,7 +224,7 @@ const uint8_t en_turret_x_offsets[16] = {
         tank_sprite_total_width - en_turret_1_offset_x - en_turret_1_width,
 };
 
-const uint8_t en_turret_y_offsets[16] = {
+extern const uint8_t en_turret_y_offsets[16] = {
         en_turret_0_offset_y,
         en_turret_1_offset_y,
         en_turret_2_offset_y,
@@ -243,7 +243,7 @@ const uint8_t en_turret_y_offsets[16] = {
         en_turret_1_offset_y,
 };
 
-const uint8_t shell_x_offsets[16] = {
+extern const uint8_t shell_x_offsets[16] = {
         shell_0_offset_x,
         shell_1_offset_x,
         shell_2_offset_x,
@@ -262,7 +262,7 @@ const uint8_t shell_x_offsets[16] = {
         tank_sprite_total_width - shell_1_offset_x - shell_1_width,
 };
 
-const uint8_t shell_y_offsets[16] = {
+extern const uint8_t shell_y_offsets[16] = {
         shell_0_offset_y,
         shell_1_offset_y,
         shell_2_offset_y,

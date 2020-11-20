@@ -6,7 +6,6 @@
  * Description: Tanks! from Wii Play
  *--------------------------------------
 */
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <tice.h>
@@ -31,7 +30,7 @@ bool start_mission(void); //Start a mission and reset various tank things.
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks);
 uint8_t play_mission(void);
 
-void main(void) {
+int main() {
     level_pack_t lvl_pack;
     ti_var_t appVar;
 
@@ -70,9 +69,9 @@ void main(void) {
 
         //Read level from appvar
         ti_Read(&game.level, sizeof(level_t), 1, appVar);
-        comp_tiles = ti_GetDataPtr(appVar);
+        comp_tiles = (const uint8_t *)ti_GetDataPtr(appVar);
         ti_Seek(game.level.compressed_tile_size, SEEK_CUR, appVar);
-        ser_tanks = ti_GetDataPtr(appVar);
+        ser_tanks = (const serialized_tank_t *)ti_GetDataPtr(appVar);
         ti_Seek(sizeof(serialized_tank_t) * game.level.num_tanks, SEEK_CUR, appVar);
 
         uint8_t status = play_level(comp_tiles, ser_tanks);
@@ -108,6 +107,7 @@ void main(void) {
     gfx_End();
 
     ti_CloseAll();
+    return 0;
 }
 
 bool start_mission() {
@@ -202,7 +202,7 @@ uint8_t play_mission(void) {
 }
 
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks) {
-    tanks = malloc(game.level.num_tanks * sizeof(tank_t));
+    tanks = (tank_t*)malloc(game.level.num_tanks * sizeof(tank_t));
     if(!tanks) {
         printf_("Failed to allocate tanks array\n");
         return ERROR;

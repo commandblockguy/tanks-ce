@@ -8,7 +8,6 @@
 
 #include <graphx.h>
 
-
 #include "level.h"
 #include "graphics.h"
 #include "gfx/gfx.h"
@@ -41,7 +40,7 @@ bool init_tank_sprites(tank_type_t type) {
     // return if sprites were already initialized from the last level
     if(tank_bases[type][0]) return true;
 
-    spriteset_t *spriteset = malloc(sizeof(spriteset_t));
+    spriteset_t *spriteset = (spriteset_t *)malloc(sizeof(spriteset_t));
     if(!spriteset) return false;
 
     tank_bases[type][0] = (gfx_sprite_t *) &spriteset->base_0_data;
@@ -230,7 +229,7 @@ void generate_bg_tilemap(void) {
 
 const gfx_tilemap_t tilemap_config = {(uint8_t *) tilemap, tileset_tiles, HALF_TILE_PIXEL_HEIGHT, TILE_PIXEL_SIZE_X,
                                       TILEMAP_HEIGHT, TILEMAP_WIDTH, gfx_tile_no_pow2, gfx_tile_no_pow2, TILEMAP_HEIGHT,
-                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, SCREEN_X(0)};
+                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, (uint24_t)SCREEN_X(0)};
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];

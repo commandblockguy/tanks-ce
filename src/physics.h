@@ -7,9 +7,10 @@
 // Tick / Frame rate
 #define TARGET_TICK_RATE 30
 
-typedef enum {
+enum {
     NONE = 0, UP = 1, DOWN = 2, LEFT = 4, RIGHT = 8
-} direction_t;
+};
+typedef uint8_t direction_t;
 
 enum physics_types {
     PHYS_TANK,
