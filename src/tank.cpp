@@ -8,133 +8,186 @@
 #include "shell.h"
 #include "tank.h"
 
-const uint8_t max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
-const uint8_t max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
-const uint8_t max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
-const uint8_t tank_velocities[] = {(uint8_t)TANK_SPEED_NORMAL,
-                                   (uint8_t)0,
-                                   (uint8_t)TANK_SPEED_SLOW,
-                                   (uint8_t)TANK_SPEED_SLOW,
-                                   (uint8_t)TANK_SPEED_HIGH,
-                                   (uint8_t)TANK_SPEED_NORMAL,
-                                   (uint8_t)0,
-                                   (uint8_t)TANK_SPEED_HIGH,
-                                   (uint8_t)TANK_SPEED_NORMAL,
-                                   (uint8_t)TANK_SPEED_BLACK};
+const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
+const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
+const uint8_t Tank::max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
+const uint8_t Tank::velocities[] = {(uint8_t)TANK_SPEED_NORMAL,
+                                    (uint8_t)0,
+                                    (uint8_t)TANK_SPEED_SLOW,
+                                    (uint8_t)TANK_SPEED_SLOW,
+                                    (uint8_t)TANK_SPEED_HIGH,
+                                    (uint8_t)TANK_SPEED_NORMAL,
+                                    (uint8_t)0,
+                                    (uint8_t)TANK_SPEED_HIGH,
+                                    (uint8_t)TANK_SPEED_NORMAL,
+                                    (uint8_t)TANK_SPEED_BLACK};
 
-void init_tank(tank_t *tank) {
-    tank->phys.type = PHYS_TANK;
-    tank->phys.position_x = TILE_TO_X_COORD(tank->start_x);
-    tank->phys.position_y = TILE_TO_Y_COORD(tank->start_y);
-    tank->phys.velocity_x = 0;
-    tank->phys.velocity_y = 0;
-    tank->phys.height = TANK_SIZE;
-    tank->phys.width = TANK_SIZE;
-    tank->barrel_rot = 0;
-    tank->tread_rot = 0;
+Tank::Tank(const serialized_tank_t *ser_tank) {
+    this->width = TANK_SIZE;
+    this->height = TANK_SIZE;
+    this->respect_holes = true;
+
+    this->alive = true;
+    this->type = ser_tank->type;
+    // add 1 because the level system uses coordinates from the first non-border block
+    this->start_x = ser_tank->start_x + 1;
+    this->start_y = ser_tank->start_y + 1;
+    this->position_x = TILE_TO_X_COORD(this->start_x);
+    this->position_y = TILE_TO_Y_COORD(this->start_y);
+    this->velocity_x = 0;
+    this->velocity_y = 0;
+    this->barrel_rot = 0;
+    this->tread_rot = 0;
 }
 
-//Process tank physics
-void process_tank(tank_t *tank) {
-    if(tank->alive) {
+void Tank::process() {
+    if(this->alive) {
         profiler_add(ai);
-        ai_process_move(tank);
-        ai_process_fire(tank);
+        ai_process_move(this);
+        ai_process_fire(this);
         profiler_end(ai);
 
-        tank->phys.position_x += tank->phys.velocity_x;
-        tank->phys.position_y += tank->phys.velocity_y;
+        this->position_x += this->velocity_x;
+        this->position_y += this->velocity_y;
 
         profiler_add(tank_collision);
-        if(!(kb_IsDown(kb_Key1) && tank == tanks))
-            process_reflection(&tank->phys, true);
+        if(!(kb_IsDown(kb_Key1) && this == tanks))
+            this->process_reflection();
 
         for(int8_t i = game.level.num_tanks - 1; i >= 0; i--) {
             if(tanks[i].alive)
-                collide_and_push(&tank->phys, &tanks[i].phys);
+                collide_and_push(&tanks[i]);
         }
         profiler_end(tank_collision);
     }
 
     //Loop through all shells
     profiler_add(shells);
-    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
-        process_shell(&tank->shells[i], tank);
+    for(int8_t i = max_shells[this->type] - 1; i >= 0; i--) {
+        this->shells[i].process();
     }
     profiler_end(shells);
     //Loop through mines
     profiler_add(mines);
-    if(max_mines[tank->type]) {
-        for(int8_t i = max_mines[tank->type] - 1; i >= 0; i--) {
-            process_mine(&tank->mines[i], tank);
+    if(max_mines[this->type]) {
+        for(int8_t i = max_mines[this->type] - 1; i >= 0; i--) {
+            this->mines[i].process();
         }
     }
     profiler_end(mines);
 }
 
-bool fire_shell(tank_t *tank) {
-    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
-        shell_t *shell = &tank->shells[i];
+bool Tank::fire_shell() {
+    for(int8_t i = max_shells[this->type] - 1; i >= 0; i--) {
+        Shell *shell = &this->shells[i];
         int24_t vector_x, vector_y;
 
         if(shell->alive) continue;
 
+        shell->tank = this;
         shell->alive = true;
         shell->left_tank_hitbox = false;
-        shell->bounces = max_bounces[tank->type];
+        shell->bounces = max_bounces[this->type];
 
-        vector_x = fast_cos(tank->barrel_rot);
-        vector_y = fast_sin(tank->barrel_rot);
+        vector_x = fast_cos(this->barrel_rot);
+        vector_y = fast_sin(this->barrel_rot);
 
-        shell->phys.position_x = center_x(&tank->phys) + BARREL_LENGTH * vector_x / TRIG_SCALE;
-        shell->phys.position_y = center_y(&tank->phys) + BARREL_LENGTH * vector_y / TRIG_SCALE;
+        shell->position_x = this->center_x() + BARREL_LENGTH * vector_x / TRIG_SCALE;
+        shell->position_y = this->center_y() + BARREL_LENGTH * vector_y / TRIG_SCALE;
 
-        shell->phys.type = PHYS_SHELL;
-        shell->phys.width = shell->phys.height = SHELL_SIZE;
-        if(tank->type == MISSILE || tank->type == IMMOB_MISSILE) {
-            shell->phys.velocity_x = SHELL_SPEED_MISSILE * vector_x / TRIG_SCALE;
-            shell->phys.velocity_y = SHELL_SPEED_MISSILE * vector_y / TRIG_SCALE;
+        shell->width = shell->height = SHELL_SIZE;
+        if(this->type == MISSILE || this->type == IMMOB_MISSILE) {
+            shell->velocity_x = SHELL_SPEED_MISSILE * vector_x / TRIG_SCALE;
+            shell->velocity_y = SHELL_SPEED_MISSILE * vector_y / TRIG_SCALE;
         } else {
-            shell->phys.velocity_x = SHELL_SPEED_STANDARD * vector_x / TRIG_SCALE;
-            shell->phys.velocity_y = SHELL_SPEED_STANDARD * vector_y / TRIG_SCALE;
+            shell->velocity_x = SHELL_SPEED_STANDARD * vector_x / TRIG_SCALE;
+            shell->velocity_y = SHELL_SPEED_STANDARD * vector_y / TRIG_SCALE;
         }
-        shell->direction = angle_to_shell_direction(tank->barrel_rot);
+        shell->direction = Shell::angle_to_shell_direction(this->barrel_rot);
         return true;
     }
     return false;
 }
 
-bool can_shoot(tank_t *tank) {
-    for(int8_t i = max_shells[tank->type] - 1; i >= 0; i--) {
-        if(!tank->shells[i].alive) {
+bool Tank::can_shoot() {
+    for(int8_t i = max_shells[this->type] - 1; i >= 0; i--) {
+        if(!this->shells[i].alive) {
             return true;
         }
     }
     return false;
 }
 
-bool lay_mine(tank_t *tank) {
-    if(!max_mines[tank->type]) return false;
-    for(int8_t i = max_mines[tank->type] - 1; i >= 0; i--) {
-        mine_t *mine = &tank->mines[i];
+bool Tank::lay_mine() {
+    if(!max_mines[this->type]) return false;
+    for(int8_t i = max_mines[this->type] - 1; i >= 0; i--) {
+        Mine *mine = &this->mines[i];
         if(mine->alive) continue;
+        mine->tank = this;
         mine->alive = true;
         mine->countdown = MINE_COUNTDOWN;
-        mine->phys.type = PHYS_MINE;
-        mine->phys.position_x = tank->phys.position_x + (TANK_SIZE - MINE_SIZE) / 2;
-        mine->phys.position_y = tank->phys.position_y + (TANK_SIZE - MINE_SIZE) / 2;
-        mine->phys.width = mine->phys.height = MINE_SIZE;
+        mine->position_x = this->position_x + (TANK_SIZE - MINE_SIZE) / 2;
+        mine->position_y = this->position_y + (TANK_SIZE - MINE_SIZE) / 2;
+        mine->width = mine->height = MINE_SIZE;
         return true;
     }
     return false;
 }
 
-void set_velocity(tank_t *tank, int24_t velocity) {
+void Tank::set_velocity(int24_t velocity) {
     if(velocity == 0) {
-        tank->phys.velocity_x = 0;
-        tank->phys.velocity_y = 0;
+        this->velocity_x = 0;
+        this->velocity_y = 0;
     } else {
-        tank->phys.velocity_x = (int24_t) velocity * fast_cos(tank->tread_rot) / TRIG_SCALE;
-        tank->phys.velocity_y = (int24_t) velocity * fast_sin(tank->tread_rot) / TRIG_SCALE;
+        this->velocity_x = (int24_t) velocity * fast_cos(this->tread_rot) / TRIG_SCALE;
+        this->velocity_y = (int24_t) velocity * fast_sin(this->tread_rot) / TRIG_SCALE;
     }
+}
+
+bool Tank::collide_and_push(Tank *other) {
+    //Figure out if the four corners are colliding
+    bool top_right = other->is_point_inside(this->position_x + this->width, this->position_y);
+    bool bottom_right = other->is_point_inside(this->position_x + this->width, this->position_y + this->height);
+    bool top_left = other->is_point_inside(this->position_x, this->position_y);
+    bool bottom_left = other->is_point_inside(this->position_x, this->position_y + this->height);
+
+    uint24_t dis_up = -1;
+    uint24_t dis_down = -1;
+    uint24_t dis_left = -1;
+    uint24_t dis_right = -1;
+
+    if(!(top_right || bottom_right || top_left || bottom_left)) return false;
+
+    if((top_right || bottom_right)) {
+        dis_right = this->position_x + this->width - other->position_x;
+    }
+    if((top_left || bottom_left)) {
+        dis_left = other->position_x + other->width - this->position_x;
+    }
+    if((top_left || top_right)) {
+        dis_up = other->position_y + other->height - this->position_y;
+    }
+    if((bottom_left || bottom_right)) {
+        dis_down = this->position_y + this->height - other->position_y;
+    }
+
+    //pick the direction with the smallest distance
+    if(dis_up < dis_left && dis_up < dis_right) {
+        this->position_y += dis_up / 2;
+        other->position_y -= dis_up / 2;
+    }
+    if(dis_left < dis_up && dis_left < dis_down) {
+        this->position_x += dis_left / 2;
+        other->position_x -= dis_left / 2;
+    }
+    if(dis_down < dis_left && dis_down < dis_right) {
+        this->position_y -= dis_down / 2;
+        other->position_y += dis_down / 2;
+    }
+    if(dis_right < dis_up && dis_right < dis_down) {
+        this->position_x -= dis_right / 2;
+        other->position_x += dis_right / 2;
+    }
+
+    return true;
 }

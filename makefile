@@ -9,6 +9,7 @@ ARCHIVED ?= YES
 OUTPUT_MAP ?= YES
 
 CFLAGS ?= -Wall -Wextra -O3
+CXXFLAGS ?= -Wall -Wextra -fno-rtti
 
 # ----------------------------
 

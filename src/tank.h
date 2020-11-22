@@ -2,6 +2,7 @@
 #define TANKS_TANK_H
 
 typedef uint8_t tank_type_t;
+class Tank;
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -39,52 +40,42 @@ enum {
 };
 
 typedef struct {
-    //A tank, used while gameplay occurs
-    tank_type_t type;
-    bool alive; //Whether this tank is alive or exploded.
-    uint8_t start_x;
-    uint8_t start_y;
-    physics_body_t phys;
-    angle_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
-    angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
-    shell_t shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
-    mine_t mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
-    ai_move_state_t ai_move;
-    ai_fire_state_t ai_fire;
-} tank_t;
-
-typedef struct {
     //A tank as stored in the level file
     tank_type_t type;
     uint8_t start_x; //Tile the tank starts on
     uint8_t start_y;
 } serialized_tank_t;
 
-void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank); //Convert a serialized tank into an actual one
+class Tank: public PhysicsBody {
+public:
+    Tank(const serialized_tank_t *ser_tank);
 
-void init_tank(tank_t *tank);
+    tank_type_t type;
+    bool alive; //Whether this tank is alive or exploded.
+    uint8_t start_x;
+    uint8_t start_y;
+    angle_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
+    angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
+    Shell shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
+    Mine mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
+    ai_move_state_t ai_move;
+    ai_fire_state_t ai_fire;
 
-void process_tank(tank_t *tank);
+    void process();
+    void render();
+    bool fire_shell();
+    bool lay_mine();
+    bool can_shoot();
+    void set_velocity(int24_t velocity);
+    bool collide_and_push(Tank *other);
 
-void process_mine(mine_t *mine, tank_t *tank);
-
-void process_shell(shell_t *shell, tank_t *tank);
-
-bool fire_shell(tank_t *tank); //PEW PEW PEW
-
-bool lay_mine(tank_t *tank); //Lay a mine under the tank
-
-//true if a tank has a slot for a shell
-bool can_shoot(tank_t *tank);
-
-void set_velocity(tank_t *tank, int24_t velocity);
-
-//Number of shots each type of tank can have on-screen at any one time
-extern const uint8_t max_shells[];
-//Number of times a shell from a certain tank type can bounce off a wall
-extern const uint8_t max_bounces[];
-//Number of mines each type of tank can have on-screen at any one time
-extern const uint8_t max_mines[];
-extern const uint8_t tank_velocities[];
+    //Number of shots each type of tank can have on-screen at any one time
+    static const uint8_t max_shells[];
+    //Number of times a shell from a certain tank type can bounce off a wall
+    static const uint8_t max_bounces[];
+    //Number of mines each type of tank can have on-screen at any one time
+    static const uint8_t max_mines[];
+    static const uint8_t velocities[];
+};
 
 #endif //TANKS_TANK_H

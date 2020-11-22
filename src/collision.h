@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "util.h"
-#include "physics.h"
 
 typedef struct {
     int24_t x1;
@@ -21,24 +20,11 @@ typedef struct {
     int24_t y2;
 } line_seg_t;
 
-//Determine if two bounding boxes are intersecting
-bool detect_collision(physics_body_t *p1, physics_body_t *p2);
-
-//Check if a point is inside a bounding box
-bool is_point_inside_body(physics_body_t *p, int24_t x, int24_t y);
-
-//Determine if a collision occurs with the tilemap
-direction_t process_reflection(physics_body_t *p, bool respect_holes);
-
-//if colliding, push bodies an equal distance apart and return true
-bool collide_and_push(physics_body_t *p1, physics_body_t *p2);
-
-bool center_distance_less_than(physics_body_t *p1, physics_body_t *p2, uint24_t dis);
-
 bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result);
 
-bool seg_collides_body(line_seg_t *ls, physics_body_t *phys);
+bool check_tile_collision(uint24_t x, uint24_t y, bool respect_holes);
 
+bool seg_collides_seg(line_seg_t *l1, line_seg_t *l2);
 bool seg_collides_seg(line_seg_t *l1, line_seg_t *l2, int24_t *intercept_x, int24_t *intercept_y);
 
 int24_t y_intercept(line_seg_t *line, int24_t x_pos);

@@ -14,7 +14,7 @@
 
 uint8_t handle_input(void) {
     profiler_start(input);
-    tank_t* player = &tanks[0];
+    Tank *player = &tanks[0];
     bool moving = true;
     angle_t target_rot;
     uint8_t keys = 0;
@@ -77,20 +77,20 @@ uint8_t handle_input(void) {
         }
 
         if((uint24_t)abs(diff) <= DEGREES_TO_ANGLE(45)) {
-            set_velocity(player, TANK_SPEED_NORMAL);
+            player->set_velocity(TANK_SPEED_NORMAL);
         } else {
-            set_velocity(player, 0);
+            player->set_velocity(0);
         }
     } else {
-        set_velocity(player, 0);
+        player->set_velocity(0);
     }
 
     if(kb_IsDown(kb_Key2nd) && !game.shotCooldown) {
-        fire_shell(player);
+        player->fire_shell();
         game.shotCooldown = SHOT_COOLDOWN;
     }
     if(kb_IsDown(kb_KeyAlpha) && !game.mineCooldown) {
-        lay_mine(player);
+        player->lay_mine();
         game.mineCooldown = MINE_COOLDOWN;
     }
     if(kb_IsDown(kb_KeyMode)) {

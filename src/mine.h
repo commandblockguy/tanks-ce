@@ -1,9 +1,13 @@
 #ifndef TANKS_MINE_H
 #define TANKS_MINE_H
 
+class Mine;
+
 #include <stdbool.h>
 #include <intce.h>
 #include "collision.h"
+#include "physics.h"
+#include "fwd.h"
 
 #define MINE_SIZE TILE_SIZE
 
@@ -27,12 +31,15 @@
 //120 pixels / 48 px/tile = 2.5 tiles
 #define MINE_EXPLOSION_RADIUS (2.5 * TILE_SIZE)
 
-typedef struct {
-    bool alive; //Whether this mine is processed
-    physics_body_t phys;
+class Mine: public PhysicsBody {
+public:
+    Mine();
+    bool alive;
     uint24_t countdown; //Number of physics loops until explosions occur
-} mine_t;
+    Tank *tank;
+    void detonate();
 
-void detonate(mine_t *mine);
+    void process();
+};
 
 #endif //TANKS_MINE_H

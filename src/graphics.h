@@ -15,6 +15,7 @@
 #include "level.h"
 #include "gfx/gfx.h"
 #include "tank.h"
+#include "fwd.h"
 
 enum colors {
     COL_WHITE = 1,
@@ -126,8 +127,6 @@ void init_graphics(void);
 
 void render(void); //Render tilemap, tanks, and UI during the game loop
 
-void render_physics_body(physics_body_t *phys);
-
 void draw_line(line_seg_t *ls);
 
 void generate_bg_tilemap(void);
@@ -135,6 +134,8 @@ void generate_bg_tilemap(void);
 bool init_tank_sprites(tank_type_t type);
 
 void free_tank_sprites(tank_type_t type);
+
+void render_physics_body(PhysicsBody *phys);
 
 extern bool needs_redraw; // set if the entire map should be redrawn
 

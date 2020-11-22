@@ -20,7 +20,7 @@ typedef struct {
     uint8_t mineCooldown;
 } game_t;
 
-extern tank_t *tanks;
+extern Tank *tanks;
 extern tile_t tiles[LEVEL_SIZE_Y][LEVEL_SIZE_X];
 extern game_t game;
 

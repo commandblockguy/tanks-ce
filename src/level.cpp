@@ -235,14 +235,6 @@ void create_levels(void) {
 #endif
 }
 
-void deserialize_tank(tank_t *tank, const serialized_tank_t *ser_tank) {
-    tank->type = ser_tank->type;
-    // add 1 because the level system uses coordinates from the first non-border block
-    tank->start_x = ser_tank->start_x + 1;
-    tank->start_y = ser_tank->start_y + 1;
-    init_tank(tank);
-}
-
 void decompress_tiles(const void *comp_tiles) {
     //Decompress tile data
     zx7_Decompress(tiles, comp_tiles);

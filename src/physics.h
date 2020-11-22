@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "collision.h"
 
 // Tick / Frame rate
 #define TARGET_TICK_RATE 30
@@ -12,34 +13,39 @@ enum {
 };
 typedef uint8_t direction_t;
 
-enum physics_types {
-    PHYS_TANK,
-    PHYS_SHELL,
-    PHYS_MINE,
-    PHYS_MINE_DETECTOR
-};
+#define MAX_OBJECTS 255
 
-typedef struct {
-    uint8_t type;
+class PhysicsBody {
+public:
     int24_t position_x;
     int24_t position_y;
     int24_t velocity_x;
     int24_t velocity_y;
     uint24_t width;
     uint24_t height;
-} physics_body_t;
 
-#define MAX_OBJECTS 255
+    // Whether or not to collide with holes
+    bool respect_holes;
 
-// An array of physics objects, sorted from least to greatest Y position
-extern physics_body_t *objects[MAX_OBJECTS];
-extern uint8_t num_objects;
+    // An array of physics objects, sorted from least to greatest Y position
+    static PhysicsBody *objects[MAX_OBJECTS];
+    static uint8_t num_objects;
 
-inline uint24_t center_x(const physics_body_t *p) { return p->position_x + p->width / 2; }
-inline uint24_t center_y(const physics_body_t *p) { return p->position_y + p->height / 2; }
+    uint24_t center_x() const;
+    uint24_t center_y() const;
 
-bool add_object(physics_body_t *phys);
-void remove_object(physics_body_t *phys);
-void sort_objects(void);
+    bool detect_collision(PhysicsBody *other) const;
+    bool is_point_inside(int24_t x, int24_t y) const;
+    direction_t process_reflection();
+    bool center_distance_less_than(PhysicsBody *other, uint24_t dis) const;
+    bool collides_line(line_seg_t *seg) const;
+
+    bool add();
+    void remove();
+    static void sort();
+
+    virtual void process() = 0;
+    virtual void render();
+};
 
 #endif //TANKS_PHYSICS_H

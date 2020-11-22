@@ -256,7 +256,7 @@ void draw_aim_dots(void) {
     angle_t angle = tanks[0].barrel_rot;
 
     profiler_add(raycast);
-    raycast(center_x(&tanks[0].phys), center_y(&tanks[0].phys), angle, &line);
+    raycast(tanks[0].center_x(), tanks[0].center_y(), angle, &line);
     profiler_end(raycast);
 
     int24_t dx = (line.x2 - line.x1) / num_dots;
@@ -277,10 +277,10 @@ void draw_aim_dots(void) {
 }
 
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
-                            const physics_body_t *phys, uint8_t rotation, uint8_t height) {
+                            const PhysicsBody *phys, uint8_t rotation, uint8_t height) {
     profiler_add(render_obscured);
-    uint24_t base_x = SCREEN_X(center_x(phys)) - SPRITE_OFFSET_X;
-    uint8_t base_y = SCREEN_Y(center_y(phys)) - SPRITE_OFFSET_Y;
+    uint24_t base_x = SCREEN_X(phys->center_x()) - SPRITE_OFFSET_X;
+    uint8_t base_y = SCREEN_Y(phys->center_y()) - SPRITE_OFFSET_Y;
     gfx_sprite_t *sprite = sprites[rotation];
     uint24_t sprite_x = base_x + offsets_x[rotation];
     uint8_t sprite_y = base_y + offsets_y[rotation];
@@ -304,52 +304,52 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
     profiler_end(render_obscured);
 }
 
-void render_shell(shell_t *shell) {
-    if(shell->alive) {
-        uint8_t sprite = shell->direction;
-        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, &shell->phys, sprite, 0);
+void Shell::render() {
+    if(this->alive) {
+        uint8_t sprite = this->direction;
+        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
     }
 }
 
-void render_tank(tank_t *tank) {
-    if(tank->alive) {
-        uint8_t base_sprite = (((uint8_t) -((tank->tread_rot >> 16) - 64)) >> 3) & 0xF;
-        uint8_t turret_sprite = ((uint8_t) -((tank->barrel_rot >> 16) - 64)) >> 4;
+void Tank::render() {
+    if(this->alive) {
+        uint8_t base_sprite = (((uint8_t) -((this->tread_rot >> 16) - 64)) >> 3) & 0xF;
+        uint8_t turret_sprite = ((uint8_t) -((this->barrel_rot >> 16) - 64)) >> 4;
 
         // todo: a lot of this seems to be running twice as often as it needs to
-        if(tank->type == PLAYER) {
-            render_obscured_object(tank_bases[tank->type], pl_base_x_offsets, pl_base_y_offsets, &tank->phys,
+        if(this->type == PLAYER) {
+            render_obscured_object(tank_bases[this->type], pl_base_x_offsets, pl_base_y_offsets, this,
                                    base_sprite, 0);
-            render_obscured_object(tank_turrets[tank->type], pl_turret_x_offsets, pl_turret_y_offsets, &tank->phys,
+            render_obscured_object(tank_turrets[this->type], pl_turret_x_offsets, pl_turret_y_offsets, this,
                                    turret_sprite, 0);
         } else {
-            render_obscured_object(tank_bases[tank->type], en_base_x_offsets, en_base_y_offsets, &tank->phys,
+            render_obscured_object(tank_bases[this->type], en_base_x_offsets, en_base_y_offsets, this,
                                    base_sprite, 0);
-            render_obscured_object(tank_turrets[tank->type], en_turret_x_offsets, en_turret_y_offsets, &tank->phys,
+            render_obscured_object(tank_turrets[this->type], en_turret_x_offsets, en_turret_y_offsets, this,
                                    turret_sprite, 0);
         }
     }
 
     //draw shell hitboxes until I can get sprites
     profiler_add(render_shells);
-    for(int8_t j = max_shells[tank->type] - 1; j >= 0; j--) {
-        shell_t *shell = &tank->shells[j];
-        if(shell->alive) render_shell(shell);
+    for(int8_t j = max_shells[this->type] - 1; j >= 0; j--) {
+        Shell *shell = &this->shells[j];
+        if(shell->alive) shell->render();
     }
     profiler_end(render_shells);
     //draw mine hitboxes
     profiler_add(render_mines);
-    for(int8_t j = max_mines[tank->type] - 1; j >= 0; j--) {
-        mine_t *mine = &tank->mines[j];
+    for(int8_t j = max_mines[this->type] - 1; j >= 0; j--) {
+        Mine *mine = &this->mines[j];
         if(!mine->countdown) continue;
         gfx_SetColor(COL_RED);
         if(mine->alive) gfx_SetColor(COL_BLACK);
-        render_physics_body(&mine->phys);
+        mine->render();
     }
     profiler_end(render_mines);
 }
 
-void render(void) {
+void render() {
     profiler_start(graphics);
 
     profiler_start(gfx_wait);
@@ -381,7 +381,7 @@ void render(void) {
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        render_tank(&tanks[i]);
+        tanks[i].render();
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
     profiler_end(render_tanks);
@@ -396,11 +396,11 @@ void render(void) {
     profiler_end(graphics);
 }
 
-void render_physics_body(physics_body_t *phys) {
-    uint24_t x = SCREEN_X(phys->position_x);
-    uint8_t y = SCREEN_Y(phys->position_y);
-    uint8_t width = SCREEN_DELTA_X(phys->width);
-    uint8_t height = SCREEN_DELTA_Y(phys->height);
+void PhysicsBody::render() {
+    uint24_t x = SCREEN_X(this->position_x);
+    uint8_t y = SCREEN_Y(this->position_y);
+    uint8_t width = SCREEN_DELTA_X(this->width);
+    uint8_t height = SCREEN_DELTA_Y(this->height);
     pdraw_RectRegion(x, y, width, height);
     gfx_Rectangle(x, y, width, height);
 }

@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include "collision.h"
+#include "physics.h"
+#include "fwd.h"
 
 #define SHELL_SIZE (TILE_SIZE * 3 / 14)
 
@@ -22,22 +24,26 @@
 //10.1827272392 tiles/second
 #define SHELL_SPEED_MISSILE (10.1827272392 * TILE_SIZE / TARGET_TICK_RATE)
 
-typedef struct {
+class Shell: public PhysicsBody {
+public:
+    Shell();
+
     bool alive; //Whether this shell is processed
-    physics_body_t phys;
     uint8_t bounces; //Number of times the shell can bounce off a wall without exploding
     bool left_tank_hitbox; //Whether the shell has exited the tank hitbox yet. Used to stop shells from blowing up the tank that fired them.
     uint8_t direction;
-} shell_t;
+    Tank *tank;
 
-//Bounce a shell off a wall
-//Returns whether or not the shell is still alive
-bool shell_ricochet(shell_t *shell, direction_t dir);
+    void process();
+    void render();
+    //Bounce a shell off a wall
+    //Returns whether or not the shell is still alive
+    bool ricochet(direction_t dir);
+    void update_direction();
 
-uint8_t inline angle_to_shell_direction(angle_t angle) {
-    return ((uint8_t) -((angle >> 16) - 64)) >> 4;
-}
-
-void update_shell_direction(shell_t *shell);
+    static uint8_t angle_to_shell_direction(angle_t angle) {
+        return ((uint8_t) -((angle >> 16) - 64)) >> 4;
+    }
+};
 
 #endif //TANKS_SHELL_H

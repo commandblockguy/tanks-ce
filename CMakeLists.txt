@@ -22,4 +22,4 @@ add_executable(dummy
         src/level.h
         src/main.cpp
         src/util.cpp
-        src/util.h src/tank.cpp src/tank.h src/shell.cpp src/shell.h src/mine.cpp src/mine.h src/globals.cpp src/globals.h src/profiler.cpp src/profiler.h src/gui.cpp src/gui.h src/partial_redraw.cpp src/partial_redraw.h src/dynamic_sprites.cpp src/dynamic_sprites.h src/ai_state.h src/physics.cpp src/physics.h src/input.cpp src/input.h)
+        src/util.h src/tank.cpp src/tank.h src/shell.cpp src/shell.h src/mine.cpp src/mine.h src/globals.cpp src/globals.h src/profiler.cpp src/profiler.h src/gui.cpp src/gui.h src/partial_redraw.cpp src/partial_redraw.h src/dynamic_sprites.cpp src/dynamic_sprites.h src/ai_state.h src/physics.cpp src/physics.h src/input.cpp src/input.h src/fwd.h)

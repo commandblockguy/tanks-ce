@@ -26,6 +26,15 @@
 #include "gui.h"
 #include "input.h"
 
+#include <stdlib.h>
+
+#ifdef __cplusplus
+void *operator new(size_t size) { return malloc(size); }
+void *operator new(size_t, void *ptr) { return ptr; }
+void *operator new[](size_t size) { return operator new(size); }
+void *operator new[](size_t, void *ptr) { return ptr; }
+#endif
+
 bool start_mission(void); //Start a mission and reset various tank things.
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks);
 uint8_t play_mission(void);
@@ -116,20 +125,20 @@ bool start_mission() {
     tanks[0].alive = true;
     //Initialize tanks
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        tank_t *tank = &tanks[i];
+        Tank *tank = &tanks[i];
         int j;
         if(tank->alive) {
             remaining_tanks++;
-            tank->phys.position_x = TILE_TO_X_COORD(tank->start_x);
-            tank->phys.position_y = TILE_TO_Y_COORD(tank->start_y);
+            tank->position_x = TILE_TO_X_COORD(tank->start_x);
+            tank->position_y = TILE_TO_Y_COORD(tank->start_y);
             tank->barrel_rot = 0;
             tank->tread_rot = DEGREES_TO_ANGLE(270);
             tank_type_used[tank->type] = true;
         }
-        for(j = max_shells[tank->type] - 1; j >= 0; j--) {
+        for(j = Tank::max_shells[tank->type] - 1; j >= 0; j--) {
             tank->shells[j].alive = false;
         }
-        for(j = max_mines[tank->type] - 1; j >= 0; j--) {
+        for(j = Tank::max_mines[tank->type] - 1; j >= 0; j--) {
             tank->mines[j].countdown = 0;
             tank->mines[j].alive = false;
         }
@@ -158,7 +167,7 @@ bool start_mission() {
     return true;
 }
 
-uint8_t play_mission(void) {
+uint8_t play_mission() {
     start_mission();
     while(true) {
         profiler_start(total);
@@ -177,9 +186,10 @@ uint8_t play_mission(void) {
         uint8_t status = handle_input();
         if(status) return status;
 
+
         profiler_start(physics);
         for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-            process_tank(&tanks[i]);
+            tanks[i].process();
             if(i && tanks[i].alive) {
                 alive_tanks++;
             }
@@ -202,14 +212,13 @@ uint8_t play_mission(void) {
 }
 
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks) {
-    tanks = (tank_t*)malloc(game.level.num_tanks * sizeof(tank_t));
+    tanks = (Tank*)malloc(game.level.num_tanks * sizeof(Tank));
     if(!tanks) {
         printf_("Failed to allocate tanks array\n");
         return ERROR;
     }
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        deserialize_tank(&tanks[i], &ser_tanks[i]);
-        tanks[i].alive = true;
+        new (&tanks[i]) Tank(&ser_tanks[i]);
     }
 
     decompress_tiles(comp_tiles);
