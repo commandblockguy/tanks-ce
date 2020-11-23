@@ -1,6 +1,8 @@
 #ifndef TANKS_DYNAMIC_SPRITES_H
 #define TANKS_DYNAMIC_SPRITES_H
 
+#include <graphx.h>
+
 extern gfx_sprite_t *tank_bases[NUM_TANK_TYPES][16];
 extern gfx_sprite_t *tank_turrets[NUM_TANK_TYPES][16];
 

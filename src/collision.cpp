@@ -131,3 +131,20 @@ int24_t y_intercept(line_seg_t *line, int24_t x_pos) {
 int24_t x_intercept(line_seg_t *line, int24_t y_pos) {
     return line->x1 + (line->x2 - line->x1) * (y_pos - line->y1) / (line->y2 - line->y1);
 }
+
+void process_collisions() {
+    for(auto *it = PhysicsBody::objects.begin(); it < PhysicsBody::objects.end();) {
+        PhysicsBody *old_ptr = *it;
+        uint24_t bottom_y = (**it).position_y + (**it).height;
+        for(auto *other = it + 1; other < PhysicsBody::objects.end() && (**other).position_y <= bottom_y; other++) {
+            if((**other).position_x < (**it).position_x + (**it).width &&
+               (**it).position_x < (**other).position_x + (**other).width) {
+                (**other).handle_collision(*it);
+                (**it).handle_collision(*other);
+                break;
+            }
+        }
+        // Advance unless we deleted the current element
+        if(old_ptr == *it) it++;
+    }
+}

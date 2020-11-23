@@ -2,6 +2,7 @@
 #include "tank.h"
 #include "mine.h"
 #include "globals.h"
+#include "dynamic_sprites.h"
 
 Shell::Shell() {
     width = SHELL_SIZE;
@@ -63,6 +64,11 @@ void Shell::process() {
     }
 }
 
+void Shell::render() {
+    uint8_t sprite = direction;
+    render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
+}
+
 bool Shell::ricochet(direction_t dir) {
     if(!bounces) {
         delete this;
@@ -87,4 +93,20 @@ bool Shell::ricochet(direction_t dir) {
 void Shell::update_direction() {
     angle_t angle = fast_atan2(velocity_y, velocity_x);
     direction = angle_to_shell_direction(angle);
+}
+
+void Shell::handle_collision(PhysicsBody *other) {
+    other->collide(this);
+}
+
+void Shell::collide(Tank *tank) {
+    printf_("Shell collided with tank\n");
+}
+
+void Shell::collide(Shell *shell) {
+
+}
+
+void Shell::collide(Mine *mine) {
+
 }

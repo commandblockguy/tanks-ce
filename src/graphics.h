@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <graphx.h>
+
 #include "collision.h"
 #include "level.h"
 #include "gfx/gfx.h"
@@ -134,6 +136,9 @@ void generate_bg_tilemap(void);
 bool init_tank_sprites(tank_type_t type);
 
 void free_tank_sprites(tank_type_t type);
+
+void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
+                            const PhysicsBody *phys, uint8_t rotation, uint8_t height);
 
 void render_physics_body(PhysicsBody *phys);
 

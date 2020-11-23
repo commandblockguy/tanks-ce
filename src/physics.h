@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <TINYSTL/vector.h>
 #include "collision.h"
+#include "fwd.h"
 
 // Tick / Frame rate
 #define TARGET_TICK_RATE 30
@@ -47,6 +48,12 @@ public:
 
     virtual void process() = 0;
     virtual void render();
+
+    // Polymorphic ping-pong (aka "visitor pattern," apparently)
+    virtual void handle_collision(PhysicsBody *other) = 0;
+    virtual void collide(Tank *tank) = 0;
+    virtual void collide(Shell *shell) = 0;
+    virtual void collide(Mine *mine) = 0;
 };
 
 #endif //TANKS_PHYSICS_H

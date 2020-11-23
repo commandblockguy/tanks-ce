@@ -87,3 +87,19 @@ void Mine::detonate() {
 
     delete this;
 }
+
+void Mine::handle_collision(PhysicsBody *other) {
+    other->collide(this);
+}
+
+void Mine::collide(Tank *tank) {
+
+}
+
+void Mine::collide(Shell *shell) {
+
+}
+
+void Mine::collide(Mine *mine) {
+
+}

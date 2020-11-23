@@ -39,6 +39,11 @@ public:
     void detonate();
 
     void process();
+
+    void handle_collision(PhysicsBody *other);
+    void collide(Tank *tank);
+    void collide(Shell *shell);
+    void collide(Mine *mine);
 };
 
 #endif //TANKS_MINE_H

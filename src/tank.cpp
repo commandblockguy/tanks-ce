@@ -7,6 +7,7 @@
 #include "profiler.h"
 #include "shell.h"
 #include "tank.h"
+#include "dynamic_sprites.h"
 
 const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
@@ -28,7 +29,7 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
     respect_holes = true;
 
     type = ser_tank->type;
-    id = id;
+    this->id = id;
     // add 1 because the level system uses coordinates from the first non-border block
     start_x = ser_tank->start_x + 1;
     start_y = ser_tank->start_y + 1;
@@ -72,6 +73,24 @@ void Tank::process() {
 //            collide_and_push(&tanks[i]);
 //    }
     profiler_end(tank_collision);
+}
+
+void Tank::render() {
+    uint8_t base_sprite = (((uint8_t) -((tread_rot >> 16) - 64)) >> 3) & 0xF;
+    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> 16) - 64)) >> 4;
+
+    // todo: a lot of this seems to be running twice as often as it needs to
+    if(type == PLAYER) {
+        render_obscured_object(tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, this,
+                               base_sprite, 0);
+        render_obscured_object(tank_turrets[type], pl_turret_x_offsets, pl_turret_y_offsets, this,
+                               turret_sprite, 0);
+    } else {
+        render_obscured_object(tank_bases[type], en_base_x_offsets, en_base_y_offsets, this,
+                               base_sprite, 0);
+        render_obscured_object(tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, this,
+                               turret_sprite, 0);
+    }
 }
 
 void Tank::fire_shell() {
@@ -178,4 +197,20 @@ bool Tank::collide_and_push(Tank *other) {
     }
 
     return true;
+}
+
+void Tank::handle_collision(PhysicsBody *other) {
+    other->collide(this);
+}
+
+void Tank::collide(Tank *tank) {
+
+}
+
+void Tank::collide(Shell *shell) {
+    printf_("Tank collided with shell\n");
+}
+
+void Tank::collide(Mine *mine) {
+
 }

@@ -20,6 +20,8 @@ typedef struct {
     int24_t y2;
 } line_seg_t;
 
+void process_collisions();
+
 bool raycast(uint24_t startX, uint24_t startY, angle_t angle, line_seg_t *result);
 
 bool check_tile_collision(uint24_t x, uint24_t y, bool respect_holes);

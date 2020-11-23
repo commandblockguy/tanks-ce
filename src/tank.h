@@ -67,6 +67,7 @@ public:
     void fire_shell();
     void lay_mine();
     bool can_shoot() const;
+    bool can_lay_mine() const;
     void set_velocity(int24_t velocity);
     bool collide_and_push(Tank *other);
 
@@ -78,7 +79,10 @@ public:
     static const uint8_t max_mines[];
     static const uint8_t velocities[];
 
-    bool can_lay_mine() const;
+    void handle_collision(PhysicsBody *other);
+    void collide(Tank *tank);
+    void collide(Shell *shell);
+    void collide(Mine *mine);
 };
 
 #endif //TANKS_TANK_H

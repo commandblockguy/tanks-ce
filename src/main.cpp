@@ -174,6 +174,7 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
         for(auto it: PhysicsBody::objects) {
             it->process();
         }
+        process_collisions();
         profiler_end(physics);
 
         if(!game.num_tanks) {

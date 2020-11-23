@@ -304,29 +304,6 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
     profiler_end(render_obscured);
 }
 
-void Shell::render() {
-    uint8_t sprite = direction;
-    render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
-}
-
-void Tank::render() {
-    uint8_t base_sprite = (((uint8_t) -((tread_rot >> 16) - 64)) >> 3) & 0xF;
-    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> 16) - 64)) >> 4;
-
-    // todo: a lot of this seems to be running twice as often as it needs to
-    if(type == PLAYER) {
-        render_obscured_object(tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, this,
-                               base_sprite, 0);
-        render_obscured_object(tank_turrets[type], pl_turret_x_offsets, pl_turret_y_offsets, this,
-                               turret_sprite, 0);
-    } else {
-        render_obscured_object(tank_bases[type], en_base_x_offsets, en_base_y_offsets, this,
-                               base_sprite, 0);
-        render_obscured_object(tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, this,
-                               turret_sprite, 0);
-    }
-}
-
 void render() {
     profiler_start(graphics);
 

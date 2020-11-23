@@ -44,6 +44,11 @@ public:
     static uint8_t angle_to_shell_direction(angle_t angle) {
         return ((uint8_t) -((angle >> 16) - 64)) >> 4;
     }
+
+    void handle_collision(PhysicsBody *other);
+    void collide(Tank *tank);
+    void collide(Shell *shell);
+    void collide(Mine *mine);
 };
 
 #endif //TANKS_SHELL_H
