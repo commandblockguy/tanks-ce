@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <TINYSTL/vector.h>
 #include "collision.h"
 
 // Tick / Frame rate
@@ -17,6 +18,9 @@ typedef uint8_t direction_t;
 
 class PhysicsBody {
 public:
+    PhysicsBody();
+    virtual ~PhysicsBody();
+
     int24_t position_x;
     int24_t position_y;
     int24_t velocity_x;
@@ -28,8 +32,7 @@ public:
     bool respect_holes;
 
     // An array of physics objects, sorted from least to greatest Y position
-    static PhysicsBody *objects[MAX_OBJECTS];
-    static uint8_t num_objects;
+    static tinystl::vector<PhysicsBody*> objects;
 
     uint24_t center_x() const;
     uint24_t center_y() const;
@@ -40,8 +43,6 @@ public:
     bool center_distance_less_than(PhysicsBody *other, uint24_t dis) const;
     bool collides_line(line_seg_t *seg) const;
 
-    bool add();
-    void remove();
     static void sort();
 
     virtual void process() = 0;

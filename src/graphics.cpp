@@ -253,10 +253,10 @@ void draw_aim_dots(void) {
     profiler_start(aim_indicator);
     const uint8_t num_dots = 8;
     line_seg_t line;
-    angle_t angle = tanks[0].barrel_rot;
+    angle_t angle = game.player->barrel_rot;
 
     profiler_add(raycast);
-    raycast(tanks[0].center_x(), tanks[0].center_y(), angle, &line);
+    raycast(game.player->center_x(), game.player->center_y(), angle, &line);
     profiler_end(raycast);
 
     int24_t dx = (line.x2 - line.x1) / num_dots;
@@ -305,48 +305,26 @@ void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, co
 }
 
 void Shell::render() {
-    if(this->alive) {
-        uint8_t sprite = this->direction;
-        render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
-    }
+    uint8_t sprite = direction;
+    render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
 }
 
 void Tank::render() {
-    if(this->alive) {
-        uint8_t base_sprite = (((uint8_t) -((this->tread_rot >> 16) - 64)) >> 3) & 0xF;
-        uint8_t turret_sprite = ((uint8_t) -((this->barrel_rot >> 16) - 64)) >> 4;
+    uint8_t base_sprite = (((uint8_t) -((tread_rot >> 16) - 64)) >> 3) & 0xF;
+    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> 16) - 64)) >> 4;
 
-        // todo: a lot of this seems to be running twice as often as it needs to
-        if(this->type == PLAYER) {
-            render_obscured_object(tank_bases[this->type], pl_base_x_offsets, pl_base_y_offsets, this,
-                                   base_sprite, 0);
-            render_obscured_object(tank_turrets[this->type], pl_turret_x_offsets, pl_turret_y_offsets, this,
-                                   turret_sprite, 0);
-        } else {
-            render_obscured_object(tank_bases[this->type], en_base_x_offsets, en_base_y_offsets, this,
-                                   base_sprite, 0);
-            render_obscured_object(tank_turrets[this->type], en_turret_x_offsets, en_turret_y_offsets, this,
-                                   turret_sprite, 0);
-        }
+    // todo: a lot of this seems to be running twice as often as it needs to
+    if(type == PLAYER) {
+        render_obscured_object(tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, this,
+                               base_sprite, 0);
+        render_obscured_object(tank_turrets[type], pl_turret_x_offsets, pl_turret_y_offsets, this,
+                               turret_sprite, 0);
+    } else {
+        render_obscured_object(tank_bases[type], en_base_x_offsets, en_base_y_offsets, this,
+                               base_sprite, 0);
+        render_obscured_object(tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, this,
+                               turret_sprite, 0);
     }
-
-    //draw shell hitboxes until I can get sprites
-    profiler_add(render_shells);
-    for(int8_t j = max_shells[this->type] - 1; j >= 0; j--) {
-        Shell *shell = &this->shells[j];
-        if(shell->alive) shell->render();
-    }
-    profiler_end(render_shells);
-    //draw mine hitboxes
-    profiler_add(render_mines);
-    for(int8_t j = max_mines[this->type] - 1; j >= 0; j--) {
-        Mine *mine = &this->mines[j];
-        if(!mine->countdown) continue;
-        gfx_SetColor(COL_RED);
-        if(mine->alive) gfx_SetColor(COL_BLACK);
-        mine->render();
-    }
-    profiler_end(render_mines);
 }
 
 void render() {
@@ -376,12 +354,11 @@ void render() {
     profiler_end(undraw);
 
     profiler_start(render_tanks);
-    // todo: z-sorting
     // restrict drawing to only the play area, to prevent the banners from being overwritten
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
-    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        tanks[i].render();
+    for(auto it: PhysicsBody::objects) {
+        it->render();
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
     profiler_end(render_tanks);
@@ -397,8 +374,8 @@ void render() {
 }
 
 void PhysicsBody::render() {
-    uint24_t x = SCREEN_X(this->position_x);
-    uint8_t y = SCREEN_Y(this->position_y);
+    uint24_t x = SCREEN_X(position_x);
+    uint8_t y = SCREEN_Y(position_y);
     uint8_t width = SCREEN_DELTA_X(this->width);
     uint8_t height = SCREEN_DELTA_Y(this->height);
     pdraw_RectRegion(x, y, width, height);

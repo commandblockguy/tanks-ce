@@ -110,7 +110,7 @@ void aim_random(Tank *tank) {
         tank->barrel_rot -= 0x010000;
     }
     if(!tank->can_shoot()) return;
-    if(pointing_at_target(tank, &tanks[0], 1, false)) {
+    if(pointing_at_target(tank, game.player, 1, false)) {
         tank->fire_shell();
     }
 }
@@ -133,8 +133,8 @@ void aim_reflect(Tank *tank) {
         if(ai->scan_pos > LEVEL_SIZE_X - 1) {
             ai->scan_pos = 1;
             ai->scan_dir = 1;
-            point_at_player(tank, &tanks[0]);
-            if(pointing_at_target(tank, &tanks[0], Tank::max_bounces[tank->type], false)) {
+            point_at_player(tank, game.player);
+            if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
                 tank->fire_shell();
             }
             return; //I know this kinda skips a tick but whatever
@@ -143,13 +143,13 @@ void aim_reflect(Tank *tank) {
         rX = TILE_TO_X_COORD(x);
         left = tank->center_x() < rX;
         //if tank and the target aren't both on the same side of the X line, do nothing
-        if(left != (tanks[0].center_x() < rX)) return;
+        if(left != (game.player->center_x() < rX)) return;
         //if the specified X line was a mirror, where would the target appear to be?
         //lineseg between it and the center of tank
         line.x1 = tank->center_x();
         line.y1 = tank->center_y();
-        line.x2 = 2 * rX - tanks[0].position_x - tanks[0].width / 2;
-        line.y2 = tanks[0].center_y();
+        line.x2 = 2 * rX - game.player->position_x - game.player->width / 2;
+        line.y2 = game.player->center_y();
         //check if there is a tile where that lineseg intercepts the X line
         yInt = y_intercept(&line, rX);
         xT = x - !left;
@@ -170,7 +170,7 @@ void aim_reflect(Tank *tank) {
             }
         //if so, check if pointing_at_target
         tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
-        if(pointing_at_target(tank, &tanks[0], Tank::max_bounces[tank->type], false)) {
+        if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
             //if so, fire
             tank->fire_shell();
         }
@@ -186,8 +186,8 @@ void aim_reflect(Tank *tank) {
         if(ai->scan_pos > LEVEL_SIZE_Y - 1) {
             ai->scan_pos = 1;
             ai->scan_dir = 0;
-            point_at_player(tank, &tanks[0]);
-            if(pointing_at_target(tank, &tanks[0], Tank::max_bounces[tank->type], false)) {
+            point_at_player(tank, game.player);
+            if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
                 tank->fire_shell();
             }
             return; //I know this kinda skips a tick but whatever
@@ -196,13 +196,13 @@ void aim_reflect(Tank *tank) {
         rY = TILE_TO_Y_COORD(y);
         up = tank->center_y() < rY;
         //if tank and the target aren't both on the same side of the Y line, do nothing
-        if(up != (tanks[0].center_y() < rY)) return;
+        if(up != (game.player->center_y() < rY)) return;
         //if the specified X line was a mirror, where would the target appear to be?
         //lineseg between it and the center of tank
         line.x1 = tank->center_x();
         line.y1 = tank->center_y();
-        line.x2 = tanks[0].center_x();
-        line.y2 = 2 * rY - tanks[0].position_y - tanks[0].height / 2;
+        line.x2 = game.player->center_x();
+        line.y2 = 2 * rY - game.player->position_y - game.player->height / 2;
         //check if there is a tile where that lineseg intercepts the X line
         xInt = x_intercept(&line, rY);
         xT = COORD_TO_X_TILE(xInt);
@@ -219,7 +219,7 @@ void aim_reflect(Tank *tank) {
             if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) return;
         //if so, check if pointing_at_target
         tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
-        if(pointing_at_target(tank, &tanks[0], Tank::max_bounces[tank->type], false)) {
+        if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
             //if so, fire
             tank->fire_shell();
         }
@@ -229,8 +229,8 @@ void aim_reflect(Tank *tank) {
 //Aim with no reflections
 void aim_current(Tank *tank) {
     if(tank->can_shoot()) {
-        point_at_player(tank, &tanks[0]);
-        if(pointing_at_target(tank, &tanks[0], 0, false)) {
+        point_at_player(tank, game.player);
+        if(pointing_at_target(tank, game.player, 0, false)) {
             tank->fire_shell();
         }
     }

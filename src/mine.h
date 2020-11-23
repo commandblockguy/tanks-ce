@@ -34,7 +34,6 @@ class Mine;
 class Mine: public PhysicsBody {
 public:
     Mine();
-    bool alive;
     uint24_t countdown; //Number of physics loops until explosions occur
     Tank *tank;
     void detonate();

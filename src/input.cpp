@@ -14,7 +14,7 @@
 
 uint8_t handle_input(void) {
     profiler_start(input);
-    Tank *player = &tanks[0];
+    Tank *player = game.player;
     bool moving = true;
     angle_t target_rot;
     uint8_t keys = 0;

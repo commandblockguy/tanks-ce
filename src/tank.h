@@ -48,24 +48,25 @@ typedef struct {
 
 class Tank: public PhysicsBody {
 public:
-    Tank(const serialized_tank_t *ser_tank);
+    Tank(const serialized_tank_t *ser_tank, uint8_t id);
+    ~Tank();
 
     tank_type_t type;
-    bool alive; //Whether this tank is alive or exploded.
+    uint8_t id;
     uint8_t start_x;
     uint8_t start_y;
     angle_t tread_rot; //Rotation of tank treads. Determines the direction of the tank.
     angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
-    Shell shells[5]; //Shells that belong to this tank. Players can shoot up to 5, and each type of tank is limited to a different number.
-    Mine mines[4]; //Mines that belong to this tank. Players and some tanks can lay up to two.
+    uint8_t num_shells = 0;
+    uint8_t num_mines = 0;
     ai_move_state_t ai_move;
     ai_fire_state_t ai_fire;
 
     void process();
     void render();
-    bool fire_shell();
-    bool lay_mine();
-    bool can_shoot();
+    void fire_shell();
+    void lay_mine();
+    bool can_shoot() const;
     void set_velocity(int24_t velocity);
     bool collide_and_push(Tank *other);
 
@@ -76,6 +77,8 @@ public:
     //Number of mines each type of tank can have on-screen at any one time
     static const uint8_t max_mines[];
     static const uint8_t velocities[];
+
+    bool can_lay_mine() const;
 };
 
 #endif //TANKS_TANK_H

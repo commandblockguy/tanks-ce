@@ -116,3 +116,8 @@ void wait_ms_or_keypress(uint24_t ms) {
         }
     }
 }
+
+extern "C" [[noreturn]] void __cxa_pure_virtual() {
+    printf_("Pure virtual function was called\n");
+    while (1);
+}

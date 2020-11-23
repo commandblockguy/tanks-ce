@@ -18,9 +18,11 @@ typedef struct {
     uint8_t kills[NUM_TANK_TYPES];
     uint8_t shotCooldown; //How many more ticks before we can fire another shot
     uint8_t mineCooldown;
+    bool player_alive;
+    uint8_t num_tanks;
+    Tank *player;
 } game_t;
 
-extern Tank *tanks;
 extern tile_t tiles[LEVEL_SIZE_Y][LEVEL_SIZE_X];
 extern game_t game;
 

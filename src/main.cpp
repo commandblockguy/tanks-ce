@@ -28,16 +28,9 @@
 
 #include <stdlib.h>
 
-#ifdef __cplusplus
-void *operator new(size_t size) { return malloc(size); }
-void *operator new(size_t, void *ptr) { return ptr; }
-void *operator new[](size_t size) { return operator new(size); }
-void *operator new[](size_t, void *ptr) { return ptr; }
-#endif
-
-bool start_mission(void); //Start a mission and reset various tank things.
+bool start_mission(const serialized_tank_t *ser_tanks); //Start a mission and reset various tank things.
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks);
-uint8_t play_mission(void);
+uint8_t play_mission(const serialized_tank_t *ser_tanks);
 
 int main() {
     level_pack_t lvl_pack;
@@ -119,30 +112,21 @@ int main() {
     return 0;
 }
 
-bool start_mission() {
-    int remaining_tanks = -1; //Don't count the player tank
+bool start_mission(const serialized_tank_t *ser_tanks) {
     bool tank_type_used[NUM_TANK_TYPES] = {false};
-    tanks[0].alive = true;
-    //Initialize tanks
-    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        Tank *tank = &tanks[i];
-        int j;
-        if(tank->alive) {
-            remaining_tanks++;
-            tank->position_x = TILE_TO_X_COORD(tank->start_x);
-            tank->position_y = TILE_TO_Y_COORD(tank->start_y);
-            tank->barrel_rot = 0;
-            tank->tread_rot = DEGREES_TO_ANGLE(270);
-            tank_type_used[tank->type] = true;
-        }
-        for(j = Tank::max_shells[tank->type] - 1; j >= 0; j--) {
-            tank->shells[j].alive = false;
-        }
-        for(j = Tank::max_mines[tank->type] - 1; j >= 0; j--) {
-            tank->mines[j].countdown = 0;
-            tank->mines[j].alive = false;
-        }
+
+    while(!PhysicsBody::objects.empty()) {
+        delete PhysicsBody::objects[0];
     }
+
+    // todo: don't recreate destroyed tanks
+    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
+        new Tank(&ser_tanks[i], i);
+        tank_type_used[ser_tanks[i].type] = true;
+    }
+
+    game.num_tanks = game.level.num_tanks;
+
     for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
         for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
             if(tiles[y][x] == DESTROYED)
@@ -150,7 +134,7 @@ bool start_mission() {
         }
     }
 
-    draw_mission_start_screen(game.mission, game.lives, remaining_tanks);
+    draw_mission_start_screen(game.mission, game.lives, game.num_tanks - 1);
     for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
         if(tank_type_used[type]) {
             if(!init_tank_sprites(type)) {
@@ -167,12 +151,11 @@ bool start_mission() {
     return true;
 }
 
-uint8_t play_mission() {
-    start_mission();
+uint8_t play_mission(const serialized_tank_t *ser_tanks) {
+    start_mission(ser_tanks);
     while(true) {
         profiler_start(total);
-        int alive_tanks = 0;
-        if(!tanks[0].alive) {
+        if(!game.player_alive) {
             game.lives--;
             if(!game.lives) {
                 profiler_end(total);
@@ -188,18 +171,17 @@ uint8_t play_mission() {
 
 
         profiler_start(physics);
-        for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-            tanks[i].process();
-            if(i && tanks[i].alive) {
-                alive_tanks++;
-            }
+        for(auto it: PhysicsBody::objects) {
+            it->process();
         }
         profiler_end(physics);
 
-        if(!alive_tanks) {
+        if(!game.num_tanks) {
             profiler_end(total);
             return NEXT_LEVEL;
         }
+
+        PhysicsBody::sort();
 
         render();
 
@@ -212,21 +194,11 @@ uint8_t play_mission() {
 }
 
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks) {
-    tanks = (Tank*)malloc(game.level.num_tanks * sizeof(Tank));
-    if(!tanks) {
-        printf_("Failed to allocate tanks array\n");
-        return ERROR;
-    }
-    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        new (&tanks[i]) Tank(&ser_tanks[i]);
-    }
-
     decompress_tiles(comp_tiles);
 
     uint8_t status;
-    do status = play_mission();
+    do status = play_mission(ser_tanks);
     while(status == RETRY);
 
-    free(tanks);
     return status;
 }
