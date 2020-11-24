@@ -129,8 +129,8 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
 
     for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
         for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
-            if(tiles[y][x] == DESTROYED)
-                tiles[y][x] = DESTRUCTIBLE;
+            if(TILE_TYPE(tiles[y][x]) == DESTROYED)
+                tiles[y][x] = TILE_HEIGHT(tiles[y][x]) | DESTRUCTIBLE;
         }
     }
 
