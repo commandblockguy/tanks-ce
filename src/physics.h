@@ -47,6 +47,7 @@ public:
 
     static void sort();
 
+    virtual void kill();
     virtual void process() = 0;
     virtual void render();
 

@@ -20,6 +20,7 @@ typedef struct {
     uint8_t mineCooldown;
     bool player_alive;
     uint8_t num_tanks;
+    bool *alive_tanks;
     Tank *player;
 } game_t;
 

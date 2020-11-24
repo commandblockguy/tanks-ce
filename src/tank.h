@@ -62,6 +62,8 @@ public:
     ai_move_state_t ai_move;
     ai_fire_state_t ai_fire;
 
+    // Kill this physics body, then destroy it
+    void kill();
     void process();
     void render();
     void fire_shell();
@@ -69,7 +71,6 @@ public:
     bool can_shoot() const;
     bool can_lay_mine() const;
     void set_velocity(int24_t velocity);
-    bool collide_and_push(Tank *other);
 
     //Number of shots each type of tank can have on-screen at any one time
     static const uint8_t max_shells[];

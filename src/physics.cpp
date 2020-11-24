@@ -14,13 +14,14 @@ uint24_t PhysicsBody::center_y() const {
 }
 
 PhysicsBody::PhysicsBody() {
-    printf_("PhysicsBody constructor called\n");
     objects.push_back(this);
+    // todo: _vtable gets off-by-one without this
+    // idek
+    printf_("pushed %p\n", this);
 }
 
 PhysicsBody::~PhysicsBody() {
     // Remove from object list
-    printf_("PhysicsBody destructor called\n");
     for(auto *it = objects.begin(); it < objects.end();) {
         // Inform any children that we no longer exist
         if((**it).parent == this) (**it).parent = nullptr;
@@ -29,6 +30,10 @@ PhysicsBody::~PhysicsBody() {
             objects.erase(it);
         } else it++;
     }
+}
+
+void PhysicsBody::kill() {
+    delete this;
 }
 
 void PhysicsBody::sort() {

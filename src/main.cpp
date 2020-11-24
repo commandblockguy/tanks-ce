@@ -113,17 +113,20 @@ int main() {
 }
 
 bool start_mission(const serialized_tank_t *ser_tanks) {
+    printf_("starting mission\n");
     bool tank_type_used[NUM_TANK_TYPES] = {false};
 
     while(!PhysicsBody::objects.empty()) {
+        // Delete objects without killing
         delete PhysicsBody::objects[0];
     }
 
     game.num_tanks = 0;
 
-    // todo: don't recreate destroyed tanks
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
-        new Tank(&ser_tanks[i], i);
+        if(!game.alive_tanks[i]) continue;
+        Tank *tank = new Tank(&ser_tanks[i], i);
+        //printf_("tank created: %p\n", tank);
         tank_type_used[ser_tanks[i].type] = true;
     }
 
@@ -162,16 +165,18 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
 
 
         profiler_start(physics);
-        for(auto it: PhysicsBody::objects) {
-            it->process();
+        //printf_("0: %p\n", PhysicsBody::objects[0]);
+        for(auto *it = PhysicsBody::objects.begin(); it < PhysicsBody::objects.end(); it++) {
+            //printf_("%p\n", *it);
+            (**it).process();
         }
         process_collisions();
         profiler_end(physics);
 
         if(!game.player_alive) {
+            profiler_end(total);
             game.lives--;
             if(!game.lives) {
-                profiler_end(total);
                 return LOSE;
             } else {
                 return RETRY;
@@ -198,9 +203,17 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks) {
     decompress_tiles(comp_tiles);
 
+    bool alive_tanks[32]; // TODO: figure out why dynamic arrays are breaking things
+    game.alive_tanks = alive_tanks;
+    for(uint8_t i = 0; i < game.level.num_tanks; i++){
+        alive_tanks[i] = true;
+    }
+
     uint8_t status;
     do status = play_mission(ser_tanks);
     while(status == RETRY);
+
+    game.alive_tanks = nullptr;
 
     return status;
 }

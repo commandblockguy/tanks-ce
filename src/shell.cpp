@@ -44,7 +44,7 @@ void Shell::render() {
 
 bool Shell::ricochet(direction_t dir) {
     if(!bounces) {
-        delete this;
+        kill();
         return false;
     }
 
@@ -74,17 +74,17 @@ void Shell::handle_collision(PhysicsBody *other) {
 
 void Shell::collide(Tank *tank) {
     if(left_tank_hitbox) {
-        delete tank;
-        delete this;
+        tank->kill();
+        kill();
     }
 }
 
 void Shell::collide(Shell *shell) {
-    delete this;
-    delete shell;
+    kill();
+    shell->kill();
 }
 
 void Shell::collide(Mine *mine) {
-    delete this;
-    mine->detonate();
+    kill();
+    mine->kill();
 }

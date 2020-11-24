@@ -20,14 +20,14 @@ void Mine::process() {
     if(!countdown) return;
 
     if(--countdown == EXPLOSION_ANIM) {
-        detonate();
+        kill();
         return;
     }
 
     //todo: range detection
 }
 
-void Mine::detonate() {
+void Mine::kill() {
     countdown = EXPLOSION_ANIM - 1;
 
     //The original game uses a radius, not a square
@@ -44,10 +44,10 @@ void Mine::detonate() {
         }
     }
 
-    // Delete any nearby physics objects
+    // Kill any nearby physics objects
     for(auto *it = objects.begin(); it < objects.end();) {
         if(*it != this && center_distance_less_than(*it, MINE_EXPLOSION_RADIUS)) {
-            delete *it;
+            (**it).kill();
         } else it++;
     }
 

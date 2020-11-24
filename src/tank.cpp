@@ -49,14 +49,21 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
 }
 
 Tank::~Tank() {
+    game.num_tanks--;
     if(this == game.player) {
         game.player_alive = false;
         game.player = nullptr;
-    } else {
+    }
+}
+
+void Tank::kill() {
+    if(this != game.player) {
         game.total_kills++;
         game.kills[type]++;
+        game.alive_tanks[id] = false;
     }
-    game.num_tanks--;
+
+    delete this;
 }
 
 void Tank::process() {
