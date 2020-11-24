@@ -119,13 +119,13 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
         delete PhysicsBody::objects[0];
     }
 
+    game.num_tanks = 0;
+
     // todo: don't recreate destroyed tanks
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         new Tank(&ser_tanks[i], i);
         tank_type_used[ser_tanks[i].type] = true;
     }
-
-    game.num_tanks = game.level.num_tanks;
 
     for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
         for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
@@ -155,15 +155,6 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
     start_mission(ser_tanks);
     while(true) {
         profiler_start(total);
-        if(!game.player_alive) {
-            game.lives--;
-            if(!game.lives) {
-                profiler_end(total);
-                return LOSE;
-            } else {
-                return RETRY;
-            }
-        }
 
         //handle player input
         uint8_t status = handle_input();
@@ -177,7 +168,17 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
         process_collisions();
         profiler_end(physics);
 
-        if(!game.num_tanks) {
+        if(!game.player_alive) {
+            game.lives--;
+            if(!game.lives) {
+                profiler_end(total);
+                return LOSE;
+            } else {
+                return RETRY;
+            }
+        }
+
+        if(game.num_tanks == 1) {
             profiler_end(total);
             return NEXT_LEVEL;
         }

@@ -4,15 +4,19 @@
 #include "globals.h"
 #include "dynamic_sprites.h"
 
-Shell::Shell() {
+Shell::Shell(Tank *tank) {
     width = SHELL_SIZE;
     height = SHELL_SIZE;
     respect_holes = false;
+
+    left_tank_hitbox = false;
+    parent = tank;
 };
 
 Shell::~Shell() {
-    if(tank) {
-        tank->num_shells--;
+    if(parent) {
+        // todo: see if there's a way to do this without an ugly cast
+        ((Tank*)parent)->num_shells--;
     }
 }
 
@@ -22,40 +26,9 @@ void Shell::process() {
     position_x += velocity_x;
     position_y += velocity_y;
 
-    // todo
-//    if(left_tank_hitbox) {
-//        //This will eventually be part of the collision bit
-//        for(uint8_t j = 0; j < game.level.num_tanks; j++) {
-//            int i;
-//
-//            for(i = Tank::max_mines[tanks[j].type] - 1; i >= 0; i--) {
-//                Mine *mine = &tanks[j].mines[i];
-//                if(mine->alive && detect_collision(mine)) {
-//                    alive = false;
-//                    mine->detonate();
-//                }
-//            }
-//
-//            for(i = Tank::max_shells[tanks[j].type] - 1; i >= 0; i--) {
-//                Shell *shell2 = &tanks[j].shells[i];
-//                if(this != shell2 && shell2->alive && detect_collision(shell2)) {
-//                    alive = false;
-//                    shell2->alive = false;
-//                }
-//            }
-//
-//            if(!tanks[j].alive) continue;
-//
-//            if(detect_collision(&tanks[j])) {
-//                if(tanks[j].type != PLAYER) game.total_kills++;
-//                game.kills[tanks[j].type]++;
-//                tanks[j].alive = false;
-//                alive = false;
-//            }
-//        }
-//    } else if(!detect_collision(tank)) {
-//        left_tank_hitbox = true;
-//    }
+    if(!left_tank_hitbox && !detect_collision(parent)) {
+        left_tank_hitbox = true;
+    }
 
     collide_dir = process_reflection();
 
@@ -100,13 +73,18 @@ void Shell::handle_collision(PhysicsBody *other) {
 }
 
 void Shell::collide(Tank *tank) {
-    printf_("Shell collided with tank\n");
+    if(left_tank_hitbox) {
+        delete tank;
+        delete this;
+    }
 }
 
 void Shell::collide(Shell *shell) {
-
+    delete this;
+    delete shell;
 }
 
 void Shell::collide(Mine *mine) {
-
+    delete this;
+    mine->detonate();
 }

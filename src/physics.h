@@ -28,6 +28,7 @@ public:
     int24_t velocity_y;
     uint24_t width;
     uint24_t height;
+    PhysicsBody *parent;
 
     // Whether or not to collide with holes
     bool respect_holes;

@@ -26,13 +26,12 @@
 
 class Shell: public PhysicsBody {
 public:
-    Shell();
+    Shell(Tank *tank);
     ~Shell();
 
     uint8_t bounces; //Number of times the shell can bounce off a wall without exploding
     bool left_tank_hitbox; //Whether the shell has exited the tank hitbox yet. Used to stop shells from blowing up the tank that fired them.
     uint8_t direction;
-    Tank *tank;
 
     void process();
     void render();

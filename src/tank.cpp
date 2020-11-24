@@ -44,14 +44,19 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
         game.player = this;
         game.player_alive = true;
     }
+
+    game.num_tanks++;
 }
 
 Tank::~Tank() {
-    // todo: fix shell/mine ptrs
     if(this == game.player) {
         game.player_alive = false;
         game.player = nullptr;
+    } else {
+        game.total_kills++;
+        game.kills[type]++;
     }
+    game.num_tanks--;
 }
 
 void Tank::process() {
@@ -66,12 +71,6 @@ void Tank::process() {
     profiler_add(tank_collision);
     if(!(kb_IsDown(kb_Key1) && this == game.player))
         process_reflection();
-
-    // todo
-//    for(int8_t i = game.level.num_tanks - 1; i >= 0; i--) {
-//        if(tanks[i].alive)
-//            collide_and_push(&tanks[i]);
-//    }
     profiler_end(tank_collision);
 }
 
@@ -95,11 +94,9 @@ void Tank::render() {
 
 void Tank::fire_shell() {
     if(!can_shoot()) return;
-    Shell *shell = new Shell;
+    Shell *shell = new Shell(this);
     int24_t vector_x, vector_y;
 
-    shell->tank = this;
-    shell->left_tank_hitbox = false;
     shell->bounces = max_bounces[type];
 
     vector_x = fast_cos(barrel_rot);
@@ -108,7 +105,6 @@ void Tank::fire_shell() {
     shell->position_x = center_x() + BARREL_LENGTH * vector_x / TRIG_SCALE;
     shell->position_y = center_y() + BARREL_LENGTH * vector_y / TRIG_SCALE;
 
-    shell->width = shell->height = SHELL_SIZE;
     if(type == MISSILE || type == IMMOB_MISSILE) {
         shell->velocity_x = SHELL_SPEED_MISSILE * vector_x / TRIG_SCALE;
         shell->velocity_y = SHELL_SPEED_MISSILE * vector_y / TRIG_SCALE;
@@ -127,12 +123,9 @@ bool Tank::can_shoot() const {
 
 void Tank::lay_mine() {
     if(!can_lay_mine()) return;
-    Mine *mine = new Mine;
-    mine->tank = this;
-    mine->countdown = MINE_COUNTDOWN;
+    Mine *mine = new Mine(this);
     mine->position_x = position_x + (TANK_SIZE - MINE_SIZE) / 2;
     mine->position_y = position_y + (TANK_SIZE - MINE_SIZE) / 2;
-    mine->width = mine->height = MINE_SIZE;
 
     num_mines++;
 }
@@ -151,66 +144,60 @@ void Tank::set_velocity(int24_t velocity) {
     }
 }
 
-bool Tank::collide_and_push(Tank *other) {
+void Tank::handle_collision(PhysicsBody *other) {
+    other->collide(this);
+}
+
+void Tank::collide(Tank *tank) {
     //Figure out if the four corners are colliding
-    bool top_right = other->is_point_inside(position_x + width, position_y);
-    bool bottom_right = other->is_point_inside(position_x + width, position_y + height);
-    bool top_left = other->is_point_inside(position_x, position_y);
-    bool bottom_left = other->is_point_inside(position_x, position_y + height);
+    bool top_right = tank->is_point_inside(position_x + width, position_y);
+    bool bottom_right = tank->is_point_inside(position_x + width, position_y + height);
+    bool top_left = tank->is_point_inside(position_x, position_y);
+    bool bottom_left = tank->is_point_inside(position_x, position_y + height);
 
     uint24_t dis_up = -1;
     uint24_t dis_down = -1;
     uint24_t dis_left = -1;
     uint24_t dis_right = -1;
 
-    if(!(top_right || bottom_right || top_left || bottom_left)) return false;
+    if(!(top_right || bottom_right || top_left || bottom_left)) return;
 
     if((top_right || bottom_right)) {
-        dis_right = position_x + width - other->position_x;
+        dis_right = position_x + width - tank->position_x;
     }
     if((top_left || bottom_left)) {
-        dis_left = other->position_x + other->width - position_x;
+        dis_left = tank->position_x + tank->width - position_x;
     }
     if((top_left || top_right)) {
-        dis_up = other->position_y + other->height - position_y;
+        dis_up = tank->position_y + tank->height - position_y;
     }
     if((bottom_left || bottom_right)) {
-        dis_down = position_y + height - other->position_y;
+        dis_down = position_y + height - tank->position_y;
     }
 
     //pick the direction with the smallest distance
     if(dis_up < dis_left && dis_up < dis_right) {
         position_y += dis_up / 2;
-        other->position_y -= dis_up / 2;
+        tank->position_y -= dis_up / 2;
     }
     if(dis_left < dis_up && dis_left < dis_down) {
         position_x += dis_left / 2;
-        other->position_x -= dis_left / 2;
+        tank->position_x -= dis_left / 2;
     }
     if(dis_down < dis_left && dis_down < dis_right) {
         position_y -= dis_down / 2;
-        other->position_y += dis_down / 2;
+        tank->position_y += dis_down / 2;
     }
     if(dis_right < dis_up && dis_right < dis_down) {
         position_x -= dis_right / 2;
-        other->position_x += dis_right / 2;
+        tank->position_x += dis_right / 2;
     }
-
-    return true;
-}
-
-void Tank::handle_collision(PhysicsBody *other) {
-    other->collide(this);
-}
-
-void Tank::collide(Tank *tank) {
-
 }
 
 void Tank::collide(Shell *shell) {
-    printf_("Tank collided with shell\n");
+    shell->collide(this);
 }
 
 void Tank::collide(Mine *mine) {
-
+    // don't do anything
 }

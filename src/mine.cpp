@@ -5,12 +5,14 @@
 #include "graphics.h"
 #include "gui.h"
 
-Mine::Mine() {
+Mine::Mine(Tank *tank) {
     width = MINE_SIZE;
     height = MINE_SIZE;
     respect_holes = true;
-    
-    countdown = 0;
+
+    parent = tank;
+
+    countdown = MINE_COUNTDOWN;
 }
 
 void Mine::process() {
@@ -22,24 +24,7 @@ void Mine::process() {
         return;
     }
 
-    //this belongs to enemy
-    if(tank != game.player) {
-        if(center_distance_less_than(game.player, MINE_EXPLOSION_RADIUS)) {
-            detonate();
-            return;
-        }
-    }
-
-    //this belongs to our tank
-    if(!center_distance_less_than(game.player, MINE_EXPLOSION_RADIUS)) {
-        // todo: iterate through other tanks
-//        for(uint8_t j = 1; j < game.level.num_tanks; j++) {
-//            if(center_distance_less_than(&tanks[j], MINE_EXPLOSION_RADIUS)) {
-//                detonate();
-//                break;
-//            }
-//        }
-    }
+    //todo: range detection
 }
 
 void Mine::detonate() {
@@ -59,27 +44,12 @@ void Mine::detonate() {
         }
     }
 
-    // todo: damage stuff
-//    for(uint8_t j = 0; j < game.level.num_tanks; j++) {
-//        Tank *tank = &tanks[j];
-//        if(tank->alive && center_distance_less_than(tank, MINE_EXPLOSION_RADIUS)) {
-//            tank->alive = false;
-//            game.kills[tanks[j].type]++;
-//            if(tanks[j].type != PLAYER) game.total_kills++;
-//        }
-//        for(uint8_t k = 0; k < Tank::max_shells[tank->type]; k++) {
-//            Shell *shell = &tank->shells[k];
-//            if(shell->alive && center_distance_less_than(shell, MINE_EXPLOSION_RADIUS)) {
-//                shell->alive = false;
-//            }
-//        }
-//        for(uint8_t k = 0; k < Tank::max_mines[tank->type]; k++) {
-//            Mine *other = &tank->mines[k];
-//            if(other->alive && center_distance_less_than(other, MINE_EXPLOSION_RADIUS)) {
-//                other->detonate();
-//            }
-//        }
-//    }
+    // Delete any nearby physics objects
+    for(auto *it = objects.begin(); it < objects.end();) {
+        if(*it != this && center_distance_less_than(*it, MINE_EXPLOSION_RADIUS)) {
+            delete *it;
+        } else it++;
+    }
 
     bang();
 
@@ -93,13 +63,13 @@ void Mine::handle_collision(PhysicsBody *other) {
 }
 
 void Mine::collide(Tank *tank) {
-
+    // don't do anything
 }
 
 void Mine::collide(Shell *shell) {
-
+    shell->collide(this);
 }
 
 void Mine::collide(Mine *mine) {
-
+    // don't do anything
 }

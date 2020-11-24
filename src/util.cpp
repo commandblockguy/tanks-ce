@@ -121,3 +121,10 @@ extern "C" [[noreturn]] void __cxa_pure_virtual() {
     printf_("Pure virtual function was called\n");
     while (1);
 }
+
+extern "C" int __cxa_atexit(void (*func) (void *), void * arg, void * dso_handle) {
+    printf_("__cxa_atexit called\n");
+    return 0;
+}
+
+void*   __dso_handle = (void*) &__dso_handle;

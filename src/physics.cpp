@@ -21,11 +21,13 @@ PhysicsBody::PhysicsBody() {
 PhysicsBody::~PhysicsBody() {
     // Remove from object list
     printf_("PhysicsBody destructor called\n");
-    for(auto *it = objects.begin(); it != objects.end(); it++) {
+    for(auto *it = objects.begin(); it < objects.end();) {
+        // Inform any children that we no longer exist
+        if((**it).parent == this) (**it).parent = nullptr;
+        // Remove from objects list
         if(*it == this) {
             objects.erase(it);
-            break;
-        }
+        } else it++;
     }
 }
 
@@ -106,11 +108,11 @@ bool PhysicsBody::center_distance_less_than(PhysicsBody *other, uint24_t dis) co
     int24_t delta_x;
     int24_t delta_y;
 
-    if((uint24_t)abs((int24_t) other->center_x() - (int24_t) other->center_x()) > dis) return false;
-    if((uint24_t)abs((int24_t) other->center_y() - (int24_t) other->center_y()) > dis) return false;
+    if((uint24_t)abs((int24_t) other->center_x() - (int24_t) center_x()) > dis) return false;
+    if((uint24_t)abs((int24_t) other->center_y() - (int24_t) center_y()) > dis) return false;
 
-    delta_x = (other->center_x() - other->center_x()) >> 8;
-    delta_y = (other->center_y() - other->center_y()) >> 8;
+    delta_x = (other->center_x() - center_x()) >> 8;
+    delta_y = (other->center_y() - center_y()) >> 8;
 
     return (uint24_t)(delta_x * delta_x + delta_y * delta_y) < (dis >> 8) * (dis >> 8);
 }
