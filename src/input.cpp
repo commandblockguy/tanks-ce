@@ -63,20 +63,20 @@ uint8_t handle_input(void) {
     }
 
     if(moving) {
-        int24_t diff = player->tread_rot - target_rot;
-        if((uint24_t)abs(diff) > DEGREES_TO_ANGLE(90)) {
+        int diff = player->tread_rot - target_rot;
+        if((uint)abs(diff) > DEGREES_TO_ANGLE(90)) {
             player->tread_rot += DEGREES_TO_ANGLE(180);
-            diff = (int24_t) (player->tread_rot - target_rot);
+            diff = (int) (player->tread_rot - target_rot);
         }
-        if(diff < -(int24_t) PLAYER_TREAD_ROTATION) {
+        if(diff < -(int) PLAYER_TREAD_ROTATION) {
             player->tread_rot += PLAYER_TREAD_ROTATION;
-        } else if(diff > (int24_t) PLAYER_TREAD_ROTATION) {
+        } else if(diff > (int) PLAYER_TREAD_ROTATION) {
             player->tread_rot -= PLAYER_TREAD_ROTATION;
         } else {
             player->tread_rot = target_rot;
         }
 
-        if((uint24_t)abs(diff) <= DEGREES_TO_ANGLE(45)) {
+        if((uint)abs(diff) <= DEGREES_TO_ANGLE(45)) {
             player->set_velocity(TANK_SPEED_NORMAL);
         } else {
             player->set_velocity(0);

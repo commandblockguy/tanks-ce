@@ -4,7 +4,7 @@
 class Mine;
 
 #include <stdbool.h>
-#include <intce.h>
+#include <stdint.h>
 #include "collision.h"
 #include "physics.h"
 #include "fwd.h"
@@ -34,7 +34,7 @@ class Mine;
 class Mine: public PhysicsBody {
 public:
     Mine(Tank *tank);
-    uint24_t countdown; //Number of physics loops until explosions occur
+    uint countdown; //Number of physics loops until explosions occur
 
     void kill();
     void process();

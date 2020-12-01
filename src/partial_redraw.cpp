@@ -9,7 +9,7 @@ bool pdraw_current_buffer = 0;
 pdraw_sprite_t pdraw_sprites[2][32];
 uint8_t pdraw_num_sprites[2] = {0, 0};
 
-pdraw_sprite_t *pdraw_RectRegion(uint24_t x, uint8_t y, uint8_t width, uint8_t height) {
+pdraw_sprite_t *pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height) {
     profiler_add(store_bg);
     gfx_sprite_t *bg_sprite = gfx_MallocSprite(width, height);
     if(bg_sprite == NULL) {
@@ -28,19 +28,19 @@ pdraw_sprite_t *pdraw_RectRegion(uint24_t x, uint8_t y, uint8_t width, uint8_t h
     return psprite;
 }
 
-void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint24_t x, uint8_t y) {
+void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y) {
     if(pdraw_RectRegion(x, y, sprite->width, sprite->height))
         gfx_Sprite_NoClip(sprite, x, y);
 }
 
-void pdraw_TransparentSprite(gfx_sprite_t *sprite, uint24_t x, uint8_t y) {
+void pdraw_TransparentSprite(gfx_sprite_t *sprite, uint x, uint8_t y) {
     gfx_region_t region = {.xmin = (int)x, .ymin = y, .xmax = (int)(x + sprite->width), .ymax = y + sprite->height};
     if(gfx_GetClipRegion(&region))
         if(pdraw_RectRegion(region.xmin, region.ymin, region.xmax - region.xmin, region.ymax - region.ymin))
             gfx_TransparentSprite(sprite, x, y);
 }
 
-void pdraw_TransparentSprite_NoClip(gfx_sprite_t *sprite, uint24_t x, uint8_t y) {
+void pdraw_TransparentSprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y) {
     if(pdraw_RectRegion(x, y, sprite->width, sprite->height))
         gfx_TransparentSprite_NoClip(sprite, x, y);
 }

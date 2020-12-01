@@ -124,8 +124,8 @@ void aim_reflect(Tank *tank) {
     if(tank->ai_fire.reflect.scan_dir == 0) {
         //Reflect off of x values
         uint8_t x, xT, yT;
-        uint24_t rX;
-        int24_t yInt;
+        uint rX;
+        int yInt;
         bool left;
         line_seg_t line;
         tile_t tile;
@@ -177,8 +177,8 @@ void aim_reflect(Tank *tank) {
     } else {
         //Reflect off of y values
         uint8_t y, xT, yT;
-        uint24_t rY;
-        int24_t xInt;
+        uint rY;
+        int xInt;
         bool up;
         line_seg_t line;
         tile_t tile;
@@ -240,10 +240,10 @@ void aim_future(Tank *tank) {
 
 }
 
-tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int24_t distance) {
+tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int distance) {
     angle_t angle = tank->tread_rot + angle_offset;
-    int24_t x = tank->position_x + tank->width / 2 + distance * fast_cos(angle) / TRIG_SCALE;
-    int24_t y = tank->position_y + tank->height / 2 + distance * fast_sin(angle) / TRIG_SCALE;
+    int x = tank->position_x + tank->width / 2 + distance * fast_cos(angle) / TRIG_SCALE;
+    int y = tank->position_y + tank->height / 2 + distance * fast_sin(angle) / TRIG_SCALE;
     int8_t tile_x = COORD_TO_X_TILE(x);
     int8_t tile_y = COORD_TO_X_TILE(y);
     if(tile_x < 0 || tile_x >= LEVEL_SIZE_X) return 1;
@@ -254,8 +254,8 @@ tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int24_t distance) {
 // todo: check tank's future position
 bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, bool future) {
     uint8_t bounces;
-    uint24_t posX = tank->center_x();
-    uint24_t posY = tank->center_y();
+    uint posX = tank->center_x();
+    uint posY = tank->center_y();
     angle_t angle = tank->barrel_rot;
     for(bounces = 0; bounces <= max_bounces; bounces++) {
         bool reflectAxis;
@@ -286,7 +286,7 @@ bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, bo
 
 //Point directly at the player with no bounces or motion compensation
 void point_at_player(Tank *tank, PhysicsBody *target) {
-    int24_t dx = target->center_x() - tank->center_x();
-    int24_t dy = target->center_y() - tank->center_y();
+    int dx = target->center_x() - tank->center_x();
+    int dy = target->center_y() - tank->center_y();
     tank->barrel_rot = fast_atan2(dy, dx);
 }

@@ -24,7 +24,7 @@ void move_away(Tank *tank);
 
 void move_toward(Tank *tank);
 
-tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int24_t distance);
+tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int distance);
 
 bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, bool future);
 

@@ -15,8 +15,8 @@ void display_scores(void) {
 // todo: improve
 void display_kill_counts(void) {
     uint8_t i;
-    const uint24_t bg_width = 120;
-    const uint24_t base_x = (LCD_WIDTH - bg_width) / 2;
+    const uint bg_width = 120;
+    const uint base_x = (LCD_WIDTH - bg_width) / 2;
 
     const uint8_t bands_base_y = 17;
     const uint8_t band_height = 3;
@@ -25,14 +25,14 @@ void display_kill_counts(void) {
 
     const uint8_t text_base_y = bands_base_y + bands_total_height + 20;
     const uint8_t line_spacing = 18;
-    const uint24_t text_center_point = LCD_WIDTH / 2 + 19;
+    const uint text_center_point = LCD_WIDTH / 2 + 19;
     const uint8_t char_width = 8;
 
     const uint8_t bottom_band_y = LCD_HEIGHT - 36;
 
-    const uint24_t final_box_width = 38;
+    const uint final_box_width = 38;
     const uint8_t final_box_height = 19;
-    const uint24_t final_box_x = text_center_point - final_box_width / 2;
+    const uint final_box_x = text_center_point - final_box_width / 2;
     const uint8_t final_box_y = bottom_band_y + 2 * band_height;
     const uint8_t box_text_y = final_box_y + (final_box_height - 6 * 2) / 2;
 
@@ -222,10 +222,10 @@ void display_game_banner(uint8_t mission, uint8_t lives) {
     // todo: check if the compiler optimizes these properly
     const uint8_t banner_width = SCREEN_DELTA_X(10.5 * TILE_SIZE);
     const uint8_t banner_height = 14;
-    const uint24_t base_x = (LCD_WIDTH - banner_width) / 2;
+    const uint base_x = (LCD_WIDTH - banner_width) / 2;
     const uint8_t base_y = SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE) + 3;
     const uint8_t text_x = base_x + 18;
-    const uint24_t text2_x = base_x + 122;
+    const uint text2_x = base_x + 122;
     const uint8_t text_y = base_y + 3;
     const uint8_t rhomb_width = 7;
 
@@ -235,7 +235,7 @@ void display_game_banner(uint8_t mission, uint8_t lives) {
     gfx_FillRectangle_NoClip(base_x, base_y + 1, banner_width, banner_height - 2);
 
     gfx_SetColor(COL_RHOM_2);
-    for(uint24_t x = base_x; x < base_x + banner_width; x += rhomb_width) {
+    for(uint x = base_x; x < base_x + banner_width; x += rhomb_width) {
         gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1,
                                 x + rhomb_width / 2, base_y);
         gfx_FillTriangle_NoClip(x, base_y + banner_height / 2 - 1, x + rhomb_width - 1, base_y + banner_height / 2 - 1,
@@ -297,7 +297,7 @@ void bang(void) {
 
     gfx_SetTextScale(3, 3);
     gfx_SetTextFGColor(COL_WHITE);
-    uint24_t width = gfx_GetStringWidth(text);
+    uint width = gfx_GetStringWidth(text);
     gfx_PrintStringXY(text, (LCD_WIDTH - width) / 2, (LCD_HEIGHT - 8 * 3) / 2);
     gfx_SetTextScale(1, 1);
 

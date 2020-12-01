@@ -13,8 +13,8 @@ profiler_set_t profiler_frames[256];
 uint8_t profiler_frame_index;
 
 void profiler_init(void) {
-    timer_2_Counter = 0;
-    timer_Control |= TIMER2_ENABLE | TIMER2_32K | TIMER2_UP | TIMER2_NOINT;
+    set_timer_Counter(2, 0);
+    timer_Enable(2, TIMER_32K, TIMER_NOINT, TIMER_UP);
     profiler_frame_index = 0;
     memset(profiler_frames, 0, sizeof(profiler_frames));
     memset(&profiler_sum, 0, sizeof(profiler_sum));
@@ -28,10 +28,10 @@ void profiler_tick(void) {
         current_profiler.array[i] = 0;
     }
     profiler_frame_index++;
-    timer_2_Counter = 0;
+    set_timer_Counter(2, 0);
 }
 
-#define as_decimal(x) (uint24_t)(x),((uint24_t)((x)*1000) % 1000)
+#define as_decimal(x) (uint)(x),((uint)((x)*1000) % 1000)
 #define profiler_field_last(name, depth) printf_("%.*s%s: %u.%03u ms\n", 2*(1+(depth)), "                    ", #name, as_decimal(profiler_frames[profiler_frame_index - 1].name / 33.0))
 #define profiler_field_average(name, depth) printf_("%.*s%s: %u.%03u ms\n", 2*(1+(depth)), "                    ", #name, as_decimal(profiler_sum.name / 8388.608))
 
@@ -64,7 +64,7 @@ void profiler_print(void) {
     profiler_field_last(    mines, 2);
     profiler_field_last(  input, 1);
     profiler_field_last(frame_wait, 0);
-    printf_("Average of last 256 frames: %u FPS\n", (uint24_t)8388608 / profiler_sum.total);
+    printf_("Average of last 256 frames: %u FPS\n", (uint)8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
     profiler_field_average(  graphics, 1);
     profiler_field_average(    gfx_wait, 2);

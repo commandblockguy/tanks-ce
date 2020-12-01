@@ -70,7 +70,7 @@ public:
     void lay_mine();
     bool can_shoot() const;
     bool can_lay_mine() const;
-    void set_velocity(int24_t velocity);
+    void set_velocity(int velocity);
 
     //Number of shots each type of tank can have on-screen at any one time
     static const uint8_t max_shells[];

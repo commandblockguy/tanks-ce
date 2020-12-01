@@ -31,7 +31,7 @@ void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t
 
     size_t size = in->width * in->height;
 
-    for(uint24_t i = 0; i < size; i++) {
+    for(uint i = 0; i < size; i++) {
         out->data[i] = map[in->data[i]];
     }
 }
@@ -229,22 +229,22 @@ void generate_bg_tilemap(void) {
 
 const gfx_tilemap_t tilemap_config = {(uint8_t *) tilemap, tileset_tiles, HALF_TILE_PIXEL_HEIGHT, TILE_PIXEL_SIZE_X,
                                       TILEMAP_HEIGHT, TILEMAP_WIDTH, gfx_tile_no_pow2, gfx_tile_no_pow2, TILEMAP_HEIGHT,
-                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, (uint24_t)SCREEN_X(0)};
+                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, (uint)SCREEN_X(0)};
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];
-    uint24_t screen_x = SCREEN_X(TILE_SIZE * x);
+    uint screen_x = SCREEN_X(TILE_SIZE * x);
     uint8_t screen_y = TILEMAP_BASE_Y + HALF_TILE_PIXEL_HEIGHT * y;
     gfx_Sprite(tile, screen_x, screen_y);
 }
 
 // Convert a screenspace coordinate to a redraw tile
-uint8_t inline screen_to_tm_x(uint24_t screen_x) {
-    int24_t dx = screen_x - SCREEN_X(0);
+uint8_t inline screen_to_tm_x(uint screen_x) {
+    int dx = screen_x - SCREEN_X(0);
     return dx / SCREEN_DELTA_X(TILE_SIZE) - (dx < 0);
 }
 
-uint8_t inline screen_to_tm_y(uint24_t screen_y) {
+uint8_t inline screen_to_tm_y(uint screen_y) {
     return (screen_y - TILEMAP_BASE_Y) / HALF_TILE_PIXEL_HEIGHT;
 }
 
@@ -259,11 +259,11 @@ void draw_aim_dots(void) {
     raycast(game.player->center_x(), game.player->center_y(), angle, &line);
     profiler_end(raycast);
 
-    int24_t dx = (line.x2 - line.x1) / num_dots;
-    int24_t dy = (line.y2 - line.y1) / num_dots;
+    int dx = (line.x2 - line.x1) / num_dots;
+    int dy = (line.y2 - line.y1) / num_dots;
 
-    int24_t x = line.x1 + dx;
-    int24_t y = line.y1 + dy;
+    int x = line.x1 + dx;
+    int y = line.y1 + dy;
 
     for(uint8_t dot = 0; dot < num_dots; dot++) {
         gfx_SetColor(COL_LIVES_TXT);
@@ -279,12 +279,12 @@ void draw_aim_dots(void) {
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
                             const PhysicsBody *phys, uint8_t rotation, uint8_t height) {
     profiler_add(render_obscured);
-    uint24_t base_x = SCREEN_X(phys->center_x()) - SPRITE_OFFSET_X;
+    uint base_x = SCREEN_X(phys->center_x()) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(phys->center_y()) - SPRITE_OFFSET_Y;
     gfx_sprite_t *sprite = sprites[rotation];
-    uint24_t sprite_x = base_x + offsets_x[rotation];
+    uint sprite_x = base_x + offsets_x[rotation];
     uint8_t sprite_y = base_y + offsets_y[rotation];
-    uint24_t sprite_end_x = sprite_x + sprite->width;
+    uint sprite_end_x = sprite_x + sprite->width;
     uint8_t sprite_end_y = sprite_y + sprite->height;
 
     pdraw_TransparentSprite(sprite, sprite_x, sprite_y);
@@ -351,7 +351,7 @@ void render() {
 }
 
 void PhysicsBody::render() {
-    uint24_t x = SCREEN_X(position_x);
+    uint x = SCREEN_X(position_x);
     uint8_t y = SCREEN_Y(position_y);
     uint8_t width = SCREEN_DELTA_X(this->width);
     uint8_t height = SCREEN_DELTA_Y(this->height);

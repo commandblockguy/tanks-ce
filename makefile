@@ -9,7 +9,7 @@ ARCHIVED ?= YES
 OUTPUT_MAP ?= YES
 
 CFLAGS ?= -Wall -Wextra -O3
-CXXFLAGS ?= -Wall -Wextra -O3 -fno-rtti
+CXXFLAGS ?= -Wall -Wextra -O3
 
 # ----------------------------
 
@@ -18,6 +18,10 @@ $(error CEDEV environment path variable is not set)
 endif
 
 include $(CEDEV)/meta/makefile.mk
+
+ifdef CEMSCRIPTEN
+include $(CEMSCRIPTEN)/makefile.mk
+endif
 
 # ----------------------------
 

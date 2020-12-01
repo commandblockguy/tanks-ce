@@ -2,7 +2,8 @@
 #define TANKS_AI_STATE_H
 
 #include <stdbool.h>
-#include <intce.h>
+#include <stdint.h>
+#include "util.h"
 
 typedef struct {
     bool clockwise;
@@ -31,8 +32,8 @@ typedef struct {
 typedef struct {} ai_move_toward_state_t;
 
 typedef struct {
-    uint24_t target_x;
-    uint24_t target_y;
+    uint target_x;
+    uint target_y;
 } ai_move_away_state_t;
 
 typedef union ai_move {

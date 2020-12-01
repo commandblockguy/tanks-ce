@@ -42,13 +42,19 @@ int main() {
 
     create_levels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
 
+    printf_("Created levels\n");
+
     init_graphics();
 
-    timer_Control = 0;
+    printf_("Initted graphics\n");
 
     profiler_init();
 
+    printf_("Started profiler\n");
+
     gen_lookups();
+
+    printf_("Generated lookups\n");
 
     game.lives = 3;
     game.total_kills = 0;
@@ -125,7 +131,7 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
 
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         if(!game.alive_tanks[i]) continue;
-        Tank *tank = new Tank(&ser_tanks[i], i);
+        new Tank(&ser_tanks[i], i);
         //printf_("tank created: %p\n", tank);
         tank_type_used[ser_tanks[i].type] = true;
     }

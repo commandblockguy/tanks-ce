@@ -41,7 +41,7 @@ public:
     void update_direction();
 
     static uint8_t angle_to_shell_direction(angle_t angle) {
-        return ((uint8_t) -((angle >> 16) - 64)) >> 4;
+        return ((uint8_t) -((angle >> (INT_BITS - 8)) - 64)) >> 4;
     }
 
     void handle_collision(PhysicsBody *other);

@@ -82,8 +82,8 @@ void Tank::process() {
 }
 
 void Tank::render() {
-    uint8_t base_sprite = (((uint8_t) -((tread_rot >> 16) - 64)) >> 3) & 0xF;
-    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> 16) - 64)) >> 4;
+    uint8_t base_sprite = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
+    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
 
     // todo: a lot of this seems to be running twice as often as it needs to
     if(type == PLAYER) {
@@ -102,7 +102,7 @@ void Tank::render() {
 void Tank::fire_shell() {
     if(!can_shoot()) return;
     Shell *shell = new Shell(this);
-    int24_t vector_x, vector_y;
+    int vector_x, vector_y;
 
     shell->bounces = max_bounces[type];
 
@@ -141,13 +141,13 @@ bool Tank::can_lay_mine() const {
     return num_mines < max_mines[type];
 }
 
-void Tank::set_velocity(int24_t velocity) {
+void Tank::set_velocity(int velocity) {
     if(velocity == 0) {
         velocity_x = 0;
         velocity_y = 0;
     } else {
-        velocity_x = (int24_t) velocity * fast_cos(tread_rot) / TRIG_SCALE;
-        velocity_y = (int24_t) velocity * fast_sin(tread_rot) / TRIG_SCALE;
+        velocity_x = (int) velocity * fast_cos(tread_rot) / TRIG_SCALE;
+        velocity_y = (int) velocity * fast_sin(tread_rot) / TRIG_SCALE;
     }
 }
 
@@ -162,10 +162,10 @@ void Tank::collide(Tank *tank) {
     bool top_left = tank->is_point_inside(position_x, position_y);
     bool bottom_left = tank->is_point_inside(position_x, position_y + height);
 
-    uint24_t dis_up = -1;
-    uint24_t dis_down = -1;
-    uint24_t dis_left = -1;
-    uint24_t dis_right = -1;
+    uint dis_up = -1;
+    uint dis_down = -1;
+    uint dis_left = -1;
+    uint dis_right = -1;
 
     if(!(top_right || bottom_right || top_left || bottom_left)) return;
 

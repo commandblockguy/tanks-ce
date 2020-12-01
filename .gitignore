@@ -58,3 +58,6 @@ src/gfx/offsets
 src/gfx/*.txt
 src/gfx/*.bin
 tank.blend1
+TANKS.html
+TANKS.js
+TANKS.wasm
