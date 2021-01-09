@@ -91,24 +91,25 @@ uint fast_atan2(int y, int x) {
 
 void init_timer() {
     timer_Disable(1);
-    set_timer_Counter(1, 32768 / TARGET_TICK_RATE);
-    set_timer_ReloadValue(1, 32768 / TARGET_TICK_RATE);
+    timer_Set(1, 32768 / TARGET_TICK_RATE);
+    timer_SetReload(1, 32768 / TARGET_TICK_RATE);
     timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
 }
 
 void limit_framerate() {
-    while(!timer_CheckInterrupt(1, TIMER_RELOADED));
+    while(!timer_ChkInterrupt(1, TIMER_RELOADED));
     timer_AckInterrupt(1, TIMER_RELOADED);
 }
 
 void wait_ms_or_keypress(uint ms) {
     timer_Disable(1);
-    set_timer_Counter(1, 33 * ms);
-    set_timer_ReloadValue(1, 33 * ms);
+    timer_AckInterrupt(1, TIMER_RELOADED);
+    timer_Set(1, 33 * ms);
+    timer_SetReload(1, 33 * ms);
     timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
 
     while(true) {
-        if(timer_CheckInterrupt(1, TIMER_RELOADED)) {
+        if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
             timer_AckInterrupt(1, TIMER_RELOADED);
             break;
         }

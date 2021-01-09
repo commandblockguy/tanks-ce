@@ -36,12 +36,6 @@ int fast_sec(angle_t angle);
 #define TRIG_PRECISION_BITS 8
 #define TRIG_PRECISION (1 << TRIG_PRECISION_BITS)
 
-#ifdef __EZ80__
-#define set_timer_Counter(n, x) timer_##n##_Counter = (x)
-#define get_timer_Counter(n) timer_##n##_Counter
-#define set_timer_ReloadValue(n, x) timer_##n##_ReloadValue = (x)
-#endif
-
 uint fast_atan2(int y, int x);
 
 void init_timer(void);

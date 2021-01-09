@@ -13,7 +13,7 @@ profiler_set_t profiler_frames[256];
 uint8_t profiler_frame_index;
 
 void profiler_init(void) {
-    set_timer_Counter(2, 0);
+    timer_Set(2, 0);
     timer_Enable(2, TIMER_32K, TIMER_NOINT, TIMER_UP);
     profiler_frame_index = 0;
     memset(profiler_frames, 0, sizeof(profiler_frames));
@@ -28,7 +28,7 @@ void profiler_tick(void) {
         current_profiler.array[i] = 0;
     }
     profiler_frame_index++;
-    set_timer_Counter(2, 0);
+    timer_Set(2, 0);
 }
 
 #define as_decimal(x) (uint)(x),((uint)((x)*1000) % 1000)
