@@ -13,7 +13,7 @@ pdraw_sprite_t *pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t heigh
     profiler_add(store_bg);
     gfx_sprite_t *bg_sprite = gfx_MallocSprite(width, height);
     if(bg_sprite == NULL) {
-        printf_("Failed to allocate memory for redraw sprite\n");
+        dbg_printf("Failed to allocate memory for redraw sprite\n");
         profiler_end(store_bg);
         return NULL;
     }

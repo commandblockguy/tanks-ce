@@ -36,25 +36,25 @@ int main() {
     level_pack_t lvl_pack;
     ti_var_t appVar;
 
-    printf_("\n\n[TANKS] Program started.\n");
+    dbg_printf("\n\n[TANKS] Program started.\n");
 
     ti_CloseAll();
 
     create_levels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
 
-    printf_("Created levels\n");
+    dbg_printf("Created levels\n");
 
     init_graphics();
 
-    printf_("Initted graphics\n");
+    dbg_printf("Initted graphics\n");
 
     profiler_init();
 
-    printf_("Started profiler\n");
+    dbg_printf("Started profiler\n");
 
     gen_lookups();
 
-    printf_("Generated lookups\n");
+    dbg_printf("Generated lookups\n");
 
     game.lives = 3;
     game.total_kills = 0;
@@ -62,18 +62,18 @@ int main() {
 
     appVar = ti_Open("TANKSLPK", "r");
     if(!appVar) {
-        printf_("Failed to open level pack\n");
+        dbg_printf("Failed to open level pack\n");
         goto exit;
     }
     ti_Read(&lvl_pack, sizeof(level_pack_t), 1, appVar);
-    printf_("Found %u levels.\n", lvl_pack.num_levels);
+    dbg_printf("Found %u levels.\n", lvl_pack.num_levels);
 
     for(game.mission = 0; game.mission < lvl_pack.num_levels; game.mission++) {
         //Level loop
         const uint8_t *comp_tiles; //Compressed tile data
         const serialized_tank_t *ser_tanks;
 
-        printf_("Loading level %u.\n", game.mission);
+        dbg_printf("Loading level %u.\n", game.mission);
 
         //Read level from appvar
         ti_Read(&game.level, sizeof(level_t), 1, appVar);
@@ -97,7 +97,7 @@ int main() {
                 goto exit;
             }
             default: {
-                printf_("Got a weird status code from a mission: %u\n", status);
+                dbg_printf("Got a weird status code from a mission: %u\n", status);
                 goto exit;
             }
         }
@@ -119,7 +119,7 @@ int main() {
 }
 
 bool start_mission(const serialized_tank_t *ser_tanks) {
-    printf_("starting mission\n");
+    dbg_printf("starting mission\n");
     bool tank_type_used[NUM_TANK_TYPES] = {false};
 
     while(!PhysicsBody::objects.empty()) {
@@ -132,7 +132,7 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         if(!game.alive_tanks[i]) continue;
         new Tank(&ser_tanks[i], i);
-        //printf_("tank created: %p\n", tank);
+        //dbg_printf("tank created: %p\n", tank);
         tank_type_used[ser_tanks[i].type] = true;
     }
 
@@ -171,9 +171,9 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
 
 
         profiler_start(physics);
-        //printf_("0: %p\n", PhysicsBody::objects[0]);
+        //dbg_printf("0: %p\n", PhysicsBody::objects[0]);
         for(auto *it = PhysicsBody::objects.begin(); it < PhysicsBody::objects.end(); it++) {
-            //printf_("%p\n", *it);
+            //dbg_printf("%p\n", *it);
             (**it).process();
         }
         process_collisions();

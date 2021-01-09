@@ -62,7 +62,7 @@ void Mine::handle_collision(PhysicsBody *other) {
     other->collide(this);
 }
 
-void Mine::collide(Tank *tank) {
+void Mine::collide(__attribute__((unused)) Tank *tank) {
     // don't do anything
 }
 
@@ -70,6 +70,6 @@ void Mine::collide(Shell *shell) {
     shell->collide(this);
 }
 
-void Mine::collide(Mine *mine) {
+void Mine::collide(__attribute__((unused)) Mine *mine) {
     // don't do anything
 }

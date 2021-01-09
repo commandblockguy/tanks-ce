@@ -14,9 +14,6 @@ typedef unsigned int uint;
 
 #define INT_BITS (sizeof(int) * 8)
 
-// todo: maybe turn this into a function that can be called on a physical calc, printing to serial or to a log
-#define printf_(...) dbg_sprintf((char*)dbgout, __VA_ARGS__)
-
 #define print_line() dbg_sprintf(dbgout, "%s:%u\n", __FILE__, __LINE__)
 
 typedef uint angle_t;

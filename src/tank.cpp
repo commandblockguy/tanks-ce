@@ -205,6 +205,6 @@ void Tank::collide(Shell *shell) {
     shell->collide(this);
 }
 
-void Tank::collide(Mine *mine) {
+void Tank::collide(__attribute__((unused)) Mine *mine) {
     // don't do anything
 }

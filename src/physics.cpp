@@ -17,7 +17,7 @@ PhysicsBody::PhysicsBody() {
     objects.push_back(this);
     // todo: _vtable gets off-by-one without this
     // idek
-    printf_("pushed %p\n", this);
+    dbg_printf("pushed %p\n", this);
 }
 
 PhysicsBody::~PhysicsBody() {

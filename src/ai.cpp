@@ -165,7 +165,7 @@ void aim_reflect(Tank *tank) {
 
         if(xT != 0 && xT < LEVEL_SIZE_X && yT != 0 && yT < LEVEL_SIZE_Y)
             if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) {
-                //printf_("No tile at intersect point (%u, %u) (is %X)\n", xT, yT, tile);
+                //dbg_printf("No tile at intersect point (%u, %u) (is %X)\n", xT, yT, tile);
                 return;
             }
         //if so, check if pointing_at_target
@@ -236,7 +236,7 @@ void aim_current(Tank *tank) {
     }
 }
 
-void aim_future(Tank *tank) {
+void aim_future(__attribute__((unused)) Tank *tank) {
 
 }
 
@@ -252,7 +252,7 @@ tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int distance) {
 }
 
 // todo: check tank's future position
-bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, bool future) {
+bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, __attribute__((unused)) bool future) {
     uint8_t bounces;
     uint posX = tank->center_x();
     uint posY = tank->center_y();
