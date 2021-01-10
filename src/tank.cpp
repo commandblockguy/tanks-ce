@@ -1,4 +1,5 @@
 #include <keypadc.h>
+#include <new>
 #include "ai.h"
 #include "collision.h"
 #include "globals.h"
@@ -101,7 +102,11 @@ void Tank::render() {
 
 void Tank::fire_shell() {
     if(!can_shoot()) return;
-    Shell *shell = new Shell(this);
+    Shell *shell = new (std::nothrow) Shell(this);
+    if(!shell) {
+        dbg_printf("Failed to allocate fired shell\n");
+        return;
+    }
     int vector_x, vector_y;
 
     shell->bounces = max_bounces[type];
@@ -130,7 +135,11 @@ bool Tank::can_shoot() const {
 
 void Tank::lay_mine() {
     if(!can_lay_mine()) return;
-    Mine *mine = new Mine(this);
+    Mine *mine = new (std::nothrow) Mine(this);
+    if(!mine) {
+        dbg_printf("Failed to allocate mine\n");
+        return;
+    }
     mine->position_x = position_x + (TANK_SIZE - MINE_SIZE) / 2;
     mine->position_y = position_y + (TANK_SIZE - MINE_SIZE) / 2;
 

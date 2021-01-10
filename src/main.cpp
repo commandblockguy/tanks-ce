@@ -27,6 +27,7 @@
 #include "input.h"
 
 #include <stdlib.h>
+#include <new>
 
 bool start_mission(const serialized_tank_t *ser_tanks); //Start a mission and reset various tank things.
 uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks);
@@ -131,8 +132,12 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
 
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         if(!game.alive_tanks[i]) continue;
-        new Tank(&ser_tanks[i], i);
         //dbg_printf("tank created: %p\n", tank);
+        Tank *tank = new (std::nothrow) Tank(&ser_tanks[i], i);
+        if(!tank) {
+            dbg_printf("Failed to allocate tank\n");
+            continue;
+        }
         tank_type_used[ser_tanks[i].type] = true;
     }
 

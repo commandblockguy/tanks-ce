@@ -41,7 +41,10 @@ bool init_tank_sprites(tank_type_t type) {
     if(tank_bases[type][0]) return true;
 
     spriteset_t *spriteset = (spriteset_t *)malloc(sizeof(spriteset_t));
-    if(!spriteset) return false;
+    if(!spriteset) {
+        dbg_printf("Failed to allocate spriteset\n");
+        return false;
+    }
 
     tank_bases[type][0] = (gfx_sprite_t *) &spriteset->base_0_data;
     tank_bases[type][1] = (gfx_sprite_t *) &spriteset->base_1_data;
