@@ -36,6 +36,24 @@ void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t
     }
 }
 
+void get_sprite_shadow(gfx_sprite_t *out, gfx_sprite_t *in, uint8_t shadow_color) {
+    out->width = in->width;
+    out->height = in->height;
+    for(uint i = 0; i < in->width * in->height; i++) {
+        uint8_t px = in->data[i];
+        out->data[i] = px ? shadow_color : 0;
+    }
+}
+
+void get_enemy_palette_map(uint8_t *out, tank_type_t type) {
+    out[0] = 0;
+    out[1] = COL_ENEMY_TANK_WOOD_1;
+    out[2] = COL_ENEMY_TANK_WOOD_2;
+    out[3] = COL_ENEMY_TANK_WOOD_3;
+    for(uint8_t i = 0; i < NUM_DYNAMIC_COLORS; i++)
+        out[NUM_NON_DYNAMIC_COLORS + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type + i;
+}
+
 bool init_tank_sprites(tank_type_t type) {
     // return if sprites were already initialized from the last level
     if(tank_bases[type][0]) return true;
@@ -80,13 +98,12 @@ bool init_tank_sprites(tank_type_t type) {
     tank_turrets[type][14] = (gfx_sprite_t *) &spriteset->turret_14_data;
     tank_turrets[type][15] = (gfx_sprite_t *) &spriteset->turret_15_data;
 
-    uint8_t palette_table[NUM_NON_DYNAMIC_COLORS + NUM_DYNAMIC_COLORS] = {0, COL_ENEMY_TANK_WOOD_1, COL_ENEMY_TANK_WOOD_2, COL_ENEMY_TANK_WOOD_3};
-    for(uint8_t i = 0; i < NUM_DYNAMIC_COLORS; i++)
-        palette_table[NUM_NON_DYNAMIC_COLORS + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type + i;
+    palette_map_t palette_map;
+    get_enemy_palette_map(palette_map, type);
 
     for(uint8_t rot = 0; rot < 9; rot++) {
-        repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_table);
-        repalettize_sprite(tank_turrets[type][rot], enemy_turrets_unconv[rot], palette_table);
+        repalettize_sprite(tank_bases[type][rot], enemy_bases_unconv[rot], palette_map);
+        repalettize_sprite(tank_turrets[type][rot], enemy_turrets_unconv[rot], palette_map);
     }
     for(uint8_t i = 1; i < 8; i++) {
         gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);

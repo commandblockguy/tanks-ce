@@ -8,12 +8,12 @@
 #include "graphics.h"
 #include "globals.h"
 
-void display_scores(void) {
+void display_scores() {
 
 }
 
 // todo: improve
-void display_kill_counts(void) {
+void display_kill_counts() {
     uint8_t i;
     const uint bg_width = 120;
     const uint base_x = (LCD_WIDTH - bg_width) / 2;
@@ -27,6 +27,9 @@ void display_kill_counts(void) {
     const uint8_t line_spacing = 18;
     const uint text_center_point = LCD_WIDTH / 2 + 19;
     const uint8_t char_width = 8;
+
+    const uint sprite_center = LCD_WIDTH / 2 - 19;
+    const uint sprite_base_y = text_base_y - 2;
 
     const uint8_t bottom_band_y = LCD_HEIGHT - 36;
 
@@ -56,11 +59,23 @@ void display_kill_counts(void) {
     gfx_SetTextScale(2, 2);
     gfx_PrintStringXY(results, (LCD_WIDTH - gfx_GetStringWidth(results)) / 2, bands_base_y + band_height);
 
+    // todo: P1 text
+
+    gfx_UninitedSprite(en_tank_shadow, en_tank_width, en_tank_height);
+    get_sprite_shadow(en_tank_shadow, en_tank, COL_RIB_SHADOW);
 
     gfx_SetTextScale(1, 1);
     for(i = 0; i < NUM_TANK_TYPES - 1; i++) {
         uint8_t num_kills = game.kills[i + 1];
         if(!num_kills) continue;
+
+        palette_map_t palette_map;
+        get_enemy_palette_map(palette_map, i + 1);
+        gfx_UninitedSprite(en_tank_palettized, en_tank_width, en_tank_height);
+        repalettize_sprite(en_tank_palettized, en_tank, palette_map);
+
+        gfx_TransparentSprite_NoClip(en_tank_shadow, sprite_center - en_tank_width / 2 + 2, sprite_base_y + line_spacing * i + 2);
+        gfx_TransparentSprite_NoClip(en_tank_palettized, sprite_center - en_tank_width / 2, sprite_base_y + line_spacing * i);
 
         /* TODO: tank sprite */
         if(num_kills >= 10) {
@@ -167,15 +182,8 @@ void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
 
     int offset = 0;
 
-    // Create a shadow of the tank sprite
-    // todo: check if this actually saves any space
     gfx_UninitedSprite(fg_tank_shadow, fg_tank_width, fg_tank_height);
-    fg_tank_shadow->width = fg_tank_width;
-    fg_tank_shadow->height = fg_tank_height;
-    for(uint i = 0; i < fg_tank_width * fg_tank_height; i++) {
-        uint8_t px = fg_tank->data[i];
-        fg_tank_shadow->data[i] = px ? COL_RIB_SHADOW : 0;
-    }
+    get_sprite_shadow(fg_tank_shadow, fg_tank, COL_RIB_SHADOW);
 
     for(uint8_t frame = 0;; frame++) {
         if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
@@ -267,7 +275,7 @@ void update_game_kill_counter(uint8_t kills, bool force) {
     update_game_kill_counter_current_buffer(kills);
 }
 
-void display_game_kill_counter(void) {
+void display_game_kill_counter() {
     gfx_SetColor(COL_LIVES_TXT); // todo: add a bluer color
     gfx_FillCircle_NoClip(KILL_COUNTER_END_X - KILL_COUNTER_RADIUS, KILL_COUNTER_Y + KILL_COUNTER_RADIUS,
                           KILL_COUNTER_RADIUS);
@@ -322,7 +330,7 @@ void display_game_banner(uint8_t mission, uint8_t lives) {
     gfx_PrintUInt(lives, 1);
 }
 
-void bang(void) {
+void bang() {
     gfx_FillScreen(COL_BLACK);
     gfx_SetColor(COL_WHITE);
     const uint8_t border_width = 24;

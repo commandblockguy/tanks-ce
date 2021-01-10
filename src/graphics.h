@@ -38,6 +38,8 @@ enum colors {
 
 #define NUM_NON_DYNAMIC_COLORS 4
 #define NUM_DYNAMIC_COLORS 5
+#define PALETTE_MAP_SIZE (NUM_NON_DYNAMIC_COLORS + NUM_DYNAMIC_COLORS)
+typedef uint8_t palette_map_t[PALETTE_MAP_SIZE];
 
 enum tileset {
     TS_TOP_TOP,
@@ -140,7 +142,11 @@ void free_tank_sprites(tank_type_t type);
 void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
                             const PhysicsBody *phys, uint8_t rotation, uint8_t height);
 
-void render_physics_body(PhysicsBody *phys);
+void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t *map);
+
+void get_sprite_shadow(gfx_sprite_t *out, gfx_sprite_t *in, uint8_t shadow_color);
+
+void get_enemy_palette_map(uint8_t *out, tank_type_t type);
 
 extern bool needs_redraw; // set if the entire map should be redrawn
 
