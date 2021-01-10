@@ -148,7 +148,6 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
         }
     }
 
-    draw_mission_start_screen(game.mission, game.lives, game.num_tanks - 1);
     for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
         if(tank_type_used[type]) {
             if(!init_tank_sprites(type)) {
@@ -159,7 +158,9 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
             free_tank_sprites(type);
         }
     }
-    wait_ms_or_keypress(MISSION_START_TIME);
+
+    mission_start_screen(game.mission, game.lives, game.num_tanks - 1);
+
     init_timer();
     needs_redraw = true;
     return true;

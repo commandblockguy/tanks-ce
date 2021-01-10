@@ -101,26 +101,6 @@ void limit_framerate() {
     timer_AckInterrupt(1, TIMER_RELOADED);
 }
 
-void wait_ms_or_keypress(uint ms) {
-    timer_Disable(1);
-    timer_AckInterrupt(1, TIMER_RELOADED);
-    timer_Set(1, 33 * ms);
-    timer_SetReload(1, 33 * ms);
-    timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
-
-    while(true) {
-        if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
-            timer_AckInterrupt(1, TIMER_RELOADED);
-            break;
-        }
-        kb_Scan();
-        if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
-            while(kb_Data[1] || kb_Data[6]) kb_Scan();
-            break;
-        }
-    }
-}
-
 #ifdef __EZ80__
 // Define some C++ internal stuff that's needed for this to link
 extern "C" [[noreturn, gnu::unused]] void __cxa_pure_virtual() {

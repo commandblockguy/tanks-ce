@@ -11,7 +11,7 @@ void display_scores(void); //Display high scores
 
 void display_kill_counts(void);
 
-void draw_mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
+void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks); //Display the mission start screen
 
 void update_game_kill_counter(uint8_t kills, bool force);
 

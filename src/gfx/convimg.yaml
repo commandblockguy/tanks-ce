@@ -52,6 +52,8 @@ converts:
     images:
       - trimmed/pl_*.png
       - trimmed/shell_*.png
+      - bg_tank.png
+      - fg_tank.png
   - name: enemy
     dither: true
     palette: enemy_palette

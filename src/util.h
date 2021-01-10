@@ -39,8 +39,6 @@ void init_timer(void);
 
 void limit_framerate(void);
 
-void wait_ms_or_keypress(uint ms);
-
 inline uint min(uint a, uint b) { return (a > b) ? b : a; }
 
 inline uint max(uint a, uint b) { return (a > b) ? a : b; }

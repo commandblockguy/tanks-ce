@@ -107,23 +107,32 @@ void display_kill_counts(void) {
 //50 (17) (16) pixels between text and bottom band
 //Text shadow (134,36,37) has 8px (3px) offset
 //# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
-void draw_mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
-    int x, y;
+void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
+    timer_Disable(1);
+    timer_AckInterrupt(1, TIMER_RELOADED);
+    timer_Set(1, 33 * MISSION_START_TIME);
+    timer_SetReload(1, 33 * MISSION_START_TIME);
+    timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
+
     gfx_FillScreen(COL_BG);
 
     gfx_SetColor(COL_RHOM_1);
 
-    gfx_FillRectangle_NoClip(0, 48, LCD_WIDTH, 100);
+    const int BANNER_TOP = 48;
+    const int BANNER_BOTTOM = 148;
+    const int SHADOW_BOTTOM = BANNER_BOTTOM + 4;
+
+    gfx_FillRectangle_NoClip(0, BANNER_TOP, LCD_WIDTH, BANNER_BOTTOM - BANNER_TOP);
     gfx_SetColor(COL_RHOM_2);
-    for(x = 0; x <= LCD_WIDTH / 12; x++) {
-        for(y = 0; y < 6; y++) {
+    for(int x = 0; x <= LCD_WIDTH / 12; x++) {
+        for(int y = 0; y < 6; y++) {
             gfx_FillTriangle(x * 12 + 6, 55 + y * 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
             gfx_FillTriangle(x * 12 + 6, 55 + y * 15 + 15, x * 12, y * 15 + 55 + 7, x * 12 + 12, y * 15 + 55 + 7);
         }
     }
 
     gfx_SetColor(COL_RIB_SHADOW);
-    gfx_FillRectangle_NoClip(0, 148, LCD_WIDTH, 4);
+    gfx_FillRectangle_NoClip(0, BANNER_BOTTOM, LCD_WIDTH, SHADOW_BOTTOM - BANNER_BOTTOM);
 
     gfx_SetColor(COL_GOLD);
     gfx_FillRectangle_NoClip(0, 51, LCD_WIDTH, 4);
@@ -154,24 +163,78 @@ void draw_mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks
     gfx_PrintString("Enemy Tanks: ");
     gfx_PrintUInt(num_tanks, 1);
 
+    gfx_BlitBuffer();
 
-    gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2 + 2, 186 + 2);
-    gfx_SetTextFGColor(COL_RIB_SHADOW);
-    gfx_PrintString("x   ");
-    gfx_PrintUInt(lives, 1);
+    int offset = 0;
 
-    gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2, 186);
-    gfx_SetTextFGColor(COL_LIVES_TXT);
-    gfx_PrintString("x   ");
-    gfx_PrintUInt(lives, 1);
+    // Create a shadow of the tank sprite
+    // todo: check if this actually saves any space
+    gfx_UninitedSprite(fg_tank_shadow, fg_tank_width, fg_tank_height);
+    fg_tank_shadow->width = fg_tank_width;
+    fg_tank_shadow->height = fg_tank_height;
+    for(uint i = 0; i < fg_tank_width * fg_tank_height; i++) {
+        uint8_t px = fg_tank->data[i];
+        fg_tank_shadow->data[i] = px ? COL_RIB_SHADOW : 0;
+    }
 
+    for(uint8_t frame = 0;; frame++) {
+        if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
+            timer_AckInterrupt(1, TIMER_RELOADED);
+            break;
+        }
+        kb_Scan();
+        if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
+            while(kb_Data[1] || kb_Data[6]) kb_Scan();
+            break;
+        }
+
+        gfx_SetColor(COL_BG);
+        gfx_FillRectangle_NoClip(0, 0, LCD_WIDTH, BANNER_TOP);
+        gfx_FillRectangle_NoClip(0, SHADOW_BOTTOM, LCD_WIDTH, LCD_HEIGHT - SHADOW_BOTTOM);
+
+        const uint TANK_TILE_SIZE = 34;
+        const uint8_t FRAMES_PER_PX = 3;
+
+        if(frame == FRAMES_PER_PX) {
+            frame = 0;
+            offset++;
+            if(offset == TANK_TILE_SIZE) {
+                offset = 0;
+            }
+        }
+
+        // Draw the background tank sprite
+        for(int x = offset - TANK_TILE_SIZE; x < LCD_WIDTH; x += TANK_TILE_SIZE) {
+            gfx_SetClipRegion(0, 0, LCD_WIDTH, BANNER_TOP);
+            for(int y = -offset; y < BANNER_TOP; y += TANK_TILE_SIZE) {
+                gfx_TransparentSprite(bg_tank, x, y);
+            }
+            gfx_SetClipRegion(0, SHADOW_BOTTOM, LCD_WIDTH, LCD_HEIGHT);
+            for(int y = SHADOW_BOTTOM - offset; y < LCD_WIDTH; y += TANK_TILE_SIZE) {
+                gfx_TransparentSprite(bg_tank, x, y);
+            }
+        }
+        gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
+
+
+        gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2 + 2, 186 + 2);
+        gfx_SetTextFGColor(COL_RIB_SHADOW);
+        gfx_PrintString("x   ");
+        gfx_PrintUInt(lives, 1);
+
+        gfx_SetTextXY((LCD_WIDTH - 8 * MISSION_NUMBER_TEXT) / 2, 186);
+        gfx_SetTextFGColor(COL_LIVES_TXT);
+        gfx_PrintString("x   ");
+        gfx_PrintUInt(lives, 1);
+
+        gfx_TransparentSprite_NoClip(fg_tank_shadow, LCD_WIDTH / 2 - fg_tank_width - 30, 189);
+        gfx_TransparentSprite_NoClip(fg_tank, LCD_WIDTH / 2 - fg_tank_width - 32, 187);
+
+        gfx_SwapDraw();
+    }
 
     gfx_SetTextFGColor(COL_BLACK);
     gfx_SetTextScale(1, 1);
-
-    //TODO: tank sprite
-
-    gfx_BlitBuffer();
 }
 
 #define KILL_COUNTER_END_X (SCREEN_DELTA_X(2.75 * TILE_SIZE))

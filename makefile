@@ -30,8 +30,8 @@ tiles:
 
 SHELL = bash
 IMAGE_NAMES = {{pl,en}_{base,turret},shell}_{0..8}
-CONVIMG_INPUT = $(shell echo src/gfx/trimmed/$(IMAGE_NAMES).png) src/gfx/tileset.png
-CONVIMG_OUTPUT = $(shell echo src/gfx/$(IMAGE_NAMES).{c,h}) src/gfx/tileset.c src/gfx/tileset.h src/gfx/palette.c src/gfx/palette.h src/gfx/gfx.h src/gfx/enemy_palette.bin
+CONVIMG_INPUT = $(shell echo src/gfx/trimmed/$(IMAGE_NAMES).png) src/gfx/tileset.png src/gfx/bg_tank.png src/gfx/fg_tank.png
+CONVIMG_OUTPUT = $(shell echo src/gfx/$(IMAGE_NAMES).{c,h}) src/gfx/tileset.c src/gfx/tileset.h src/gfx/bg_tank.c src/gfx/bg_tank.h src/gfx/fg_tank.c src/gfx/fg_tank.h src/gfx/palette.c src/gfx/palette.h src/gfx/gfx.h src/gfx/enemy_palette.bin
 BLENDER_OUTPUT = $(shell echo src/gfx/rendered/$(IMAGE_NAMES).png)
 OFFSET_FILES = $(shell echo src/gfx/offsets/$(IMAGE_NAMES).h)
 
