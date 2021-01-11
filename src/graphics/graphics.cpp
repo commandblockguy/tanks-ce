@@ -340,7 +340,7 @@ void render() {
     pdraw_RemoveSprites();
     profiler_end(undraw);
 
-    profiler_start(render_tanks);
+    profiler_start(render_pbs);
     // restrict drawing to only the play area, to prevent the banners from being overwritten
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
@@ -351,7 +351,7 @@ void render() {
         it->render(1);
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
-    profiler_end(render_tanks);
+    profiler_end(render_pbs);
 
     // todo: move to GUI section?
     draw_aim_dots();

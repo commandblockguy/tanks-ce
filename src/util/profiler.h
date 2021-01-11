@@ -19,6 +19,7 @@ typedef union {
         unsigned int gfx_wait;
         unsigned int tilemap;
         unsigned int render_tanks;
+        unsigned int render_pbs;
         unsigned int render_shells;
         unsigned int render_mines;
         unsigned int render_obscured;
@@ -36,7 +37,9 @@ typedef union {
         unsigned int ai_aim_reflect;
         unsigned int raycast;
         unsigned int seg_collision;
-        unsigned int tank_collision;
+        unsigned int tile_collision;
+        unsigned int pb_collision;
+        unsigned int tanks;
         unsigned int shells;
         unsigned int mines;
         unsigned int input;

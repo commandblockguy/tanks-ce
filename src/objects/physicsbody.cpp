@@ -4,6 +4,7 @@
 #include "../level.h"
 #include "../graphics/graphics.h"
 #include "../graphics/partial_redraw.h"
+#include "../util/profiler.h"
 
 tinystl::vector<PhysicsBody*> PhysicsBody::objects;
 
@@ -65,7 +66,9 @@ bool PhysicsBody::is_point_inside(int x, int y) const {
 }
 
 // todo: remove duplicate code from this and collide_and_push
-direction_t PhysicsBody::process_reflection() {
+direction_t PhysicsBody::process_tile_collision() {
+    profiler_start(tile_collision);
+
     // Figure out if the four corners are colliding
     bool top_right = check_tile_collision(position_x + width, position_y, respect_holes);
     bool bottom_right = check_tile_collision(position_x + width, position_y + height, respect_holes);
@@ -106,6 +109,7 @@ direction_t PhysicsBody::process_reflection() {
         }
     }
 
+    profiler_end(tile_collision);
     return dir;
 }
 

@@ -4,6 +4,7 @@
 #include "../graphics/gui.h"
 #include "../graphics/graphics.h"
 #include "../graphics/dynamic_sprites.h"
+#include "../util/profiler.h"
 
 Mine::Mine(Tank *tank) {
     width = MINE_SIZE;
@@ -26,16 +27,20 @@ void Mine::process() {
     //Ignore mines which have already finished their countdowns
     if(!countdown) return;
 
+    profiler_add(mines);
     if(--countdown == EXPLOSION_ANIM) {
         kill();
+        profiler_end(mines);
         return;
     }
 
-    //todo: range detection
+//todo: range detection
+    profiler_end(mines);
 }
 
 void Mine::render(uint8_t layer) {
     if(layer != 0) return;
+    profiler_add(render_mines);
 
     uint8_t sprite;
     if(countdown < MINE_WARNING) {
@@ -44,6 +49,7 @@ void Mine::render(uint8_t layer) {
         sprite = 0;
     }
     render_obscured_object(mine_sprites, mine_x_offsets, mine_y_offsets, this, sprite, 0);
+    profiler_end(render_mines);
 }
 
 void Mine::kill() {
@@ -64,6 +70,7 @@ void Mine::kill() {
     }
 
     // Kill any nearby physics objects
+    // todo: unbork this
     for(auto *it = objects.begin(); it < objects.end();) {
         if(*it != this && center_distance_less_than(*it, MINE_EXPLOSION_RADIUS)) {
             (**it).kill();

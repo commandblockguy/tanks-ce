@@ -72,7 +72,9 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
             //dbg_printf("%p\n", *it);
             object->process();
         }
+        profiler_start(pb_collision);
         process_collisions();
+        profiler_end(pb_collision);
         profiler_end(physics);
 
         if(!game.player_alive) {

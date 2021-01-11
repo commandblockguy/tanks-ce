@@ -69,6 +69,8 @@ void Tank::kill() {
 }
 
 void Tank::process() {
+    profiler_add(tanks);
+
     profiler_add(ai);
     ai_process_move(this);
     ai_process_fire(this);
@@ -77,14 +79,15 @@ void Tank::process() {
     position_x += velocity_x;
     position_y += velocity_y;
 
-    profiler_add(tank_collision);
     if(!(kb_IsDown(kb_Key1) && this == game.player))
-        process_reflection();
-    profiler_end(tank_collision);
+        process_tile_collision();
+
+    profiler_add(tanks);
 }
 
 void Tank::render(uint8_t layer) {
     if(layer != 1) return;
+    profiler_add(render_tanks);
 
     uint8_t base_sprite = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
     uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
@@ -101,6 +104,8 @@ void Tank::render(uint8_t layer) {
         render_obscured_object(tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, this,
                                turret_sprite, 0);
     }
+
+    profiler_end(render_tanks);
 }
 
 void Tank::fire_shell() {

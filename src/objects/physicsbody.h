@@ -36,7 +36,7 @@ public:
 
     bool detect_collision(PhysicsBody *other) const;
     bool is_point_inside(int x, int y) const;
-    direction_t process_reflection();
+    direction_t process_tile_collision();
     bool center_distance_less_than(PhysicsBody *other, uint dis) const;
     bool collides_line(line_seg_t *seg) const;
 

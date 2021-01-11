@@ -2,6 +2,7 @@
 #include "tank.h"
 #include "../graphics/dynamic_sprites.h"
 #include "../graphics/graphics.h"
+#include "../util/profiler.h"
 
 Shell::Shell(Tank *tank) {
     width = SHELL_SIZE;
@@ -37,6 +38,8 @@ Shell::~Shell() {
 }
 
 void Shell::process() {
+    profiler_add(shells);
+
     direction_t collide_dir;
     //Add velocity
     position_x += velocity_x;
@@ -46,18 +49,23 @@ void Shell::process() {
         left_tank_hitbox = true;
     }
 
-    collide_dir = process_reflection();
+    collide_dir = process_tile_collision();
 
     if(collide_dir) {
         ricochet(collide_dir);
     }
+
+    profiler_end(shells);
 }
 
 void Shell::render(uint8_t layer) {
     if(layer != 1) return;
+    profiler_add(render_shells);
 
     uint8_t sprite = direction;
     render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
+
+    profiler_end(render_shells);
 }
 
 bool Shell::ricochet(direction_t dir) {
