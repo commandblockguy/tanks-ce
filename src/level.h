@@ -2,13 +2,13 @@
 #define H_LEVEL
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <tice.h>
 
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string.h>
 
 typedef uint8_t tile_t;
@@ -38,8 +38,6 @@ typedef struct {
     uint8_t num_levels;
     uint8_t scores[5];
 } level_pack_t;
-
-void create_levels(void); //Temporary function to make a level pack
 
 void decompress_tiles(const void *comp_tiles);
 

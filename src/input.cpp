@@ -1,7 +1,7 @@
 #include <keypadc.h>
 #include "input.h"
-#include "profiler.h"
-#include "tank.h"
+#include "util/profiler.h"
+#include "objects/tank.h"
 #include "globals.h"
 
 //Player action cooldown
@@ -12,18 +12,18 @@
 //1/3 of a second for 90 degree rotation
 #define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_TICK_RATE / 3))
 
-uint8_t handle_input(void) {
+uint8_t handle_input() {
     profiler_start(input);
     Tank *player = game.player;
     bool moving = true;
     angle_t target_rot;
     uint8_t keys = 0;
 
-    if(game.shotCooldown) {
-        game.shotCooldown--;
+    if(game.shot_cooldown) {
+        game.shot_cooldown--;
     }
-    if(game.mineCooldown) {
-        game.mineCooldown--;
+    if(game.mine_cooldown) {
+        game.mine_cooldown--;
     }
 
     kb_Scan();
@@ -85,13 +85,13 @@ uint8_t handle_input(void) {
         player->set_velocity(0);
     }
 
-    if(kb_IsDown(kb_Key2nd) && !game.shotCooldown) {
+    if(kb_IsDown(kb_Key2nd) && !game.shot_cooldown) {
         player->fire_shell();
-        game.shotCooldown = SHOT_COOLDOWN;
+        game.shot_cooldown = SHOT_COOLDOWN;
     }
-    if(kb_IsDown(kb_KeyAlpha) && !game.mineCooldown) {
+    if(kb_IsDown(kb_KeyAlpha) && !game.mine_cooldown) {
         player->lay_mine();
-        game.mineCooldown = MINE_COOLDOWN;
+        game.mine_cooldown = MINE_COOLDOWN;
     }
     if(kb_IsDown(kb_KeyMode)) {
         player->barrel_rot -= PLAYER_BARREL_ROTATION;

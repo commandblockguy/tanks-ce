@@ -1,8 +1,8 @@
 #ifndef TANKS_GLOBALS_H
 #define TANKS_GLOBALS_H
 
-#include <stdint.h>
-#include "tank.h"
+#include <cstdint>
+#include "objects/tank.h"
 #include "level.h"
 
 // Game status
@@ -16,11 +16,11 @@ typedef struct {
     uint8_t lives; //Number of remaining tanks. This includes the tank that is currently in use, so a value of 1 means that the game will end the next time the tank is hit.
     uint8_t total_kills; //Number of enemy tanks destroyed.
     uint8_t kills[NUM_TANK_TYPES];
-    uint8_t shotCooldown; //How many more ticks before we can fire another shot
-    uint8_t mineCooldown;
+    uint8_t shot_cooldown; //How many more ticks before we can fire another shot
+    uint8_t mine_cooldown;
     bool player_alive;
     uint8_t num_tanks;
-    bool *alive_tanks;
+    bool alive_tanks[MAX_NUM_TANKS];
     Tank *player;
 } game_t;
 
