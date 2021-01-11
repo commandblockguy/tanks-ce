@@ -44,7 +44,7 @@ public:
 
     virtual void kill();
     virtual void process() = 0;
-    virtual void render();
+    virtual void render(uint8_t layer);
 
     // Polymorphic ping-pong (aka "visitor pattern," apparently)
     virtual void handle_collision(PhysicsBody *other) = 0;

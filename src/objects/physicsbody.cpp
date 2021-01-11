@@ -143,7 +143,9 @@ bool PhysicsBody::collides_line(line_seg_t *ls) const {
     return false;
 }
 
-void PhysicsBody::render() {
+void PhysicsBody::render(uint8_t layer) {
+    if(layer != 0) return;
+
     uint x = SCREEN_X(position_x);
     uint8_t y = SCREEN_Y(position_y);
     uint8_t width = SCREEN_DELTA_X(this->width);

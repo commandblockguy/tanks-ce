@@ -67,7 +67,7 @@ public:
     // Kill this physics body, then destroy it
     void kill();
     void process();
-    void render();
+    void render(uint8_t layer);
     void fire_shell();
     void lay_mine();
     bool can_shoot() const;

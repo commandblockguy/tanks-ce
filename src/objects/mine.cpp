@@ -3,6 +3,7 @@
 #include "../globals.h"
 #include "../graphics/gui.h"
 #include "../graphics/graphics.h"
+#include "../graphics/dynamic_sprites.h"
 
 Mine::Mine(Tank *tank) {
     width = MINE_SIZE;
@@ -24,6 +25,18 @@ void Mine::process() {
     }
 
     //todo: range detection
+}
+
+void Mine::render(uint8_t layer) {
+    if(layer != 0) return;
+
+    uint8_t sprite;
+    if(countdown < MINE_WARNING) {
+        sprite = countdown % 4;
+    } else {
+        sprite = 0;
+    }
+    render_obscured_object(mine_sprites, mine_x_offsets, mine_y_offsets, this, sprite, 0);
 }
 
 void Mine::kill() {

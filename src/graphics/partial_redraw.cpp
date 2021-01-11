@@ -32,7 +32,7 @@ void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y) {
         gfx_Sprite_NoClip(sprite, x, y);
 }
 
-void pdraw_TransparentSprite(gfx_sprite_t *sprite, uint x, uint8_t y) {
+void pdraw_TransparentSprite(const gfx_sprite_t *sprite, uint x, uint8_t y) {
     gfx_region_t region = {.xmin = (int)x, .ymin = y, .xmax = (int)(x + sprite->width), .ymax = y + sprite->height};
     if(gfx_GetClipRegion(&region))
         if(pdraw_RectRegion(region.xmin, region.ymin, region.xmax - region.xmin, region.ymax - region.ymin))

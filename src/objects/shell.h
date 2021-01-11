@@ -34,7 +34,7 @@ public:
     uint8_t direction;
 
     void process();
-    void render();
+    void render(uint8_t layer);
     //Bounce a shell off a wall
     //Returns whether or not the shell is still alive
     bool ricochet(direction_t dir);

@@ -345,7 +345,10 @@ void render() {
     gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
     for(auto *it: PhysicsBody::objects) {
-        it->render();
+        it->render(0);
+    }
+    for(auto *it: PhysicsBody::objects) {
+        it->render(1);
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
     profiler_end(render_tanks);

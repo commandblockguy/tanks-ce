@@ -52,6 +52,7 @@ converts:
     images:
       - trimmed/pl_*.png
       - trimmed/shell_*.png
+      - trimmed/mine_*.png
       - bg_tank.png
       - fg_tank.png
   - name: enemy

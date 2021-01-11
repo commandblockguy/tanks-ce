@@ -83,7 +83,9 @@ void Tank::process() {
     profiler_end(tank_collision);
 }
 
-void Tank::render() {
+void Tank::render(uint8_t layer) {
+    if(layer != 1) return;
+
     uint8_t base_sprite = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
     uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
 

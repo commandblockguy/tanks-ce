@@ -53,7 +53,9 @@ void Shell::process() {
     }
 }
 
-void Shell::render() {
+void Shell::render(uint8_t layer) {
+    if(layer != 1) return;
+
     uint8_t sprite = direction;
     render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
 }

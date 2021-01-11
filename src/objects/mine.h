@@ -18,8 +18,6 @@ class Mine;
 //TODO: better data for this
 //time after a enemy enters the range of a mine
 #define MINE_TRIGGERED (TARGET_TICK_RATE * 2 / 5 + EXPLOSION_ANIM)
-//2/15ths of a second per pulse
-#define PULSE_TIME ((uint8_t)(2 * TARGET_TICK_RATE / 15))
 
 //Amount of time the explosion takes
 //1/2 second in the original, may reduce to save sprite size
@@ -34,10 +32,13 @@ class Mine;
 class Mine: public PhysicsBody {
 public:
     Mine(Tank *tank);
+    ~Mine();
+
     uint countdown; //Number of physics loops until explosions occur
 
     void kill();
     void process();
+    void render(uint8_t layer);
 
     void handle_collision(PhysicsBody *other);
     void collide(Tank *tank);

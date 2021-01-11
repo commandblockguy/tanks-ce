@@ -91,6 +91,13 @@ extern gfx_sprite_t * const shell_sprites[16] = {
         (gfx_sprite_t*)shell_15_data,
 };
 
+extern gfx_sprite_t * const mine_sprites[4] = {
+        mine_0,
+        mine_1,
+        mine_2,
+        mine_1
+};
+
 extern const uint8_t pl_base_x_offsets[16] = {
         pl_base_0_offset_x,
         pl_base_1_offset_x,
@@ -279,4 +286,18 @@ extern const uint8_t shell_y_offsets[16] = {
         shell_3_offset_y,
         shell_2_offset_y,
         shell_1_offset_y,
+};
+
+extern const uint8_t mine_x_offsets[4] = {
+        mine_0_offset_x,
+        mine_1_offset_x,
+        mine_2_offset_x,
+        mine_1_offset_x,
+};
+
+extern const uint8_t mine_y_offsets[4] = {
+        mine_0_offset_y,
+        mine_1_offset_y,
+        mine_2_offset_y,
+        mine_1_offset_y,
 };

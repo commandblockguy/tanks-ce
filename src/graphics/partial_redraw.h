@@ -17,7 +17,7 @@ pdraw_sprite_t *pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t heigh
 // Draw a sprite, storing the background sprite for later redraw
 void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y);
 
-void pdraw_TransparentSprite(gfx_sprite_t *sprite, uint x, uint8_t y);
+void pdraw_TransparentSprite(const gfx_sprite_t *sprite, uint x, uint8_t y);
 
 void pdraw_TransparentSprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y);
 
