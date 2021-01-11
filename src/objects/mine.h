@@ -34,6 +34,7 @@ public:
     Mine(Tank *tank);
     ~Mine();
 
+    
     uint countdown; //Number of physics loops until explosions occur
 
     void kill();

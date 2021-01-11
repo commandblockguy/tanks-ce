@@ -15,6 +15,13 @@ Mine::Mine(Tank *tank) {
     countdown = MINE_COUNTDOWN;
 }
 
+Mine::~Mine() {
+    if(parent) {
+        // todo: see if there's a way to do this without an ugly cast
+        ((Tank*)parent)->num_mines--;
+    }
+}
+
 void Mine::process() {
     //Ignore mines which have already finished their countdowns
     if(!countdown) return;
