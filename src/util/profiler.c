@@ -44,8 +44,8 @@ void profiler_print() {
     profiler_field_last(      render_tanks, 3);
     profiler_field_last(      render_shells, 3);
     profiler_field_last(      render_mines, 3);
-    profiler_field_last(    render_obscured, 2);
-    profiler_field_last(      redraw_tile, 3);
+    profiler_field_last(    sprite_footprint, 2);
+    profiler_field_last(    redraw_tile, 2);
     profiler_field_last(    aim_indicator, 2);
     profiler_field_last(    swapdraw, 2);
     profiler_field_last(    undraw, 2);
@@ -66,6 +66,9 @@ void profiler_print() {
     profiler_field_last(    mines, 2);
     profiler_field_last(  input, 1);
     profiler_field_last(frame_wait, 0);
+    profiler_field_last(temp, 0);
+    profiler_field_last(temp2, 0);
+    profiler_field_last(temp3, 0);
     dbg_printf("Average of last 256 frames: %u FPS\n", (unsigned int)8388608 / profiler_sum.total);
     profiler_field_average(total, 0);
     profiler_field_average(  graphics, 1);
@@ -75,8 +78,8 @@ void profiler_print() {
     profiler_field_average(      render_tanks, 3);
     profiler_field_average(      render_shells, 3);
     profiler_field_average(      render_mines, 3);
-    profiler_field_average(    render_obscured, 2);
-    profiler_field_average(      redraw_tile, 3);
+    profiler_field_average(    sprite_footprint, 2);
+    profiler_field_average(    redraw_tile, 2);
     profiler_field_average(    aim_indicator, 2);
     profiler_field_average(    swapdraw, 2);
     profiler_field_average(    undraw, 2);
@@ -97,6 +100,9 @@ void profiler_print() {
     profiler_field_average(    mines, 2);
     profiler_field_average(  input, 1);
     profiler_field_average(frame_wait, 0);
+    profiler_field_average(temp, 0);
+    profiler_field_average(temp2, 0);
+    profiler_field_average(temp3, 0);
 }
 
 #endif

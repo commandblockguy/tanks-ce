@@ -3,6 +3,7 @@
 #include "../graphics/dynamic_sprites.h"
 #include "../graphics/graphics.h"
 #include "../util/profiler.h"
+#include "../graphics/partial_redraw.h"
 
 Shell::Shell(Tank *tank) {
     width = SHELL_SIZE;
@@ -63,7 +64,11 @@ void Shell::render(uint8_t layer) {
     profiler_add(render_shells);
 
     uint8_t sprite = direction;
-    render_obscured_object(shell_sprites, shell_x_offsets, shell_y_offsets, this, sprite, 0);
+    gfx_region_t region;
+    get_sprite_footprint(&region, this, shell_sprites, shell_x_offsets, shell_y_offsets, sprite);
+    pdraw_RectRegion(&region);
+    gfx_TransparentSprite(shell_sprites[sprite], region.xmin, region.ymin);
+    redraw_tiles(&region, 0);
 
     profiler_end(render_shells);
 }

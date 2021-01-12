@@ -23,16 +23,18 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
 
     int8_t dirSignX = dirX >= 0 ? 1 : -1;
     int8_t dirSignY = dirY >= 0 ? 1 : -1;
+    int8_t row_offset = dirY >= 0 ? LEVEL_SIZE_X : -LEVEL_SIZE_X;
 
     int8_t tileX = COORD_TO_X_TILE(startX);
     int8_t tileY = COORD_TO_Y_TILE(startY);
+    tile_t *tile_ptr = &tiles[tileY][tileX];
     int t = 0;
 
     int dtX = (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) * dirX;
     int dtY = (TILE_TO_Y_COORD(tileY + (dirY >= 0)) - startY) * dirY;
 
-    int dtXr = dirSignX > 0 ? TILE_SIZE * dirX : TILE_SIZE * -dirX;
-    int dtYr = dirSignY > 0 ? TILE_SIZE * dirY : TILE_SIZE * -dirY;
+    int dtXr = TILE_SIZE * dirSignX * dirX;
+    int dtYr = TILE_SIZE * dirSignY * dirY;
 
     //dbg_printf("%i,%i %u %i,%i %i,%i %i,%i %i,%i %i,%i\n", startX, startY, angle, dirX, dirY, dirSignX, dirSignY, tileX, tileY, dtX, dtY, dtXr, dtYr);
 
@@ -47,7 +49,7 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
     }
 
     while(true) {
-        tile_t tile = tiles[tileY][tileX];
+        tile_t tile = *tile_ptr;
 
         if(TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) {
             break;
@@ -56,12 +58,12 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
         //not entirely sure how this works
         if(dtX < dtY) {
             t += dtX;
-            tileX += dirSignX;
+            tile_ptr += dirSignX;
             dtY -= dtX;
             dtX = dtXr;
         } else {
             t += dtY;
-            tileY += dirSignY;
+            tile_ptr += row_offset;
             dtX -= dtY;
             dtY = dtYr;
         }

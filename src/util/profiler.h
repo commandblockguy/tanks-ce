@@ -22,7 +22,7 @@ typedef union {
         unsigned int render_pbs;
         unsigned int render_shells;
         unsigned int render_mines;
-        unsigned int render_obscured;
+        unsigned int sprite_footprint;
         unsigned int redraw_tile;
         unsigned int aim_indicator;
         unsigned int swapdraw;
@@ -44,6 +44,9 @@ typedef union {
         unsigned int mines;
         unsigned int input;
         unsigned int frame_wait;
+        unsigned int temp;
+        unsigned int temp2;
+        unsigned int temp3;
     };
     unsigned int array[0];
 } profiler_set_t;

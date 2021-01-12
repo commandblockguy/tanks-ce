@@ -27,6 +27,10 @@ pdraw_sprite_t *pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t heigh
     return psprite;
 }
 
+pdraw_sprite_t *pdraw_RectRegion(const gfx_region_t *region) {
+    return pdraw_RectRegion(region->xmin, region->ymin, region->xmax - region->xmin, region->ymax - region->ymin);
+}
+
 void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y) {
     if(pdraw_RectRegion(x, y, sprite->width, sprite->height))
         gfx_Sprite_NoClip(sprite, x, y);

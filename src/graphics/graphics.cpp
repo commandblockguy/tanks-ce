@@ -286,32 +286,36 @@ void draw_aim_dots() {
     profiler_end(aim_indicator);
 }
 
-void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
-                            const PhysicsBody *phys, uint8_t rotation, uint8_t height) {
-    profiler_add(render_obscured);
+void get_sprite_footprint(gfx_region_t *out, const PhysicsBody *phys, gfx_sprite_t **sprites, const uint8_t *offsets_x,
+                          const uint8_t *offsets_y, uint8_t anim) {
+    profiler_add(sprite_footprint);
     uint base_x = SCREEN_X(phys->center_x()) - SPRITE_OFFSET_X;
     uint8_t base_y = SCREEN_Y(phys->center_y()) - SPRITE_OFFSET_Y;
-    gfx_sprite_t *sprite = sprites[rotation];
-    uint sprite_x = base_x + offsets_x[rotation];
-    uint8_t sprite_y = base_y + offsets_y[rotation];
-    uint sprite_end_x = sprite_x + sprite->width;
-    uint8_t sprite_end_y = sprite_y + sprite->height;
+    gfx_sprite_t *sprite = sprites[anim];
+    out->xmin = base_x + offsets_x[anim];
+    out->ymin = base_y + offsets_y[anim];
+    out->xmax = out->xmin + sprite->width;
+    out->ymax = out->ymin + sprite->height;
 
-    pdraw_TransparentSprite(sprite, sprite_x, sprite_y);
+    profiler_end(sprite_footprint);
+}
 
+void redraw_tiles(const gfx_region_t *region, uint8_t height) {
     profiler_add(redraw_tile);
-    uint8_t tile_end_x = screen_to_tm_x(sprite_end_x);
-    uint8_t tile_end_y = screen_to_tm_y(sprite_end_y);
-    for(uint8_t tile_x = screen_to_tm_x(sprite_x); tile_x <= tile_end_x; tile_x++) {
-        for(uint8_t tile_y = screen_to_tm_y(sprite_y); tile_y <= tile_end_y; tile_y++) {
-            int8_t tile_height = heightmap[tile_y][tile_x];
-            if(tile_height > height) {
+    uint8_t tile_start_x = screen_to_tm_x(region->xmin);
+    uint8_t tile_start_y = screen_to_tm_y(region->ymin);
+    uint8_t tile_end_x = screen_to_tm_x(region->xmax);
+    uint8_t tile_end_y = screen_to_tm_y(region->ymax);
+    uint8_t *hm_base_ptr = heightmap[tile_start_y];
+    for(uint8_t tile_x = tile_start_x; tile_x <= tile_end_x; tile_x++) {
+        uint8_t *hm_ptr = hm_base_ptr + tile_x;
+        for(uint8_t tile_y = tile_start_y; tile_y <= tile_end_y; tile_y++, hm_ptr += TILEMAP_WIDTH) {
+            if(*hm_ptr > height) {
                 redraw_tile(tile_x, tile_y);
             }
         }
     }
     profiler_end(redraw_tile);
-    profiler_end(render_obscured);
 }
 
 void render() {

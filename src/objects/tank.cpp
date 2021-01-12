@@ -10,6 +10,7 @@
 #include "../util/profiler.h"
 #include "../graphics/dynamic_sprites.h"
 #include "../graphics/graphics.h"
+#include "../graphics/partial_redraw.h"
 
 const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
@@ -89,21 +90,30 @@ void Tank::render(uint8_t layer) {
     if(layer != 1) return;
     profiler_add(render_tanks);
 
-    uint8_t base_sprite = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
-    uint8_t turret_sprite = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
+    uint8_t base_index = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
+    uint8_t turret_index = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
 
-    // todo: a lot of this seems to be running twice as often as it needs to
+    gfx_sprite_t *base_sprite = tank_bases[type][base_index];
+    gfx_sprite_t *turret_sprite = tank_turrets[type][turret_index];
+    gfx_region_t base_region, turret_region, combined_region;
+
     if(type == PLAYER) {
-        render_obscured_object(tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, this,
-                               base_sprite, 0);
-        render_obscured_object(tank_turrets[type], pl_turret_x_offsets, pl_turret_y_offsets, this,
-                               turret_sprite, 0);
+        get_sprite_footprint(&base_region, this, tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, base_index);
+        get_sprite_footprint(&turret_region, this, tank_turrets[type], pl_turret_x_offsets, pl_turret_y_offsets, turret_index);
     } else {
-        render_obscured_object(tank_bases[type], en_base_x_offsets, en_base_y_offsets, this,
-                               base_sprite, 0);
-        render_obscured_object(tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, this,
-                               turret_sprite, 0);
+        get_sprite_footprint(&base_region, this, tank_bases[type], en_base_x_offsets, en_base_y_offsets, base_index);
+        get_sprite_footprint(&turret_region, this, tank_turrets[type], en_turret_x_offsets, en_turret_y_offsets, turret_index);
     }
+
+    combined_region.xmin = min(base_region.xmin, turret_region.xmin);
+    combined_region.xmax = max(base_region.xmax, turret_region.xmax);
+    combined_region.ymin = min(base_region.ymin, turret_region.ymin);
+    combined_region.ymax = max(base_region.ymax, turret_region.ymax);
+
+    pdraw_RectRegion(&combined_region);
+    gfx_TransparentSprite(base_sprite, base_region.xmin, base_region.ymin);
+    gfx_TransparentSprite(turret_sprite, turret_region.xmin, turret_region.ymin);
+    redraw_tiles(&combined_region, 0);
 
     profiler_end(render_tanks);
 }

@@ -139,8 +139,10 @@ bool init_tank_sprites(tank_type_t type);
 
 void free_tank_sprites(tank_type_t type);
 
-void render_obscured_object(gfx_sprite_t **sprites, const uint8_t *offsets_x, const uint8_t *offsets_y,
-                            const PhysicsBody *phys, uint8_t rotation, uint8_t height);
+void get_sprite_footprint(gfx_region_t *out, const PhysicsBody *phys, gfx_sprite_t **sprites, const uint8_t *offsets_x,
+                          const uint8_t *offsets_y, uint8_t anim);
+
+void redraw_tiles(const gfx_region_t *region, uint8_t height);
 
 void repalettize_sprite(gfx_sprite_t *out, const gfx_sprite_t *in, const uint8_t *map);
 

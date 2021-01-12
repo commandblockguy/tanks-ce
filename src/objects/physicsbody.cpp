@@ -17,9 +17,8 @@ uint PhysicsBody::center_y() const {
 }
 
 PhysicsBody::PhysicsBody() {
+    // todo: compiler bug triggers if this line is the only thing in here
     objects.push_back(this);
-    // todo: _vtable gets off-by-one without this
-    // idek
     dbg_printf("pushed %p\n", this);
 }
 
