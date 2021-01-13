@@ -10,7 +10,14 @@
 Mine::Mine(Tank *tank) {
     width = MINE_SIZE;
     height = MINE_SIZE;
-    respect_holes = true;
+    tile_collisions = false;
+    respect_holes = false;
+
+    position_x = tank->position_x + (TANK_SIZE - MINE_SIZE) / 2;
+    position_y = tank->position_y + (TANK_SIZE - MINE_SIZE) / 2;
+
+    velocity_x = 0;
+    velocity_y = 0;
 
     parent = tank;
 

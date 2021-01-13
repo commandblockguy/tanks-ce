@@ -35,9 +35,6 @@ public:
 
     void process();
     void render(uint8_t layer);
-    //Bounce a shell off a wall
-    //Returns whether or not the shell is still alive
-    bool ricochet(direction_t dir);
     void update_direction();
 
     static uint8_t angle_to_shell_direction(angle_t angle) {
@@ -48,6 +45,8 @@ public:
     void collide(Tank *tank);
     void collide(Shell *shell);
     void collide(Mine *mine);
+
+    void handle_tile_collision(direction_t dir);
 };
 
 #endif //TANKS_SHELL_H

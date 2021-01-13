@@ -6,7 +6,13 @@
 void ai_process_move(Tank *tank) {
     profiler_add(ai_move);
     switch(tank->type) {
+        case (PLAYER):
+            break;
+        case (IMMOBILE):
+        case (IMMOB_MISSILE):
         default:
+            tank->velocity_x = 0;
+            tank->velocity_y = 0;
             break;
         case (BASIC):
         case (INVISIBLE):

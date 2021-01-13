@@ -8,6 +8,7 @@
 Shell::Shell(Tank *tank) {
     width = SHELL_SIZE;
     height = SHELL_SIZE;
+    tile_collisions = true;
     respect_holes = false;
 
     bounces = Tank::max_bounces[tank->type];
@@ -41,19 +42,8 @@ Shell::~Shell() {
 void Shell::process() {
     profiler_add(shells);
 
-    direction_t collide_dir;
-    //Add velocity
-    position_x += velocity_x;
-    position_y += velocity_y;
-
     if(!left_tank_hitbox && !detect_collision(parent)) {
         left_tank_hitbox = true;
-    }
-
-    collide_dir = process_tile_collision();
-
-    if(collide_dir) {
-        ricochet(collide_dir);
     }
 
     profiler_end(shells);
@@ -71,27 +61,6 @@ void Shell::render(uint8_t layer) {
     redraw_tiles(&region, 0);
 
     profiler_end(render_shells);
-}
-
-bool Shell::ricochet(direction_t dir) {
-    if(!bounces) {
-        kill();
-        return false;
-    }
-
-    //shell_t is still alive
-    if(dir & UP || dir & DOWN) {
-        velocity_y *= -1;
-        update_direction();
-        bounces--;
-    }
-    if(dir & LEFT || dir & RIGHT) {
-        velocity_x *= -1;
-        update_direction();
-        bounces--;
-    }
-
-    return true;
 }
 
 void Shell::update_direction() {
@@ -118,4 +87,25 @@ void Shell::collide(Shell *shell) {
 void Shell::collide(Mine *mine) {
     kill();
     mine->kill();
+}
+
+void Shell::handle_tile_collision(direction_t dir) {
+    if(!dir) return;
+
+    if(!bounces) {
+        kill();
+        return;
+    }
+
+    //shell_t is still alive
+    if(dir & UP || dir & DOWN) {
+        velocity_y *= -1;
+        update_direction();
+        bounces--;
+    }
+    if(dir & LEFT || dir & RIGHT) {
+        velocity_x *= -1;
+        update_direction();
+        bounces--;
+    }
 }

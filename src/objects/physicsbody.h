@@ -25,6 +25,7 @@ public:
     uint height;
     PhysicsBody *parent;
 
+    bool tile_collisions;
     // Whether or not to collide with holes
     bool respect_holes;
 
@@ -40,11 +41,15 @@ public:
     bool center_distance_less_than(PhysicsBody *other, uint dis) const;
     bool collides_line(line_seg_t *seg) const;
 
+    void tick();
+
     static void sort();
 
     virtual void kill();
     virtual void process() = 0;
     virtual void render(uint8_t layer);
+
+    virtual void handle_tile_collision(direction_t dir);
 
     // Polymorphic ping-pong (aka "visitor pattern," apparently)
     virtual void handle_collision(PhysicsBody *other) = 0;

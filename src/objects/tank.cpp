@@ -29,6 +29,7 @@ const uint8_t Tank::velocities[] = {(uint8_t)TANK_SPEED_NORMAL,
 Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
     width = TANK_SIZE;
     height = TANK_SIZE;
+    tile_collisions = true;
     respect_holes = true;
 
     type = ser_tank->type;
@@ -77,13 +78,7 @@ void Tank::process() {
     ai_process_fire(this);
     profiler_end(ai);
 
-    position_x += velocity_x;
-    position_y += velocity_y;
-
-    if(!(kb_IsDown(kb_Key1) && this == game.player))
-        process_tile_collision();
-
-    profiler_add(tanks);
+    profiler_end(tanks);
 }
 
 void Tank::render(uint8_t layer) {
@@ -140,8 +135,6 @@ void Tank::lay_mine() {
         dbg_printf("Failed to allocate mine\n");
         return;
     }
-    mine->position_x = position_x + (TANK_SIZE - MINE_SIZE) / 2;
-    mine->position_y = position_y + (TANK_SIZE - MINE_SIZE) / 2;
 
     num_mines++;
 }
@@ -193,20 +186,20 @@ void Tank::collide(Tank *tank) {
 
     //pick the direction with the smallest distance
     if(dis_up < dis_left && dis_up < dis_right) {
-        position_y += dis_up / 2;
-        tank->position_y -= dis_up / 2;
+        velocity_y += dis_up / 2;
+        tank->velocity_y -= dis_up / 2;
     }
     if(dis_left < dis_up && dis_left < dis_down) {
-        position_x += dis_left / 2;
-        tank->position_x -= dis_left / 2;
+        velocity_x += dis_left / 2;
+        tank->velocity_x -= dis_left / 2;
     }
     if(dis_down < dis_left && dis_down < dis_right) {
-        position_y -= dis_down / 2;
-        tank->position_y += dis_down / 2;
+        velocity_y -= dis_down / 2;
+        tank->velocity_y += dis_down / 2;
     }
     if(dis_right < dis_up && dis_right < dis_down) {
-        position_x -= dis_right / 2;
-        tank->position_x += dis_right / 2;
+        velocity_x -= dis_right / 2;
+        tank->velocity_x += dis_right / 2;
     }
 }
 

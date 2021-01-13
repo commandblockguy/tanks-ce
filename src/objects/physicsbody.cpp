@@ -157,3 +157,17 @@ void PhysicsBody::render(uint8_t layer) {
     pdraw_RectRegion(x, y, width, height);
     gfx_Rectangle(x, y, width, height);
 }
+
+void PhysicsBody::tick() {
+    position_x += velocity_x;
+    position_y += velocity_y;
+
+    if(tile_collisions) {
+        direction_t dir = process_tile_collision();
+        handle_tile_collision(dir);
+    }
+}
+
+void PhysicsBody::handle_tile_collision(__attribute__((unused)) direction_t dir) {
+
+}
