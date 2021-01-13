@@ -250,12 +250,11 @@ void redraw_tile(uint8_t x, uint8_t y) {
 
 // Convert a screenspace coordinate to a redraw tile
 uint8_t inline screen_to_tm_x(uint screen_x) {
-    int dx = screen_x - SCREEN_X(0);
-    return dx / SCREEN_DELTA_X(TILE_SIZE) - (dx < 0);
+    return fast_div(screen_x - SCREEN_X(0), SCREEN_DELTA_X(TILE_SIZE));
 }
 
 uint8_t inline screen_to_tm_y(uint screen_y) {
-    return (screen_y - TILEMAP_BASE_Y) / HALF_TILE_PIXEL_HEIGHT;
+    return fast_div(screen_y - TILEMAP_BASE_Y, HALF_TILE_PIXEL_HEIGHT);
 }
 
 // todo: use sprites instead?
