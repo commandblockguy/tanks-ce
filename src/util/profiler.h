@@ -8,7 +8,9 @@ extern "C" {
 #include <stdint.h>
 #include <tice.h>
 
+#ifndef NDEBUG
 #define USE_PROFILER 1
+#endif
 
 #if USE_PROFILER
 

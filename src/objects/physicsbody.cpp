@@ -1,4 +1,3 @@
-#include <debug.h>
 #include "physicsbody.h"
 
 #include "../level.h"
@@ -19,7 +18,9 @@ uint PhysicsBody::center_y() const {
 PhysicsBody::PhysicsBody() {
     // todo: compiler bug triggers if this line is the only thing in here
     objects.push_back(this);
-    dbg_printf("pushed %p\n", this);
+
+    static PhysicsBody *dummy;
+    dummy = this;
 }
 
 PhysicsBody::~PhysicsBody() {
