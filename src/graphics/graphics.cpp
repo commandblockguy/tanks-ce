@@ -239,7 +239,7 @@ void generate_bg_tilemap() {
 
 const gfx_tilemap_t tilemap_config = {(uint8_t *) tilemap, tileset_tiles, HALF_TILE_PIXEL_HEIGHT, TILE_PIXEL_SIZE_X,
                                       TILEMAP_HEIGHT, TILEMAP_WIDTH, gfx_tile_no_pow2, gfx_tile_no_pow2, TILEMAP_HEIGHT,
-                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, (uint)SCREEN_X(0)};
+                                      TILEMAP_WIDTH, TILEMAP_BASE_Y, (uint)SCREEN_X_CONST(0)};
 
 void redraw_tile(uint8_t x, uint8_t y) {
     gfx_sprite_t *tile = tileset_tiles[tilemap[y][x]];
@@ -250,7 +250,7 @@ void redraw_tile(uint8_t x, uint8_t y) {
 
 // Convert a screenspace coordinate to a redraw tile
 uint8_t inline screen_to_tm_x(uint screen_x) {
-    return fast_div(screen_x - SCREEN_X(0), SCREEN_DELTA_X(TILE_SIZE));
+    return fast_div(screen_x - SCREEN_X_CONST(0), SCREEN_DELTA_X_CONST(TILE_SIZE));
 }
 
 uint8_t inline screen_to_tm_y(uint screen_y) {
@@ -345,8 +345,8 @@ void render() {
 
     profiler_start(render_pbs);
     // restrict drawing to only the play area, to prevent the banners from being overwritten
-    gfx_SetClipRegion(SCREEN_X(0), SCREEN_Y(-TILE_SIZE), SCREEN_X(LEVEL_SIZE_X * TILE_SIZE),
-                      SCREEN_Y((LEVEL_SIZE_Y - 2) * TILE_SIZE));
+    gfx_SetClipRegion(SCREEN_X_CONST(0), SCREEN_Y_CONST(-TILE_SIZE), SCREEN_X_CONST(LEVEL_SIZE_X * TILE_SIZE),
+                      SCREEN_Y_CONST((LEVEL_SIZE_Y - 2) * TILE_SIZE));
     for(auto *it: PhysicsBody::objects) {
         it->render(0);
     }

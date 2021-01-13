@@ -27,15 +27,34 @@ void limit_framerate();
 // About 10x faster than regular division when the result is 1, and 5x faster when the result is 20
 inline uint8_t fast_div(uint24_t num, uint24_t den) {
     uint8_t result;
-    asm("xor a,a\n"
+    asm("xor\ta,a\n"
         "loop%=:\n"
-        "\tinc a\n"
-        "\tsbc hl,de\n"
-        "\tjq nc,loop%=\n"
-        "\tdec a\n"
+        "\tinc\ta\n"
+        "\tsbc\thl,de\n"
+        "\tjq\tnc,loop%=\n"
+        "\tdec\ta\n"
     : "=a" (result)
     : "l" (num), "e" (den)
     : "cc");
+    return result;
+}
+
+inline uint8_t div256_8(uint24_t num) {
+    uint8_t result;
+    asm(""
+    : "+b,+d,+h,+ixh,+iyh" (result)
+    : "c,e,l,ixl,iyl" (num):);
+    return result;
+}
+
+extern uint8_t div256_24_buf[4];
+inline uint24_t div256_24(uint24_t num) {
+    uint24_t result;
+    asm("ld\t(%2),hl\n"
+        "\tld\thl,(%2 + 1)"
+    : "+l" (result)
+    : "l" (num), "iyl" (div256_24_buf)
+    :);
     return result;
 }
 

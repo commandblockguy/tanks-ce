@@ -16,3 +16,5 @@ void limit_framerate() {
     while(!timer_ChkInterrupt(1, TIMER_RELOADED));
     timer_AckInterrupt(1, TIMER_RELOADED);
 }
+
+uint8_t div256_24_buf[4] = {0, 0, 0, 0};

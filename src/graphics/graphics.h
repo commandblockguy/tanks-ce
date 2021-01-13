@@ -100,25 +100,31 @@ typedef struct {
 #define TILE_PIXEL_SIZE_Y 12
 
 /* Calculate the screen-space distance for a given world-space distance */
-#define SCREEN_DELTA_X(x) ((x) * TILE_PIXEL_SIZE_X / TILE_SIZE)
-#define SCREEN_DELTA_Y(y) ((y) * TILE_PIXEL_SIZE_Y / TILE_SIZE)
+#define SCREEN_DELTA_X_CONST(x) ((x) * TILE_PIXEL_SIZE_X / TILE_SIZE)
+#define SCREEN_DELTA_Y_CONST(y) ((y) * TILE_PIXEL_SIZE_Y / TILE_SIZE)
+
+#define SCREEN_DELTA_X(x) (div256_24((x) * TILE_PIXEL_SIZE_X))
+#define SCREEN_DELTA_Y(y) (div256_24((y) * TILE_PIXEL_SIZE_Y))
 
 #define HALF_TILE_PIXEL_HEIGHT (TILE_PIXEL_SIZE_Y / 2)
+
+//Offset from sides of screen
+#define MAP_OFFSET_X ((LCD_WIDTH - SCREEN_DELTA_X_CONST(LEVEL_SIZE_X * TILE_SIZE)) / 2)
+// Offset from top of the screen
+#define MAP_OFFSET_Y 12
+
+/* Calculate the screen-space position for a given world-space point */
+#define SCREEN_X_CONST(x) (SCREEN_DELTA_X_CONST(x) + MAP_OFFSET_X)
+#define SCREEN_Y_CONST(y) (SCREEN_DELTA_Y_CONST(y) + MAP_OFFSET_Y)
+
+#define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
+#define SCREEN_Y(y) (SCREEN_DELTA_Y(y) + MAP_OFFSET_Y)
 
 // todo: wat
 #define TILEMAP_OFFSET 2
 #define TILEMAP_HEIGHT (2 * LEVEL_SIZE_Y + TILEMAP_OFFSET)
 #define TILEMAP_WIDTH LEVEL_SIZE_X
-#define TILEMAP_BASE_Y (SCREEN_Y(0) - HALF_TILE_PIXEL_HEIGHT * TILEMAP_OFFSET)
-
-//Offset from sides of screen
-#define MAP_OFFSET_X ((LCD_WIDTH - SCREEN_DELTA_X(LEVEL_SIZE_X * TILE_SIZE)) / 2)
-// Offset from top of the screen
-#define MAP_OFFSET_Y 12
-
-/* Calculate the screen-space position for a given world-space point */
-#define SCREEN_X(x) (SCREEN_DELTA_X(x) + MAP_OFFSET_X)
-#define SCREEN_Y(y) (SCREEN_DELTA_Y(y) + MAP_OFFSET_Y)
+#define TILEMAP_BASE_Y (SCREEN_Y_CONST(0) - HALF_TILE_PIXEL_HEIGHT * TILEMAP_OFFSET)
 
 #define SPRITE_OFFSET_X 20
 #define SPRITE_OFFSET_Y 22
