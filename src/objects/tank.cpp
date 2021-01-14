@@ -11,6 +11,7 @@
 #include "../graphics/dynamic_sprites.h"
 #include "../graphics/graphics.h"
 #include "../graphics/partial_redraw.h"
+#include "mine_detector.h"
 
 const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
@@ -209,4 +210,8 @@ void Tank::collide(Shell *shell) {
 
 void Tank::collide(__attribute__((unused)) Mine *mine) {
     // don't do anything
+}
+
+void Tank::collide(MineDetector *detector) {
+    detector->collide(this);
 }

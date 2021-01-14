@@ -1,11 +1,14 @@
 #include "mine.h"
-#include "../level.h"
+
+#include <new>
+
 #include "../globals.h"
 #include "../graphics/gui.h"
 #include "../graphics/graphics.h"
 #include "../graphics/dynamic_sprites.h"
 #include "../util/profiler.h"
 #include "../graphics/partial_redraw.h"
+#include "mine_detector.h"
 
 Mine::Mine(Tank *tank) {
     width = MINE_SIZE;
@@ -20,6 +23,8 @@ Mine::Mine(Tank *tank) {
     velocity_y = 0;
 
     parent = tank;
+
+    new (std::nothrow) MineDetector(this);
 
     countdown = MINE_COUNTDOWN;
 }
@@ -122,5 +127,9 @@ void Mine::collide(Shell *shell) {
 }
 
 void Mine::collide(__attribute__((unused)) Mine *mine) {
+    // don't do anything
+}
+
+void Mine::collide(MineDetector *detector) {
     // don't do anything
 }

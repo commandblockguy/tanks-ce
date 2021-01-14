@@ -8,6 +8,7 @@ class Mine;
 #include "../physics/collision.h"
 #include "physicsbody.h"
 #include "../fwd.h"
+#include "../level.h"
 
 #define MINE_SIZE TILE_SIZE
 
@@ -46,6 +47,7 @@ public:
     void collide(Tank *tank);
     void collide(Shell *shell);
     void collide(Mine *mine);
+    void collide(MineDetector *detector);
 };
 
 #endif //TANKS_MINE_H

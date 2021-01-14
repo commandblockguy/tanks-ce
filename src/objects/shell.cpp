@@ -42,7 +42,7 @@ Shell::~Shell() {
 void Shell::process() {
     profiler_add(shells);
 
-    if(!left_tank_hitbox && !detect_collision(parent)) {
+    if(!parent || (!left_tank_hitbox && !detect_collision(parent))) {
         left_tank_hitbox = true;
     }
 
@@ -108,4 +108,8 @@ void Shell::handle_tile_collision(direction_t dir) {
         update_direction();
         bounces--;
     }
+}
+
+void Shell::collide(MineDetector *detector) {
+    // don't do anything
 }

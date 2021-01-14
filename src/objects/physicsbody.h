@@ -56,6 +56,7 @@ public:
     virtual void collide(Tank *tank) = 0;
     virtual void collide(Shell *shell) = 0;
     virtual void collide(Mine *mine) = 0;
+    virtual void collide(MineDetector *detector) = 0;
 };
 
 #endif //TANKS_PHYSICSBODY_H

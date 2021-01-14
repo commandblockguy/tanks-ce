@@ -45,6 +45,7 @@ public:
     void collide(Tank *tank);
     void collide(Shell *shell);
     void collide(Mine *mine);
+    void collide(MineDetector *detector);
 
     void handle_tile_collision(direction_t dir);
 };

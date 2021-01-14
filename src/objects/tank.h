@@ -86,6 +86,7 @@ public:
     void collide(Tank *tank);
     void collide(Shell *shell);
     void collide(Mine *mine);
+    void collide(MineDetector *detector);
 };
 
 #endif //TANKS_TANK_H
