@@ -25,9 +25,6 @@ endif
 
 # ----------------------------
 
-tiles:
-	@$(MAKE) -C src/data/tiles --no-print-directory
-
 SHELL = bash
 IMAGE_NAMES = {{{pl,en}_{base,turret},shell}_{0..8},mine_{0..2}}
 CONVIMG_INPUT = $(shell echo src/data/gfx/trimmed/$(IMAGE_NAMES).png) src/data/gfx/tileset.png src/data/gfx/bg_tank.png src/data/gfx/fg_tank.png

@@ -4,9 +4,6 @@
 
 #include "globals.h"
 
-#include "data/tiles/lvlpack.h"
-
-
 void decompress_tiles(const void *comp_tiles) {
     //Decompress tile data
     zx7_Decompress(tiles, comp_tiles);

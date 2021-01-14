@@ -19,17 +19,12 @@
 #include "globals.h"
 #include "util/profiler.h"
 #include "graphics/gui.h"
-#include "data/export_levels.h"
 #include "game.h"
 
 int main() {
     dbg_printf("\n\n[TANKS] Program started.\n");
 
     ti_CloseAll();
-
-    create_levels(); //TODO: TEMP (you'll just download an appvar after I get one properly generated.)
-
-    dbg_printf("Created levels\n");
 
     init_graphics();
 
