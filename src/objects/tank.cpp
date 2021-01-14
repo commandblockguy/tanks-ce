@@ -106,10 +106,11 @@ void Tank::render(uint8_t layer) {
     combined_region.ymin = min(base_region.ymin, turret_region.ymin);
     combined_region.ymax = max(base_region.ymax, turret_region.ymax);
 
-    pdraw_RectRegion(&combined_region);
-    gfx_TransparentSprite(base_sprite, base_region.xmin, base_region.ymin);
-    gfx_TransparentSprite(turret_sprite, turret_region.xmin, turret_region.ymin);
-    redraw_tiles(&combined_region, 0);
+    if(pdraw_RectRegion(&combined_region)) {
+        gfx_TransparentSprite(base_sprite, base_region.xmin, base_region.ymin);
+        gfx_TransparentSprite(turret_sprite, turret_region.xmin, turret_region.ymin);
+        redraw_tiles(&combined_region, 0);
+    }
 
     profiler_end(render_tanks);
 }

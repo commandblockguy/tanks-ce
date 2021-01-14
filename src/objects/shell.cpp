@@ -56,9 +56,10 @@ void Shell::render(uint8_t layer) {
     uint8_t sprite = direction;
     gfx_region_t region;
     get_sprite_footprint(&region, this, shell_sprites, shell_x_offsets, shell_y_offsets, sprite);
-    pdraw_RectRegion(&region);
-    gfx_TransparentSprite(shell_sprites[sprite], region.xmin, region.ymin);
-    redraw_tiles(&region, 0);
+    if(pdraw_RectRegion(&region)) {
+        gfx_TransparentSprite(shell_sprites[sprite], region.xmin, region.ymin);
+        redraw_tiles(&region, 0);
+    }
 
     profiler_end(render_shells);
 }

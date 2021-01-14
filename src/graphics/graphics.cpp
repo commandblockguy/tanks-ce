@@ -276,11 +276,12 @@ void draw_aim_dots() {
 
     for(uint8_t dot = 0; dot < num_dots; dot++) {
         gfx_SetColor(COL_LIVES_TXT);
-        pdraw_RectRegion(SCREEN_X(x) - AIM_INDICATOR_RADIUS, SCREEN_Y(y) - AIM_INDICATOR_RADIUS,
-                         2 * AIM_INDICATOR_RADIUS + 1, 2 * AIM_INDICATOR_RADIUS + 1);
-        gfx_FillCircle(SCREEN_X(x), SCREEN_Y(y), AIM_INDICATOR_RADIUS);
-        x += dx;
-        y += dy;
+        if(pdraw_RectRegion(SCREEN_X(x) - AIM_INDICATOR_RADIUS, SCREEN_Y(y) - AIM_INDICATOR_RADIUS,
+                         2 * AIM_INDICATOR_RADIUS + 1, 2 * AIM_INDICATOR_RADIUS + 1)) {
+            gfx_FillCircle(SCREEN_X(x), SCREEN_Y(y), AIM_INDICATOR_RADIUS);
+            x += dx;
+            y += dy;
+        }
     }
     profiler_end(aim_indicator);
 }

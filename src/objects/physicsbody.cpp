@@ -154,8 +154,9 @@ void PhysicsBody::render(uint8_t layer) {
     uint8_t y = SCREEN_Y(position_y);
     uint8_t width = SCREEN_DELTA_X(this->width);
     uint8_t height = SCREEN_DELTA_Y(this->height);
-    pdraw_RectRegion(x, y, width, height);
-    gfx_Rectangle(x, y, width, height);
+    if(pdraw_RectRegion(x, y, width, height)) {
+        gfx_Rectangle(x, y, width, height);
+    }
 }
 
 void PhysicsBody::tick() {

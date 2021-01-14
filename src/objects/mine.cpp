@@ -65,9 +65,10 @@ void Mine::render(uint8_t layer) {
         }
         gfx_region_t region;
         get_sprite_footprint(&region, this, mine_sprites, mine_x_offsets, mine_y_offsets, sprite);
-        pdraw_RectRegion(&region);
-        gfx_TransparentSprite(mine_sprites[sprite], region.xmin, region.ymin);
-        redraw_tiles(&region, 0);
+        if(pdraw_RectRegion(&region)) {
+            gfx_TransparentSprite(mine_sprites[sprite], region.xmin, region.ymin);
+            redraw_tiles(&region, 0);
+        }
     } else {
         // todo: maybe resize the sprite to make it more animated
         uint x = SCREEN_X(center_x()) - explosion_width / 2;
@@ -80,10 +81,11 @@ void Mine::render(uint8_t layer) {
 
         gfx_GetClipRegion(&region);
 
-        pdraw_RectRegion(&region);
-        gfx_TransparentSprite(explosion, x, y);
-        // todo: fix this
-        //redraw_tiles(&region, 0);
+        if(pdraw_RectRegion(&region)) {
+            gfx_TransparentSprite(explosion, x, y);
+            // todo: fix this
+            //redraw_tiles(&region, 0);
+        }
     }
     profiler_end(render_mines);
 }
