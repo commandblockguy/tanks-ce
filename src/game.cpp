@@ -67,8 +67,8 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
 
 
         profiler_start(physics);
-        for(auto & object : PhysicsBody::objects) {
-            object->process();
+        for(uint i = 0; i < PhysicsBody::objects.size(); i++) {
+            PhysicsBody::objects[i]->process();
         }
         profiler_start(pb_collision);
         process_collisions();
