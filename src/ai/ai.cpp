@@ -36,6 +36,7 @@ void ai_process_fire(Tank *tank) {
         default:
             break;
         case (IMMOBILE):
+        case (IMMOB_MISSILE):
             profiler_add(ai_aim_random);
             aim_random(tank);
             profiler_end(ai_aim_random);
@@ -43,6 +44,9 @@ void ai_process_fire(Tank *tank) {
         case (BASIC):
         case (MINE):
         case (RED):
+        case (FAST):
+        case (INVISIBLE):
+        case (BLACK):
             profiler_add(ai_aim_reflect);
             aim_reflect(tank);
             profiler_end(ai_aim_reflect);
@@ -50,11 +54,12 @@ void ai_process_fire(Tank *tank) {
         case (MISSILE):
             aim_current(tank);
             break;
-        case (IMMOB_MISSILE):
-        case (FAST):
-        case (INVISIBLE):
-        case (BLACK):
-            aim_future(tank);
+// todo:
+//        case (IMMOB_MISSILE):
+//        case (FAST):
+//        case (INVISIBLE):
+//        case (BLACK):
+//            aim_future(tank);
     }
     profiler_end(ai_aim);
 }
