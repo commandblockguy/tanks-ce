@@ -117,10 +117,10 @@ bool PhysicsBody::center_distance_less_than(PhysicsBody *other, uint dis) const 
     if((uint)abs((int) other->center_x() - (int) center_x()) > dis) return false;
     if((uint)abs((int) other->center_y() - (int) center_y()) > dis) return false;
 
-    int delta_x = (other->center_x() - center_x()) >> 8;
-    int delta_y = (other->center_y() - center_y()) >> 8;
+    int delta_x = ((int)other->center_x() - (int)center_x());
+    int delta_y = ((int)other->center_y() - (int)center_y());
 
-    return (uint)(delta_x * delta_x + delta_y * delta_y) < (dis >> 8) * (dis >> 8);
+    return (uint)(delta_x * delta_x + delta_y * delta_y) < dis * dis;
 }
 
 // todo: optimize
