@@ -12,9 +12,9 @@ typedef struct {
 } pdraw_sprite_t;
 
 // Store a rectangular region for redraw on the next relevant frame
-pdraw_sprite_t *pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height);
+bool pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height);
 
-pdraw_sprite_t *pdraw_RectRegion(const gfx_region_t *region);
+bool pdraw_RectRegion(const gfx_region_t *region);
 
 // Draw a sprite, storing the background sprite for later redraw
 void pdraw_Sprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y);
