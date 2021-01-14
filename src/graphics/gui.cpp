@@ -100,7 +100,7 @@ void display_kill_counts() {
 
     gfx_BlitBuffer();
 
-    while(!kb_IsDown(kb_KeyEnter) && !kb_IsDown(kb_KeyClear)) kb_Scan();
+    while(!kb_IsDown(kb_KeyEnter) && !kb_IsDown(kb_KeyClear));
 }
 
 //Screen is 700 (240) pixels tall
@@ -187,9 +187,8 @@ void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
             timer_AckInterrupt(1, TIMER_RELOADED);
             break;
         }
-        kb_Scan();
         if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
-            while(kb_Data[1] || kb_Data[6]) kb_Scan();
+            while(kb_Data[1] || kb_Data[6]);
             break;
         }
 
@@ -359,7 +358,6 @@ uint8_t pause_menu() {
     gfx_SetTextScale(2, 2);
 
     while(true) {
-        kb_Scan();
         if(kb_IsDown(kb_KeyClear)) {
             gfx_SetTextScale(1, 1);
             return 0;
@@ -375,7 +373,7 @@ uint8_t pause_menu() {
         if(selection < 0) selection = 2;
         if(selection >= 3) selection = 0;
 
-        while(kb_IsDown(kb_KeyUp) || kb_IsDown(kb_KeyDown)) kb_Scan();
+        while(kb_IsDown(kb_KeyUp) || kb_IsDown(kb_KeyDown));
 
         for(int8_t button = 0; button < 3; button++) {
             const char *strings[3] = {"Continue", "Start Over", "Quit"};

@@ -13,6 +13,7 @@
 #include <fileioc.h>
 
 #include <string.h>
+#include <keypadc.h>
 
 #include "level.h"
 #include "graphics/graphics.h"
@@ -25,6 +26,7 @@ int main() {
     dbg_printf("\n\n[TANKS] Program started.\n");
 
     ti_CloseAll();
+    kb_SetMode(MODE_3_CONTINUOUS);
 
     init_graphics();
 

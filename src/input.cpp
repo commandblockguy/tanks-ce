@@ -13,21 +13,10 @@
 //1/3 of a second for 90 degree rotation
 #define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_TICK_RATE / 3))
 
-uint8_t handle_input() {
-    profiler_start(input);
+void handle_movement() {
     Tank *player = game.player;
-    bool moving = true;
     angle_t target_rot;
     uint8_t keys = 0;
-
-    if(game.shot_cooldown) {
-        game.shot_cooldown--;
-    }
-    if(game.mine_cooldown) {
-        game.mine_cooldown--;
-    }
-
-    kb_Scan();
 
     if(kb_IsDown(kb_KeyDown)) keys |= DOWN;
     if(kb_IsDown(kb_KeyLeft)) keys |= LEFT;
@@ -36,8 +25,8 @@ uint8_t handle_input() {
 
     switch(keys) {
         default:
-            moving = false;
-            break;
+            player->set_velocity(0);
+            return;
         case UP:
             target_rot = DEGREES_TO_ANGLE(270);
             break;
@@ -63,28 +52,38 @@ uint8_t handle_input() {
             target_rot = DEGREES_TO_ANGLE(135);
     }
 
-    if(moving) {
-        int diff = player->tread_rot - target_rot;
-        if((uint)abs(diff) > DEGREES_TO_ANGLE(90)) {
-            player->tread_rot += DEGREES_TO_ANGLE(180);
-            diff = (int) (player->tread_rot - target_rot);
-        }
-        if(diff < -(int) PLAYER_TREAD_ROTATION) {
-            player->tread_rot += PLAYER_TREAD_ROTATION;
-        } else if(diff > (int) PLAYER_TREAD_ROTATION) {
-            player->tread_rot -= PLAYER_TREAD_ROTATION;
-        } else {
-            player->tread_rot = target_rot;
-        }
+    int diff = player->tread_rot - target_rot;
+    if((uint)abs(diff) > DEGREES_TO_ANGLE(90)) {
+        player->tread_rot += DEGREES_TO_ANGLE(180);
+        diff = (int) (player->tread_rot - target_rot);
+    }
+    if(diff < -(int) PLAYER_TREAD_ROTATION) {
+        player->tread_rot += PLAYER_TREAD_ROTATION;
+    } else if(diff > (int) PLAYER_TREAD_ROTATION) {
+        player->tread_rot -= PLAYER_TREAD_ROTATION;
+    } else {
+        player->tread_rot = target_rot;
+    }
 
-        if((uint)abs(diff) <= DEGREES_TO_ANGLE(45)) {
-            player->set_velocity(TANK_SPEED_NORMAL);
-        } else {
-            player->set_velocity(0);
-        }
+    if((uint)abs(diff) <= DEGREES_TO_ANGLE(45)) {
+        player->set_velocity(TANK_SPEED_NORMAL);
     } else {
         player->set_velocity(0);
     }
+}
+
+uint8_t handle_input() {
+    profiler_start(input);
+    Tank *player = game.player;
+
+    if(game.shot_cooldown) {
+        game.shot_cooldown--;
+    }
+    if(game.mine_cooldown) {
+        game.mine_cooldown--;
+    }
+
+    handle_movement();
 
     if(kb_IsDown(kb_Key2nd) && !game.shot_cooldown) {
         player->fire_shell();
