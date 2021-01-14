@@ -37,9 +37,10 @@ public:
     
     uint countdown; //Number of physics loops until explosions occur
 
-    void kill();
     void process();
     void render(uint8_t layer);
+
+    void detonate();
 
     void handle_collision(PhysicsBody *other);
     void collide(Tank *tank);

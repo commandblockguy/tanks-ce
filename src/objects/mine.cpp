@@ -37,9 +37,10 @@ void Mine::process() {
 
     profiler_add(mines);
     if(--countdown == EXPLOSION_ANIM) {
+        detonate();
+    }
+    if(countdown == 0) {
         kill();
-        profiler_end(mines);
-        return;
     }
 
 //todo: range detection
@@ -50,25 +51,42 @@ void Mine::render(uint8_t layer) {
     if(layer != 0) return;
     profiler_add(render_mines);
 
-    uint8_t sprite;
-    if(countdown < MINE_WARNING) {
-        sprite = countdown % 4;
+    if(countdown > EXPLOSION_ANIM) {
+        uint8_t sprite;
+        if(countdown < MINE_WARNING) {
+            sprite = countdown % 4;
+        } else {
+            sprite = 0;
+        }
+        gfx_region_t region;
+        get_sprite_footprint(&region, this, mine_sprites, mine_x_offsets, mine_y_offsets, sprite);
+        pdraw_RectRegion(&region);
+        gfx_TransparentSprite(mine_sprites[sprite], region.xmin, region.ymin);
+        redraw_tiles(&region, 0);
     } else {
-        sprite = 0;
+        // todo: maybe resize the sprite to make it more animated
+        uint x = SCREEN_X(center_x()) - explosion_width / 2;
+        uint8_t y = SCREEN_Y(center_y()) + TILE_PIXEL_SIZE_Y * MINE_EXPLOSION_RADIUS / TILE_SIZE - explosion_height;
+        gfx_region_t region;
+        region.xmin = x;
+        region.ymin = y;
+        region.xmax = region.xmin + explosion_width;
+        region.ymax = region.ymin + explosion_height;
+
+        gfx_GetClipRegion(&region);
+
+        pdraw_RectRegion(&region);
+        gfx_TransparentSprite(explosion, x, y);
+        // todo: fix this
+        //redraw_tiles(&region, 0);
     }
-    gfx_region_t region;
-    get_sprite_footprint(&region, this, mine_sprites, mine_x_offsets, mine_y_offsets, sprite);
-    pdraw_RectRegion(&region);
-    gfx_TransparentSprite(mine_sprites[sprite], region.xmin, region.ymin);
-    redraw_tiles(&region, 0);
     profiler_end(render_mines);
 }
 
-void Mine::kill() {
+void Mine::detonate() {
     countdown = EXPLOSION_ANIM - 1;
 
-    //The original game uses a radius, not a square
-    //Don't tell anyone.
+    // todo: The original game uses a radius, not a square
 
     for(uint8_t j = COORD_TO_X_TILE(center_x() - MINE_EXPLOSION_RADIUS);
         j <= COORD_TO_X_TILE(center_x() + MINE_EXPLOSION_RADIUS); j++) {
@@ -82,18 +100,13 @@ void Mine::kill() {
     }
 
     // Kill any nearby physics objects
-    // todo: unbork this
     for(auto *it = objects.begin(); it < objects.end();) {
         if(*it != this && center_distance_less_than(*it, MINE_EXPLOSION_RADIUS)) {
             (**it).kill();
         } else it++;
     }
 
-    bang();
-
     generate_bg_tilemap();
-
-    delete this;
 }
 
 void Mine::handle_collision(PhysicsBody *other) {

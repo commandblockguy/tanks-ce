@@ -86,7 +86,7 @@ void Shell::collide(Shell *shell) {
 
 void Shell::collide(Mine *mine) {
     kill();
-    mine->kill();
+    mine->detonate();
 }
 
 void Shell::handle_tile_collision(direction_t dir) {

@@ -55,6 +55,7 @@ converts:
       - trimmed/mine_*.png
       - bg_tank.png
       - fg_tank.png
+      - explosion.png
   - name: enemy
     dither: true
     palette: enemy_palette
