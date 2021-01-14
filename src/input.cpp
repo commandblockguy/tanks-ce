@@ -3,6 +3,7 @@
 #include "util/profiler.h"
 #include "objects/tank.h"
 #include "globals.h"
+#include "graphics/gui.h"
 
 //Player action cooldown
 #define SHOT_COOLDOWN 5
@@ -98,6 +99,17 @@ uint8_t handle_input() {
     }
     if(kb_IsDown(kb_KeyGraphVar)) {
         player->barrel_rot += PLAYER_BARREL_ROTATION;
+    }
+    if(kb_IsDown(kb_KeyAdd)) {
+        switch(pause_menu()) {
+            default:
+            case 0:
+                break;
+            case 1:
+                // todo: restart
+            case 2:
+                return QUIT;
+        }
     }
     if(kb_IsDown(kb_KeyDel)) { // TODO: remove
         return NEXT_LEVEL;
