@@ -19,11 +19,10 @@ typedef uint8_t tank_type_t;
 //Distance from center of tank new shells appear
 #define BARREL_LENGTH (TANK_SIZE * 5 / 14)
 
-//148 px / 1 s * 1 tile / 48 px = 3.08 tiles / sec
-#define TANK_SPEED_SLOW (2 * TILE_SIZE / TARGET_TICK_RATE) // todo
-#define TANK_SPEED_NORMAL (3.08 * TILE_SIZE / TARGET_TICK_RATE)
-#define TANK_SPEED_HIGH (4 * TILE_SIZE / TARGET_TICK_RATE) // todo
-#define TANK_SPEED_BLACK (5 * TILE_SIZE / TARGET_TICK_RATE) // todo
+#define TANK_SPEED_SLOW (2.25 * TILE_SIZE / TARGET_TICK_RATE)
+#define TANK_SPEED_NORMAL (2.5 * TILE_SIZE / TARGET_TICK_RATE)
+#define TANK_SPEED_HIGH (3 * TILE_SIZE / TARGET_TICK_RATE)
+#define TANK_SPEED_BLACK (4 * TILE_SIZE / TARGET_TICK_RATE) // todo
 
 #define MAX_NUM_TANKS 16
 

@@ -16,7 +16,7 @@
 const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
 const uint8_t Tank::max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
-const uint8_t Tank::velocities[] = {(uint8_t)TANK_SPEED_NORMAL,
+const uint8_t Tank::velocities[] = {(uint8_t)TANK_SPEED_HIGH,
                                     (uint8_t)0,
                                     (uint8_t)TANK_SPEED_SLOW,
                                     (uint8_t)TANK_SPEED_SLOW,
