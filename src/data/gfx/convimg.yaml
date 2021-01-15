@@ -30,6 +30,8 @@ palettes:
       - color: {index: 12, r:  66, g:  40, b:  25}
       - color: {index: 13, r: 123, g:  81, b:  49}
       - color: {index: 14, r: 132, g: 105, b:  82}
+      - color: {index: 15, r: 105, g: 145, b: 105}
+      - color: {index: 16, r:  31, g:  57, b:  31}
 
   - name: enemy_palette
     max-entries: 9
@@ -56,6 +58,7 @@ converts:
       - bg_tank.png
       - fg_tank.png
       - explosion.png
+      - star.png
   - name: enemy
     dither: true
     palette: enemy_palette

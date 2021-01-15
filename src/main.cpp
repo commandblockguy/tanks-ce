@@ -97,7 +97,7 @@ int main() {
         }
 
         if(game.mission % 5 == 4 && game.mission != lvl_pack.num_levels - 1) {
-            //TODO: display lives++ screen
+            extra_life_screen(game.lives);
             game.lives++;
         }
     }
