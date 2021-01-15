@@ -131,10 +131,6 @@ typedef struct {
 #define SPRITE_OFFSET_X 20
 #define SPRITE_OFFSET_Y 22
 
-// todo: get an actual value?
-#define AIM_INDICATOR_DOT_DISTANCE (2 * TILE_SIZE)
-#define AIM_INDICATOR_RADIUS 2
-
 void init_graphics();
 
 void render(); //Render tilemap, tanks, and UI during the game loop

@@ -31,7 +31,6 @@ Mine::Mine(Tank *tank) {
 
 Mine::~Mine() {
     if(parent) {
-        // todo: see if there's a way to do this without an ugly cast
         ((Tank*)parent)->num_mines--;
     }
 }

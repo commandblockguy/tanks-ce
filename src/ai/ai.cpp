@@ -85,7 +85,6 @@ void move_random(Tank *tank) {
         }
     }
     tank->tread_rot += randInt(0, DEGREES_TO_ANGLE(6)) - DEGREES_TO_ANGLE(3);
-    // todo: fast/slow tanks
     tank->set_velocity(Tank::velocities[tank->type]);
     profiler_end(ai_move_random);
 }

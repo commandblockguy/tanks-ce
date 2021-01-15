@@ -59,6 +59,7 @@ converts:
       - fg_tank.png
       - explosion.png
       - star.png
+      - aim_dot.png
   - name: enemy
     dither: true
     palette: enemy_palette

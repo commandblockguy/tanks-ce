@@ -87,7 +87,7 @@ void Tank::render(uint8_t layer) {
     profiler_add(render_tanks);
 
     uint8_t base_index = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
-    uint8_t turret_index = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 64)) >> 4;
+    uint8_t turret_index = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 68)) >> 4;
 
     gfx_sprite_t *base_sprite = tank_bases[type][base_index];
     gfx_sprite_t *turret_sprite = tank_turrets[type][turret_index];
