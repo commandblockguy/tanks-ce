@@ -28,6 +28,8 @@ int main() {
     ti_CloseAll();
     kb_SetMode(MODE_3_CONTINUOUS);
 
+    srand(rtc_Time());
+
     init_graphics();
 
     dbg_printf("Initted graphics\n");
@@ -46,8 +48,8 @@ int main() {
 
     ti_var_t appVar = ti_Open("TANKSLPK", "r");
     if(!appVar) {
-        dbg_printf("Failed to open level pack\n");
-        goto exit;
+        // todo: present this better
+        ERROR("TANKSLPK not found");
     }
 
     level_pack_t lvl_pack;
@@ -70,7 +72,7 @@ int main() {
 
         if(game.level.num_tanks > MAX_NUM_TANKS) {
             dbg_printf("Too many tanks in level (%u)\n", game.level.num_tanks);
-            continue;
+            ERROR("Too many tanks in level.");
         }
 
         uint8_t status = play_level(comp_tiles, ser_tanks);
@@ -88,7 +90,8 @@ int main() {
                 goto exit;
             }
             default: {
-                dbg_printf("Got a weird status code from a mission: %u\n", status);
+                dbg_printf("Status: %u\n", status);
+                ERROR("Unknown game status");
                 goto exit;
             }
         }

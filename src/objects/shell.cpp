@@ -111,6 +111,6 @@ void Shell::handle_tile_collision(direction_t dir) {
     }
 }
 
-void Shell::collide(MineDetector *detector) {
+void Shell::collide(__attribute__((unused)) MineDetector *detector) {
     // don't do anything
 }

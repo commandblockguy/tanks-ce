@@ -44,14 +44,13 @@ void get_enemy_palette_map(uint8_t *out, tank_type_t type) {
         out[NUM_NON_DYNAMIC_COLORS + i] = 256 - NUM_DYNAMIC_COLORS * NUM_TANK_TYPES + NUM_DYNAMIC_COLORS * type + i;
 }
 
-bool init_tank_sprites(tank_type_t type) {
+void init_tank_sprites(tank_type_t type) {
     // return if sprites were already initialized from the last level
-    if(tank_bases[type][0]) return true;
+    if(tank_bases[type][0]) return;
 
     auto *spriteset = (spriteset_t *)malloc(sizeof(spriteset_t));
     if(!spriteset) {
-        dbg_printf("Failed to allocate spriteset\n");
-        return false;
+        ERROR("Failed to allocate spriteset");
     }
 
     tank_bases[type][0] = (gfx_sprite_t *) &spriteset->base_0_data;
@@ -99,7 +98,7 @@ bool init_tank_sprites(tank_type_t type) {
         gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);
         gfx_FlipSpriteY(tank_turrets[type][i], tank_turrets[type][16 - i]);
     }
-    return true;
+    return;
 }
 
 void free_tank_sprites(tank_type_t type) {

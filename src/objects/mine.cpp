@@ -132,6 +132,6 @@ void Mine::collide(__attribute__((unused)) Mine *mine) {
     // don't do anything
 }
 
-void Mine::collide(MineDetector *detector) {
+void Mine::collide(__attribute__((unused)) MineDetector *detector) {
     // don't do anything
 }

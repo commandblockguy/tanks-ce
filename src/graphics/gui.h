@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include <string.h>
+
 //amount of time in milliseconds the mission start screen displays
 #define MISSION_START_TIME 3000
 //Font size
@@ -22,5 +24,9 @@ void display_game_kill_counter();
 void display_game_banner(uint8_t mission, uint8_t lives);
 
 uint8_t pause_menu();
+
+[[noreturn]] void error_screen(const char *error, const char *file, uint24_t line);
+
+#define ERROR(msg) error_screen(msg, __func__, __LINE__)
 
 #endif //TANKS_GUI_H

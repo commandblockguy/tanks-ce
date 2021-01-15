@@ -25,8 +25,7 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
         //dbg_printf("tank created: %p\n", tank);
         Tank *tank = new (std::nothrow) Tank(&ser_tanks[i], i);
         if(!tank) {
-            dbg_printf("Failed to allocate tank\n");
-            continue;
+            ERROR("Failed to allocate tank");
         }
         tank_type_used[ser_tanks[i].type] = true;
     }
@@ -40,10 +39,7 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
 
     for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
         if(tank_type_used[type]) {
-            if(!init_tank_sprites(type)) {
-                dbg_sprintf(dbgerr, "Ran out of memory when allocating tank sprites\n");
-                return false;
-            }
+            init_tank_sprites(type);
         } else {
             free_tank_sprites(type);
         }

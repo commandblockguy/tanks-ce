@@ -8,8 +8,10 @@ ARCHIVED ?= YES
 
 OUTPUT_MAP ?= YES
 
-CFLAGS ?= -Wall -Wextra -O3
-CXXFLAGS ?= -Wall -Wextra -O3
+COMMIT = \"$(shell git rev-parse --short HEAD || echo non-git)$(shell git diff --quiet || echo \*)\"
+
+CFLAGS ?= -Wall -Wextra -O3 -DCOMMIT=$(COMMIT)
+CXXFLAGS ?= -Wall -Wextra -O3 -DCOMMIT=$(COMMIT)
 
 # ----------------------------
 

@@ -141,7 +141,7 @@ void draw_line(line_seg_t *ls);
 
 void generate_bg_tilemap();
 
-bool init_tank_sprites(tank_type_t type);
+void init_tank_sprites(tank_type_t type);
 
 void free_tank_sprites(tank_type_t type);
 
