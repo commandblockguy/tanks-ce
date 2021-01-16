@@ -98,12 +98,11 @@ void init_tank_sprites(tank_type_t type) {
         gfx_FlipSpriteY(tank_bases[type][i], tank_bases[type][16 - i]);
         gfx_FlipSpriteY(tank_turrets[type][i], tank_turrets[type][16 - i]);
     }
-    return;
 }
 
 void free_tank_sprites(tank_type_t type) {
     free(tank_bases[type][0]);
-    memset(tank_bases[type], 0, sizeof(tank_bases[type]));
+    memset(tank_bases[type], 0, sizeof tank_bases[type]);
 }
 
 // this is supposed to go in dynamic_sprites.c, but a weird (linker?) issue causes this array to be filled with NULL if I do that

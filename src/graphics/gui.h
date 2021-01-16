@@ -29,6 +29,6 @@ uint8_t pause_menu();
 
 [[noreturn]] void error_screen(const char *error, const char *file, uint24_t line);
 
-#define ERROR(msg) error_screen(msg, __func__, __LINE__)
+#define ERROR(msg) error_screen(msg, __FILE_NAME__, __LINE__)
 
 #endif //TANKS_GUI_H

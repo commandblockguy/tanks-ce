@@ -38,10 +38,14 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
     }
 
     for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
+        if(!tank_type_used[type]) {
+            free_tank_sprites(type);
+        }
+    }
+
+    for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
         if(tank_type_used[type]) {
             init_tank_sprites(type);
-        } else {
-            free_tank_sprites(type);
         }
     }
 
