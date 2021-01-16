@@ -27,6 +27,8 @@ void display_game_banner(uint8_t mission, uint8_t lives);
 
 uint8_t pause_menu();
 
+void draw_aim_dots();
+
 [[noreturn]] void error_screen(const char *error, const char *file, uint24_t line);
 
 #define ERROR(msg) error_screen(msg, __FILE_NAME__, __LINE__)

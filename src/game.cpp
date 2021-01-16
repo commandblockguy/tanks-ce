@@ -8,10 +8,10 @@
 #include "graphics/gui.h"
 #include "input.h"
 #include "util/profiler.h"
+#include "graphics/tank_sprite.h"
 
 bool start_mission(const serialized_tank_t *ser_tanks) {
     dbg_printf("starting mission\n");
-    bool tank_type_used[NUM_TANK_TYPES] = {false};
 
     while(!PhysicsBody::objects.empty()) {
         // Delete objects without killing
@@ -27,7 +27,6 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
         if(!tank) {
             ERROR("Failed to allocate tank");
         }
-        tank_type_used[ser_tanks[i].type] = true;
     }
 
     for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
@@ -37,17 +36,9 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
         }
     }
 
-    for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
-        if(!tank_type_used[type]) {
-            free_tank_sprites(type);
-        }
-    }
+    game.tick = 0;
 
-    for(uint8_t type = 1; type < NUM_TANK_TYPES; type++) {
-        if(tank_type_used[type]) {
-            init_tank_sprites(type);
-        }
-    }
+    free_tank_sprites();
 
     mission_start_screen(game.mission, game.lives, game.num_tanks - 1);
 
@@ -96,6 +87,8 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
         PhysicsBody::sort();
 
         render();
+
+        game.tick++;
 
         profiler_end(total);
         profiler_start(frame_wait);

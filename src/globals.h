@@ -22,6 +22,7 @@ typedef struct {
     uint8_t num_tanks;
     bool alive_tanks[MAX_NUM_TANKS];
     Tank *player;
+    uint24_t tick;
 } game_t;
 
 extern tile_t tiles[LEVEL_SIZE_Y][LEVEL_SIZE_X];

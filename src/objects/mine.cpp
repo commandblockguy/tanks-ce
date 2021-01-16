@@ -9,6 +9,7 @@
 #include "../util/profiler.h"
 #include "../graphics/partial_redraw.h"
 #include "mine_detector.h"
+#include "../graphics/tiles.h"
 
 Mine::Mine(Tank *tank) {
     width = MINE_SIZE;

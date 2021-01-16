@@ -4,6 +4,7 @@
 #include "../graphics/graphics.h"
 #include "../util/profiler.h"
 #include "../graphics/partial_redraw.h"
+#include "../graphics/tiles.h"
 
 Shell::Shell(Tank *tank) {
     width = SHELL_SIZE;

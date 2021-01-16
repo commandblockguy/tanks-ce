@@ -12,6 +12,8 @@
 #include "../graphics/graphics.h"
 #include "../graphics/partial_redraw.h"
 #include "mine_detector.h"
+#include "../graphics/tiles.h"
+#include "../graphics/tank_sprite.h"
 
 const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
 const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
@@ -89,9 +91,10 @@ void Tank::render(uint8_t layer) {
     uint8_t base_index = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
     uint8_t turret_index = ((uint8_t) -((barrel_rot >> (INT_BITS - 8)) - 68)) >> 4;
 
-    gfx_sprite_t *base_sprite = tank_bases[type][base_index];
-    gfx_sprite_t *turret_sprite = tank_turrets[type][turret_index];
     gfx_region_t base_region, turret_region, combined_region;
+
+    gfx_sprite_t *base_sprite = base_cache.get(type, base_index);
+    gfx_sprite_t *turret_sprite = turret_cache.get(type, turret_index);
 
     if(type == PLAYER) {
         get_sprite_footprint(&base_region, this, tank_bases[type], pl_base_x_offsets, pl_base_y_offsets, base_index);
