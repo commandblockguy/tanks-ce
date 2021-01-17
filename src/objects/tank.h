@@ -24,6 +24,9 @@ typedef uint8_t tank_type_t;
 #define TANK_SPEED_HIGH (3 * TILE_SIZE / TARGET_TICK_RATE)
 #define TANK_SPEED_BLACK (4 * TILE_SIZE / TARGET_TICK_RATE) // todo
 
+#define SHOT_COOLDOWN 5
+#define MINE_COOLDOWN 10
+
 #define MAX_NUM_TANKS 16
 
 enum {
@@ -60,6 +63,8 @@ public:
     angle_t barrel_rot; //Rotation of the barrel. Determines the direction shots are fired in
     uint8_t num_shells = 0;
     uint8_t num_mines = 0;
+    uint8_t shot_cooldown;
+    uint8_t mine_cooldown;
     ai_move_state_t ai_move;
     ai_fire_state_t ai_fire;
 

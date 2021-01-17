@@ -46,6 +46,8 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
     velocity_y = 0;
     barrel_rot = 0;
     tread_rot = 0;
+    shot_cooldown = 0;
+    mine_cooldown = 0;
 
     if(id == 0) {
         game.player = this;
@@ -80,6 +82,13 @@ void Tank::process() {
     ai_process_move(this);
     ai_process_fire(this);
     profiler_end(ai);
+
+    if(shot_cooldown) {
+        shot_cooldown--;
+    }
+    if(mine_cooldown) {
+        mine_cooldown--;
+    }
 
     profiler_end(tanks);
 }
@@ -127,10 +136,11 @@ void Tank::fire_shell() {
     }
 
     num_shells++;
+    shot_cooldown = SHOT_COOLDOWN;
 }
 
 bool Tank::can_shoot() const {
-    return num_shells < max_shells[type];
+    return !shot_cooldown && num_shells < max_shells[type];
 }
 
 void Tank::lay_mine() {
@@ -142,10 +152,11 @@ void Tank::lay_mine() {
     }
 
     num_mines++;
+    mine_cooldown = MINE_COOLDOWN;
 }
 
 bool Tank::can_lay_mine() const {
-    return num_mines < max_mines[type];
+    return !mine_cooldown && num_mines < max_mines[type];
 }
 
 void Tank::set_velocity(int velocity) {

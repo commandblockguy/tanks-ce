@@ -5,10 +5,6 @@
 #include "globals.h"
 #include "graphics/gui.h"
 
-//Player action cooldown
-#define SHOT_COOLDOWN 5
-#define MINE_COOLDOWN 10
-
 #define PLAYER_BARREL_ROTATION DEGREES_TO_ANGLE(5)
 //1/3 of a second for 90 degree rotation
 #define PLAYER_TREAD_ROTATION (DEGREES_TO_ANGLE(90) / (TARGET_TICK_RATE / 3))
@@ -76,22 +72,13 @@ uint8_t handle_input() {
     profiler_start(input);
     Tank *player = game.player;
 
-    if(game.shot_cooldown) {
-        game.shot_cooldown--;
-    }
-    if(game.mine_cooldown) {
-        game.mine_cooldown--;
-    }
-
     handle_movement();
 
-    if(kb_IsDown(kb_Key2nd) && !game.shot_cooldown) {
+    if(kb_IsDown(kb_Key2nd)) {
         player->fire_shell();
-        game.shot_cooldown = SHOT_COOLDOWN;
     }
-    if(kb_IsDown(kb_KeyAlpha) && !game.mine_cooldown) {
+    if(kb_IsDown(kb_KeyAlpha)) {
         player->lay_mine();
-        game.mine_cooldown = MINE_COOLDOWN;
     }
     if(kb_IsDown(kb_KeyMode)) {
         player->barrel_rot -= PLAYER_BARREL_ROTATION;
