@@ -13,10 +13,10 @@
 bool start_mission(const serialized_tank_t *ser_tanks) {
     dbg_printf("starting mission\n");
 
-    while(!PhysicsBody::objects.empty()) {
-        // Delete objects without killing
-        delete PhysicsBody::objects[0];
+    for(auto & obj : PhysicsBody::objects) {
+        obj->active = false;
     }
+    PhysicsBody::remove_inactive();
 
     game.num_tanks = 0;
 
@@ -67,9 +67,11 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
         for(auto & object : PhysicsBody::objects) {
             object->tick();
         }
+        PhysicsBody::remove_inactive();
+        PhysicsBody::sort();
         profiler_end(physics);
 
-        if(!game.player_alive) {
+        if(!game.player) {
             profiler_end(total);
             game.lives--;
             if(!game.lives) {
@@ -83,8 +85,6 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
             profiler_end(total);
             return NEXT_LEVEL;
         }
-
-        PhysicsBody::sort();
 
         render();
 

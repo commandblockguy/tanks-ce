@@ -13,14 +13,11 @@ MineDetector::MineDetector(Mine *mine) {
     position_x = mine->center_x() - MINE_EXPLOSION_RADIUS;
     position_y = mine->center_y() - MINE_EXPLOSION_RADIUS;
 
-    velocity_x = 0;
-    velocity_y = 0;
-
     parent = mine;
 }
 
 void MineDetector::process() {
-    if(!parent) kill();
+    if(!parent) active = false;
 
     if(!primed) {
         Tank *placer = (Tank*)parent->parent;
@@ -43,7 +40,7 @@ void MineDetector::collide(__attribute__((unused)) Tank *tank) {
         if(parent) {
             ((Mine*)parent)->countdown = MINE_TRIGGERED;
         }
-        kill();
+        active = false;
     }
 }
 

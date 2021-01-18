@@ -42,8 +42,6 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
     start_y = ser_tank->start_y + 1;
     position_x = TILE_TO_X_COORD(start_x);
     position_y = TILE_TO_Y_COORD(start_y);
-    velocity_x = 0;
-    velocity_y = 0;
     barrel_rot = 0;
     tread_rot = 0;
     shot_cooldown = 0;
@@ -51,7 +49,6 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
 
     if(id == 0) {
         game.player = this;
-        game.player_alive = true;
     }
 
     game.num_tanks++;
@@ -60,7 +57,6 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
 Tank::~Tank() {
     game.num_tanks--;
     if(this == game.player) {
-        game.player_alive = false;
         game.player = nullptr;
     }
 }
@@ -72,7 +68,7 @@ void Tank::kill() {
         game.alive_tanks[id] = false;
     }
 
-    delete this;
+    active = false;
 }
 
 void Tank::process() {
@@ -171,6 +167,10 @@ void Tank::set_velocity(int velocity) {
 
 void Tank::handle_collision(PhysicsBody *other) {
     other->collide(this);
+}
+
+void Tank::handle_explosion() {
+    kill();
 }
 
 void Tank::collide(Tank *tank) {

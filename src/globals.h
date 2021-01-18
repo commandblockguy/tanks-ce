@@ -16,7 +16,6 @@ typedef struct {
     uint8_t lives; //Number of remaining tanks. This includes the tank that is currently in use, so a value of 1 means that the game will end the next time the tank is hit.
     uint8_t total_kills; //Number of enemy tanks destroyed.
     uint8_t kills[NUM_TANK_TYPES];
-    bool player_alive;
     uint8_t num_tanks;
     bool alive_tanks[MAX_NUM_TANKS];
     Tank *player;

@@ -20,9 +20,6 @@ Mine::Mine(Tank *tank) {
     position_x = tank->position_x + (TANK_SIZE - MINE_SIZE) / 2;
     position_y = tank->position_y + (TANK_SIZE - MINE_SIZE) / 2;
 
-    velocity_x = 0;
-    velocity_y = 0;
-
     parent = tank;
 
     new (std::nothrow) MineDetector(this);
@@ -45,7 +42,7 @@ void Mine::process() {
         detonate();
     }
     if(countdown == 0) {
-        kill();
+        active = false;
     }
 
 //todo: range detection
@@ -91,6 +88,11 @@ void Mine::render(uint8_t layer) {
 }
 
 void Mine::detonate() {
+    if(countdown < EXPLOSION_ANIM) {
+        // Don't explode multiple times
+        return;
+    }
+
     countdown = EXPLOSION_ANIM - 1;
 
     // todo: The original game uses a radius, not a square
@@ -107,13 +109,17 @@ void Mine::detonate() {
     }
 
     // Kill any nearby physics objects
-    for(auto *it = objects.begin(); it < objects.end();) {
-        if(*it != this && center_distance_less_than(*it, MINE_EXPLOSION_RADIUS)) {
-            (**it).kill();
-        } else it++;
+    for(auto & obj : objects) {
+        if(obj != this && center_distance_less_than(obj, MINE_EXPLOSION_RADIUS)) {
+            obj->handle_explosion();
+        }
     }
 
     generate_bg_tilemap();
+}
+
+void Mine::handle_explosion() {
+    detonate();
 }
 
 void Mine::handle_collision(PhysicsBody *other) {

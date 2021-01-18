@@ -24,6 +24,7 @@ public:
     uint width;
     uint height;
     PhysicsBody *parent;
+    bool active;
 
     bool tile_collisions;
     // Whether or not to collide with holes
@@ -44,12 +45,13 @@ public:
     void tick();
 
     static void sort();
+    static void remove_inactive();
 
-    virtual void kill();
     virtual void process() = 0;
     virtual void render(uint8_t layer);
 
     virtual void handle_tile_collision(direction_t dir);
+    virtual void handle_explosion();
 
     // Polymorphic ping-pong (aka "visitor pattern," apparently)
     virtual void handle_collision(PhysicsBody *other) = 0;

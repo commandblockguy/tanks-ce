@@ -16,6 +16,11 @@ uint PhysicsBody::center_y() const {
 }
 
 PhysicsBody::PhysicsBody() {
+    active = true;
+    parent = nullptr;
+    velocity_x = 0;
+    velocity_y = 0;
+
     // todo: compiler bug triggers if this line is the only thing in here
     objects.push_back(this);
 
@@ -24,19 +29,7 @@ PhysicsBody::PhysicsBody() {
 }
 
 PhysicsBody::~PhysicsBody() {
-    // Remove from object list
-    for(auto *it = objects.begin(); it < objects.end();) {
-        // Inform any children that we no longer exist
-        if((**it).parent == this) (**it).parent = nullptr;
-        // Remove from objects list
-        if(*it == this) {
-            objects.erase(it);
-        } else it++;
-    }
-}
 
-void PhysicsBody::kill() {
-    delete this;
 }
 
 void PhysicsBody::sort() {
@@ -49,6 +42,18 @@ void PhysicsBody::sort() {
             objects[j + 1] = objects[j];
         }
         objects[j + 1] = x;
+    }
+}
+
+void PhysicsBody::remove_inactive() {
+    for(auto & obj : objects) {
+        if(!obj->parent->active) obj->parent = nullptr;
+    }
+    for(auto *it = objects.begin(); it < objects.end();) {
+        if(!(*it)->active) {
+            delete *it;
+            it = objects.erase(it);
+        } else it++;
     }
 }
 
@@ -171,4 +176,8 @@ void PhysicsBody::tick() {
 
 void PhysicsBody::handle_tile_collision(__attribute__((unused)) direction_t dir) {
 
+}
+
+void PhysicsBody::handle_explosion() {
+    // Do nothing, by default
 }

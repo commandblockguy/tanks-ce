@@ -41,6 +41,10 @@ public:
         return ((uint8_t) -((angle >> (INT_BITS - 8)) - 64)) >> 4;
     }
 
+    void kill();
+
+    void handle_explosion();
+
     void handle_collision(PhysicsBody *other);
     void collide(Tank *tank);
     void collide(Shell *shell);

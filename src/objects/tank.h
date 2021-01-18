@@ -86,6 +86,8 @@ public:
     static const uint8_t max_mines[];
     static const uint8_t velocities[];
 
+    void handle_explosion();
+
     void handle_collision(PhysicsBody *other);
     void collide(Tank *tank);
     void collide(Shell *shell);

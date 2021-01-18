@@ -43,6 +43,8 @@ public:
 
     void detonate();
 
+    void handle_explosion();
+
     void handle_collision(PhysicsBody *other);
     void collide(Tank *tank);
     void collide(Shell *shell);

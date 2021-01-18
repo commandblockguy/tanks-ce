@@ -35,7 +35,6 @@ Shell::Shell(Tank *tank) {
 
 Shell::~Shell() {
     if(parent) {
-        // todo: see if there's a way to do this without an ugly cast
         ((Tank*)parent)->num_shells--;
     }
 }
@@ -70,6 +69,10 @@ void Shell::update_direction() {
     direction = angle_to_shell_direction(angle);
 }
 
+void Shell::handle_explosion() {
+    kill();
+}
+
 void Shell::handle_collision(PhysicsBody *other) {
     other->collide(this);
 }
@@ -99,7 +102,6 @@ void Shell::handle_tile_collision(direction_t dir) {
         return;
     }
 
-    //shell_t is still alive
     if(dir & UP || dir & DOWN) {
         velocity_y *= -1;
         update_direction();
@@ -114,4 +116,8 @@ void Shell::handle_tile_collision(direction_t dir) {
 
 void Shell::collide(__attribute__((unused)) MineDetector *detector) {
     // don't do anything
+}
+
+void Shell::kill() {
+    active = false;
 }
