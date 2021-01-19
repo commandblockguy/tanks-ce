@@ -9,6 +9,8 @@ extern gfx_sprite_t *tank_turrets[NUM_TANK_TYPES][16];
 extern gfx_sprite_t *const enemy_bases_unconv[9];
 extern gfx_sprite_t *const enemy_turrets_unconv[9];
 
+extern gfx_sprite_t *tread_sprites[9];
+
 extern gfx_sprite_t *shell_sprites[16];
 
 extern gfx_sprite_t *mine_sprites[4];
@@ -22,6 +24,9 @@ extern const uint8_t en_base_x_offsets[16];
 extern const uint8_t en_base_y_offsets[16];
 extern const uint8_t en_turret_x_offsets[16];
 extern const uint8_t en_turret_y_offsets[16];
+
+extern const uint8_t tread_x_offsets[16];
+extern const uint8_t tread_y_offsets[16];
 
 extern const uint8_t shell_x_offsets[16];
 extern const uint8_t shell_y_offsets[16];

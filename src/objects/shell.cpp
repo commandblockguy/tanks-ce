@@ -50,7 +50,7 @@ void Shell::process() {
 }
 
 void Shell::render(uint8_t layer) {
-    if(layer != 1) return;
+    if(layer != 2) return;
     profiler_add(render_shells);
 
     uint8_t sprite = direction;

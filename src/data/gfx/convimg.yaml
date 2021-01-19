@@ -55,6 +55,7 @@ converts:
       - trimmed/pl_*.png
       - trimmed/shell_*.png
       - trimmed/mine_*.png
+      - trimmed/tread_*.png
       - bg_tank.png
       - fg_tank.png
       - explosion.png

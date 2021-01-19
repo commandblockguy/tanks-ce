@@ -28,7 +28,7 @@ endif
 # ----------------------------
 
 SHELL = bash
-IMAGE_NAMES = {{{pl,en}_{base,turret},shell}_{0..8},mine_{0..2}}
+IMAGE_NAMES = {{{pl,en}_{base,turret},shell,tread}_{0..8},mine_{0..2}}
 CONVIMG_INPUT = $(shell echo src/data/gfx/trimmed/$(IMAGE_NAMES).png) src/data/gfx/tileset.png src/data/gfx/bg_tank.png src/data/gfx/fg_tank.png
 CONVIMG_OUTPUT = $(shell echo src/data/gfx/$(IMAGE_NAMES).{c,h}) src/data/gfx/tileset.c src/data/gfx/tileset.h src/data/gfx/bg_tank.c src/data/gfx/bg_tank.h src/data/gfx/fg_tank.c src/data/gfx/fg_tank.h src/data/gfx/palette.c src/data/gfx/palette.h src/data/gfx/gfx.h src/data/gfx/enemy_palette.bin
 BLENDER_OUTPUT = $(shell echo src/data/gfx/rendered/$(IMAGE_NAMES).png)

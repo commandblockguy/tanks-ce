@@ -46,6 +46,8 @@ Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
     tread_rot = 0;
     shot_cooldown = 0;
     mine_cooldown = 0;
+    tread_distance = TREAD_DISTANCE;
+    draw_treads = false;
 
     if(id == 0) {
         game.player = this;
@@ -90,7 +92,24 @@ void Tank::process() {
 }
 
 void Tank::render(uint8_t layer) {
-    if(layer != 1) return;
+    if(layer == 0) {
+        tread_distance += abs(velocity_x) + abs(velocity_y);
+        if(draw_treads) {
+            gfx_TransparentSprite(tread_sprite, tread_pos.xmin, tread_pos.ymin);
+            redraw_tiles(&tread_pos, 0);
+            draw_treads = false;
+        }
+        if(tread_distance > TREAD_DISTANCE) {
+            uint8_t base_index = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;
+            get_sprite_footprint(&tread_pos, this, tread_sprites, tread_x_offsets, tread_y_offsets, base_index);
+            tread_distance -= TREAD_DISTANCE;
+            tread_sprite = tread_sprites[base_index];
+            gfx_TransparentSprite(tread_sprite, tread_pos.xmin, tread_pos.ymin);
+            redraw_tiles(&tread_pos, 0);
+            draw_treads = true;
+        }
+    }
+    if(layer != 2) return;
     profiler_add(render_tanks);
 
     uint8_t base_index = (((uint8_t) -((tread_rot >> (INT_BITS - 8)) - 64)) >> 3) & 0xF;

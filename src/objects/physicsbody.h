@@ -10,8 +10,6 @@
 #include "../fwd.h"
 #include "../physics/physics.h"
 
-#define MAX_OBJECTS 255
-
 class PhysicsBody {
 public:
     PhysicsBody();

@@ -4,6 +4,7 @@
 #include "../fwd.h"
 
 #include <cstdint>
+#include <graphx.h>
 
 #include "../ai/ai_state.h"
 #include "../physics/collision.h"
@@ -26,6 +27,8 @@ typedef uint8_t tank_type_t;
 
 #define SHOT_COOLDOWN 5
 #define MINE_COOLDOWN 10
+
+#define TREAD_DISTANCE (TILE_SIZE / 3)
 
 #define MAX_NUM_TANKS 16
 
@@ -65,8 +68,14 @@ public:
     uint8_t num_mines = 0;
     uint8_t shot_cooldown;
     uint8_t mine_cooldown;
+    uint tread_distance;
     ai_move_state_t ai_move;
     ai_fire_state_t ai_fire;
+
+    // Used to (somewhat lazily) draw stuff on the background across two frame buffers
+    bool draw_treads;
+    gfx_sprite_t *tread_sprite;
+    gfx_region_t tread_pos;
 
     // Kill this physics body, then destroy it
     void kill();

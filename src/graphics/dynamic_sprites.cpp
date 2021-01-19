@@ -22,6 +22,14 @@ gfx_UninitedSprite(pl_turret_13, pl_turret_3_width, pl_turret_3_height);
 gfx_UninitedSprite(pl_turret_14, pl_turret_2_width, pl_turret_2_height);
 gfx_UninitedSprite(pl_turret_15, pl_turret_1_width, pl_turret_1_height);
 
+gfx_UninitedSprite(tread_9, tread_7_width, tread_7_height);
+gfx_UninitedSprite(tread_10, tread_6_width, tread_6_height);
+gfx_UninitedSprite(tread_11, tread_5_width, tread_5_height);
+gfx_UninitedSprite(tread_12, tread_4_width, tread_4_height);
+gfx_UninitedSprite(tread_13, tread_3_width, tread_3_height);
+gfx_UninitedSprite(tread_14, tread_2_width, tread_2_height);
+gfx_UninitedSprite(tread_15, tread_1_width, tread_1_height);
+
 gfx_UninitedSprite(shell_9, shell_7_width, shell_7_height);
 gfx_UninitedSprite(shell_10, shell_6_width, shell_6_height);
 gfx_UninitedSprite(shell_11, shell_5_width, shell_5_height);
@@ -70,6 +78,25 @@ extern gfx_sprite_t * const tank_turrets[NUM_TANK_TYPES][16] = {
                 (gfx_sprite_t*)pl_turret_14_data,
                 (gfx_sprite_t*)pl_turret_15_data,
         }
+};
+
+extern gfx_sprite_t * const tread_sprites[16] = {
+        tread_0,
+        tread_1,
+        tread_2,
+        tread_3,
+        tread_4,
+        tread_5,
+        tread_6,
+        tread_7,
+        tread_8,
+        (gfx_sprite_t*)tread_9_data,
+        (gfx_sprite_t*)tread_10_data,
+        (gfx_sprite_t*)tread_11_data,
+        (gfx_sprite_t*)tread_12_data,
+        (gfx_sprite_t*)tread_13_data,
+        (gfx_sprite_t*)tread_14_data,
+        (gfx_sprite_t*)tread_15_data,
 };
 
 extern gfx_sprite_t * const shell_sprites[16] = {
@@ -248,6 +275,44 @@ extern const uint8_t en_turret_y_offsets[16] = {
         en_turret_3_offset_y,
         en_turret_2_offset_y,
         en_turret_1_offset_y,
+};
+
+extern const uint8_t tread_x_offsets[16] = {
+        tread_0_offset_x,
+        tread_1_offset_x,
+        tread_2_offset_x,
+        tread_3_offset_x,
+        tread_4_offset_x,
+        tread_5_offset_x,
+        tread_6_offset_x,
+        tread_7_offset_x,
+        tread_8_offset_x,
+        tank_sprite_total_width - tread_7_offset_x - tread_7_width,
+        tank_sprite_total_width - tread_6_offset_x - tread_6_width,
+        tank_sprite_total_width - tread_5_offset_x - tread_5_width,
+        tank_sprite_total_width - tread_4_offset_x - tread_4_width,
+        tank_sprite_total_width - tread_3_offset_x - tread_3_width,
+        tank_sprite_total_width - tread_2_offset_x - tread_2_width,
+        tank_sprite_total_width - tread_1_offset_x - tread_1_width,
+};
+
+extern const uint8_t tread_y_offsets[16] = {
+        tread_0_offset_y,
+        tread_1_offset_y,
+        tread_2_offset_y,
+        tread_3_offset_y,
+        tread_4_offset_y,
+        tread_5_offset_y,
+        tread_6_offset_y,
+        tread_7_offset_y,
+        tread_8_offset_y,
+        tread_7_offset_y,
+        tread_6_offset_y,
+        tread_5_offset_y,
+        tread_4_offset_y,
+        tread_3_offset_y,
+        tread_2_offset_y,
+        tread_1_offset_y,
 };
 
 extern const uint8_t shell_x_offsets[16] = {

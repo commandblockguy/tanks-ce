@@ -50,7 +50,7 @@ void Mine::process() {
 }
 
 void Mine::render(uint8_t layer) {
-    if(layer != 0) return;
+    if(layer != 1) return;
     profiler_add(render_mines);
 
     if(countdown > EXPLOSION_ANIM) {

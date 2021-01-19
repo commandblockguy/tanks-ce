@@ -9,7 +9,6 @@
 #include "gui.h"
 #include "../data/gfx/enemy_pal.h"
 #include "tiles.h"
-#include "repalettize.h"
 
 bool needs_redraw;
 
@@ -23,6 +22,7 @@ void init_graphics() {
     for(uint8_t i = 1; i < 8; i++) {
         gfx_FlipSpriteY(tank_bases[PLAYER][i], tank_bases[PLAYER][16 - i]);
         gfx_FlipSpriteY(tank_turrets[PLAYER][i], tank_turrets[PLAYER][16 - i]);
+        gfx_FlipSpriteY(tread_sprites[i], tread_sprites[16 - i]);
         gfx_FlipSpriteY(shell_sprites[i], shell_sprites[16 - i]);
     }
 }
@@ -71,11 +71,10 @@ void render() {
     // restrict drawing to only the play area, to prevent the banners from being overwritten
     gfx_SetClipRegion(SCREEN_X_CONST(0), SCREEN_Y_CONST(-TILE_SIZE), SCREEN_X_CONST(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y_CONST((LEVEL_SIZE_Y - 2) * TILE_SIZE));
-    for(auto *it: PhysicsBody::objects) {
-        it->render(0);
-    }
-    for(auto *it: PhysicsBody::objects) {
-        it->render(1);
+    for(uint8_t layer = 0; layer < 3; layer++) {
+        for(auto *it: PhysicsBody::objects) {
+            it->render(layer);
+        }
     }
     gfx_SetClipRegion(0, 0, LCD_WIDTH, LCD_HEIGHT);
     profiler_end(render_pbs);
