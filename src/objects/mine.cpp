@@ -1,19 +1,18 @@
 #include "mine.h"
 
-#include <new>
-
-#include "../globals.h"
-#include "../graphics/gui.h"
 #include "../graphics/graphics.h"
 #include "../graphics/dynamic_sprites.h"
 #include "../util/profiler.h"
 #include "../graphics/partial_redraw.h"
 #include "mine_detector.h"
 #include "../graphics/tiles.h"
+#include "../game.h"
 
-Mine::Mine(Tank *tank) {
-    width = MINE_SIZE;
-    height = MINE_SIZE;
+#include <new>
+
+Mine::Mine(Tank *tank):
+    PhysicsBody(MINE_SIZE, MINE_SIZE),
+    countdown(MINE_COUNTDOWN) {
     tile_collisions = false;
     respect_holes = false;
 
@@ -23,8 +22,6 @@ Mine::Mine(Tank *tank) {
     parent = tank;
 
     new (std::nothrow) MineDetector(this);
-
-    countdown = MINE_COUNTDOWN;
 }
 
 Mine::~Mine() {
@@ -103,7 +100,7 @@ void Mine::detonate() {
         for(uint8_t k = COORD_TO_Y_TILE(center_y() - MINE_EXPLOSION_RADIUS);
             k <= COORD_TO_Y_TILE(center_y() + MINE_EXPLOSION_RADIUS); k++) {
             if(k < 0 || k >= LEVEL_SIZE_Y) continue;
-            if(TILE_TYPE(tiles[k][j]) == DESTRUCTIBLE) tiles[k][j] |= DESTROYED;
+            if(TILE_TYPE(game.tiles[k][j]) == DESTRUCTIBLE) game.tiles[k][j] |= DESTROYED;
             needs_redraw = true;
         }
     }
@@ -126,18 +123,6 @@ void Mine::handle_collision(PhysicsBody *other) {
     other->collide(this);
 }
 
-void Mine::collide(__attribute__((unused)) Tank *tank) {
-    // don't do anything
-}
-
 void Mine::collide(Shell *shell) {
     shell->collide(this);
-}
-
-void Mine::collide(__attribute__((unused)) Mine *mine) {
-    // don't do anything
-}
-
-void Mine::collide(__attribute__((unused)) MineDetector *detector) {
-    // don't do anything
 }

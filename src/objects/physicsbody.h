@@ -12,17 +12,17 @@
 
 class PhysicsBody {
 public:
-    PhysicsBody();
+    PhysicsBody(uint width, uint height);
     virtual ~PhysicsBody();
 
     int position_x;
     int position_y;
-    int velocity_x;
-    int velocity_y;
-    uint width;
-    uint height;
-    PhysicsBody *parent;
-    bool active;
+    int velocity_x{0};
+    int velocity_y{0};
+    const uint width;
+    const uint height;
+    PhysicsBody *parent{nullptr};
+    bool active{true};
 
     bool tile_collisions;
     // Whether or not to collide with holes
@@ -38,11 +38,12 @@ public:
     bool is_point_inside(int x, int y) const;
     direction_t process_tile_collision();
     bool center_distance_less_than(PhysicsBody *other, uint dis) const;
-    bool collides_line(line_seg_t *seg) const;
+    bool collides_line(struct line_seg *seg) const;
 
     void tick();
 
     static void sort();
+    static void remove_all();
     static void remove_inactive();
 
     virtual void process() = 0;
@@ -53,10 +54,10 @@ public:
 
     // Polymorphic ping-pong (aka "visitor pattern," apparently)
     virtual void handle_collision(PhysicsBody *other) = 0;
-    virtual void collide(Tank *tank) = 0;
-    virtual void collide(Shell *shell) = 0;
-    virtual void collide(Mine *mine) = 0;
-    virtual void collide(MineDetector *detector) = 0;
+    virtual void collide([[maybe_unused]] Tank *tank);
+    virtual void collide([[maybe_unused]] Shell *shell);
+    virtual void collide([[maybe_unused]] Mine *mine);
+    virtual void collide([[maybe_unused]] MineDetector *detector);
 };
 
 #endif //TANKS_PHYSICSBODY_H

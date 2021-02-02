@@ -17,10 +17,11 @@
 
 #include "level.h"
 #include "graphics/graphics.h"
-#include "globals.h"
 #include "util/profiler.h"
-#include "graphics/gui.h"
 #include "game.h"
+#include "gui/error.h"
+#include "gui/kill_counts.h"
+#include "gui/transition.h"
 
 int main() {
     dbg_printf("\n\n[TANKS] Program started.\n");
@@ -52,23 +53,23 @@ int main() {
         ERROR("TANKSLPK not found");
     }
 
-    level_pack_t lvl_pack;
-    ti_Read(&lvl_pack, sizeof(level_pack_t), 1, appVar);
+    struct level_pack lvl_pack;
+    ti_Read(&lvl_pack, sizeof(struct level_pack), 1, appVar);
     dbg_printf("Found %u levels.\n", lvl_pack.num_levels);
 
     for(game.mission = 0; game.mission < lvl_pack.num_levels; game.mission++) {
         //Level loop
         const uint8_t *comp_tiles; //Compressed tile data
-        const serialized_tank_t *ser_tanks;
+        const struct serialized_tank *ser_tanks;
 
         dbg_printf("Loading level %u.\n", game.mission);
 
         //Read level from appvar
-        ti_Read(&game.level, sizeof(level_t), 1, appVar);
+        ti_Read(&game.level, sizeof(struct level), 1, appVar);
         comp_tiles = (const uint8_t *)ti_GetDataPtr(appVar);
         ti_Seek(game.level.compressed_tile_size, SEEK_CUR, appVar);
-        ser_tanks = (const serialized_tank_t *)ti_GetDataPtr(appVar);
-        ti_Seek(sizeof(serialized_tank_t) * game.level.num_tanks, SEEK_CUR, appVar);
+        ser_tanks = (const struct serialized_tank *)ti_GetDataPtr(appVar);
+        ti_Seek(sizeof(struct serialized_tank) * game.level.num_tanks, SEEK_CUR, appVar);
 
         if(game.level.num_tanks > MAX_NUM_TANKS) {
             dbg_printf("Too many tanks in level (%u)\n", game.level.num_tanks);
@@ -82,7 +83,7 @@ int main() {
                 break;
             case LOSE: {
                 display_kill_counts();
-                display_scores();
+                // todo: display high scores
                 goto exit;
             }
             case QUIT:
@@ -92,7 +93,6 @@ int main() {
             default: {
                 dbg_printf("Status: %u\n", status);
                 ERROR("Unknown game status");
-                goto exit;
             }
         }
 

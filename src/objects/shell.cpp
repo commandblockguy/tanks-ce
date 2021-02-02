@@ -6,13 +6,11 @@
 #include "../graphics/partial_redraw.h"
 #include "../graphics/tiles.h"
 
-Shell::Shell(Tank *tank) {
-    width = SHELL_SIZE;
-    height = SHELL_SIZE;
+Shell::Shell(Tank *tank):
+    PhysicsBody(SHELL_SIZE, SHELL_SIZE),
+    bounces(tank->max_bounces()) {
     tile_collisions = true;
     respect_holes = false;
-
-    bounces = Tank::max_bounces[tank->type];
 
     int vector_x = fast_cos(tank->barrel_rot);
     int vector_y = fast_sin(tank->barrel_rot);
@@ -112,10 +110,6 @@ void Shell::handle_tile_collision(direction_t dir) {
         update_direction();
         bounces--;
     }
-}
-
-void Shell::collide(__attribute__((unused)) MineDetector *detector) {
-    // don't do anything
 }
 
 void Shell::kill() {

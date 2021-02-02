@@ -5,11 +5,11 @@
 
 #include "../util/util.h"
 
-typedef struct {
+struct pdraw_sprite {
     uint x;
     uint8_t y;
     gfx_sprite_t *sprite;
-} pdraw_sprite_t;
+};
 
 // Store a rectangular region for redraw on the next relevant frame
 bool pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height);

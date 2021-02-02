@@ -15,12 +15,9 @@ uint PhysicsBody::center_y() const {
     return position_y + height / 2;
 }
 
-PhysicsBody::PhysicsBody() {
-    active = true;
-    parent = nullptr;
-    velocity_x = 0;
-    velocity_y = 0;
-
+PhysicsBody::PhysicsBody(uint width, uint height):
+    width(width),
+    height(height) {
     // todo: compiler bug triggers if this line is the only thing in here
     objects.push_back(this);
 
@@ -28,9 +25,7 @@ PhysicsBody::PhysicsBody() {
     dummy = this;
 }
 
-PhysicsBody::~PhysicsBody() {
-
-}
+PhysicsBody::~PhysicsBody() = default;
 
 void PhysicsBody::sort() {
     // Wikipedia Insertion Sort
@@ -45,11 +40,18 @@ void PhysicsBody::sort() {
     }
 }
 
+void PhysicsBody::remove_all() {
+    for(auto & obj : PhysicsBody::objects) {
+        obj->active = false;
+    }
+    PhysicsBody::remove_inactive();
+}
+
 void PhysicsBody::remove_inactive() {
     for(auto & obj : objects) {
         if(!obj->parent->active) obj->parent = nullptr;
     }
-    for(auto *it = objects.begin(); it < objects.end();) {
+    for(auto it = objects.begin(); it != objects.end();) {
         if(!(*it)->active) {
             delete *it;
             it = objects.erase(it);
@@ -129,8 +131,8 @@ bool PhysicsBody::center_distance_less_than(PhysicsBody *other, uint dis) const 
 }
 
 // todo: optimize
-bool PhysicsBody::collides_line(line_seg_t *ls) const {
-    line_seg_t border;
+bool PhysicsBody::collides_line(struct line_seg *ls) const {
+    struct line_seg border;
     //top
     border.x1 = position_x;
     border.x2 = position_x + width;
@@ -181,3 +183,8 @@ void PhysicsBody::handle_tile_collision(__attribute__((unused)) direction_t dir)
 void PhysicsBody::handle_explosion() {
     // Do nothing, by default
 }
+
+void PhysicsBody::collide([[maybe_unused]] Tank *tank) {}
+void PhysicsBody::collide([[maybe_unused]] Shell *shell) {}
+void PhysicsBody::collide([[maybe_unused]] Mine *mine) {}
+void PhysicsBody::collide([[maybe_unused]] MineDetector *detector) {}

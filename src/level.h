@@ -28,16 +28,16 @@ enum {
 #define TILE_HEIGHT(tile) ((tile) & 7)
 #define TILE_TYPE(tile) ((tile) & TYPE_MASK)
 
-typedef struct {
+struct level {
     uint8_t compressed_tile_size; //Compressed size of tile data
     uint8_t num_tanks; //Number of tanks in the level
-} level_t;
+};
 
-typedef struct {
+struct level_pack {
     char name[15];
     uint8_t num_levels;
     uint8_t scores[5];
-} level_pack_t;
+};
 
 void decompress_tiles(const void *comp_tiles);
 

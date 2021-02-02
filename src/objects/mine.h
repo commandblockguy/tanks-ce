@@ -46,10 +46,7 @@ public:
     void handle_explosion();
 
     void handle_collision(PhysicsBody *other);
-    void collide(Tank *tank);
     void collide(Shell *shell);
-    void collide(Mine *mine);
-    void collide(MineDetector *detector);
 };
 
 #endif //TANKS_MINE_H

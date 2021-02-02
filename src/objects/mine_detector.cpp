@@ -3,11 +3,9 @@
 #include "mine.h"
 #include "tank.h"
 
-MineDetector::MineDetector(Mine *mine) {
-    primed = false;
-
-    width = MINE_EXPLOSION_RADIUS * 2;
-    height = MINE_EXPLOSION_RADIUS * 2;
+MineDetector::MineDetector(Mine *mine):
+    PhysicsBody(MINE_EXPLOSION_RADIUS * 2, MINE_EXPLOSION_RADIUS * 2),
+    primed(false) {
     tile_collisions = false;
 
     position_x = mine->center_x() - MINE_EXPLOSION_RADIUS;
@@ -42,16 +40,4 @@ void MineDetector::collide(__attribute__((unused)) Tank *tank) {
         }
         active = false;
     }
-}
-
-void MineDetector::collide(__attribute__((unused)) Shell *shell) {
-    // don't do anything
-}
-
-void MineDetector::collide(__attribute__((unused)) Mine *mine) {
-    // don't do anything
-}
-
-void MineDetector::collide(__attribute__((unused)) MineDetector *detector) {
-    // don't do anything
 }

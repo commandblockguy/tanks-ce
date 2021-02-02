@@ -14,7 +14,7 @@ extern "C" {
 
 #if USE_PROFILER
 
-typedef union {
+union profiler_set {
     struct {
         unsigned int total;
         unsigned int graphics;
@@ -51,9 +51,9 @@ typedef union {
         unsigned int temp3;
     };
     unsigned int array[0];
-} profiler_set_t;
+};
 
-#define NUM_PROFILER_FIELDS (sizeof(profiler_set_t) / sizeof(unsigned int))
+#define NUM_PROFILER_FIELDS (sizeof(union profiler_set) / sizeof(unsigned int))
 
 #define profiler_start(name) current_profiler.name = (unsigned int)timer_2_Counter
 #define profiler_add(name) (current_profiler.name = (unsigned int)timer_2_Counter - current_profiler.name)
@@ -65,7 +65,7 @@ void profiler_tick(void);
 
 void profiler_print(void);
 
-extern profiler_set_t current_profiler;
+extern union profiler_set current_profiler;
 
 #else
 

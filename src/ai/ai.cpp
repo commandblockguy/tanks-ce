@@ -1,7 +1,7 @@
 #include "ai.h"
 
 #include "../util/profiler.h"
-#include "../globals.h"
+#include "../game.h"
 
 void ai_process_move(Tank *tank) {
     profiler_add(ai_move);
@@ -85,7 +85,7 @@ void move_random(Tank *tank) {
         }
     }
     tank->tread_rot += randInt(0, DEGREES_TO_ANGLE(6)) - DEGREES_TO_ANGLE(3);
-    tank->set_velocity(Tank::velocities[tank->type]);
+    tank->set_velocity(tank->velocity());
     profiler_end(ai_move_random);
 }
 
@@ -119,7 +119,7 @@ void aim_random(Tank *tank) {
 //todo: add some visualizations as I have absolutely no idea wtf is going on here
 //it worked well in my head, okay?
 void aim_reflect(Tank *tank) {
-    ai_fire_reflect_state_t *ai = &tank->ai_fire.reflect;
+    struct ai_fire_reflect_state *ai = &tank->ai_fire.reflect;
     if(!tank->can_shoot()) return;
     //Loop through all X values, then all Y values
     if(tank->ai_fire.reflect.scan_dir == AXIS_X) {
@@ -128,7 +128,7 @@ void aim_reflect(Tank *tank) {
             ai->scan_pos = 1;
             ai->scan_dir = AXIS_Y;
             point_at_player(tank, game.player);
-            if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
+            if(pointing_at_target(tank, game.player, tank->max_bounces(), false)) {
                 tank->fire_shell();
             }
             return; //I know this kinda skips a tick but whatever
@@ -140,7 +140,7 @@ void aim_reflect(Tank *tank) {
         if(left != (game.player->center_x() < rX)) return;
         //if the specified X line was a mirror, where would the target appear to be?
         //lineseg between it and the center of tank
-        line_seg_t line;
+        struct line_seg line;
         line.x1 = tank->center_x();
         line.y1 = tank->center_y();
         line.x2 = 2 * rX - game.player->position_x - game.player->width / 2;
@@ -149,7 +149,7 @@ void aim_reflect(Tank *tank) {
         int yInt = y_intercept(&line, rX);
         uint8_t xT = x - !left;
         uint8_t yT = COORD_TO_Y_TILE(yInt);
-        tile_t tile = tiles[yT][xT];
+        tile_t tile = game.tiles[yT][xT];
 #ifdef DBG_DRAW
         gfx_SetColor(COL_RED);
         drawLine(&line);
@@ -165,7 +165,7 @@ void aim_reflect(Tank *tank) {
             }
         //if so, check if pointing_at_target
         tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
-        if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
+        if(pointing_at_target(tank, game.player, tank->max_bounces(), false)) {
             //if so, fire
             tank->fire_shell();
         }
@@ -175,7 +175,7 @@ void aim_reflect(Tank *tank) {
             ai->scan_pos = 1;
             ai->scan_dir = AXIS_X;
             point_at_player(tank, game.player);
-            if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
+            if(pointing_at_target(tank, game.player, tank->max_bounces(), false)) {
                 tank->fire_shell();
             }
             return; //I know this kinda skips a tick but whatever
@@ -187,7 +187,7 @@ void aim_reflect(Tank *tank) {
         if(up != (game.player->center_y() < rY)) return;
         //if the specified X line was a mirror, where would the target appear to be?
         //lineseg between it and the center of tank
-        line_seg_t line;
+        struct line_seg line;
         line.x1 = tank->center_x();
         line.y1 = tank->center_y();
         line.x2 = game.player->center_x();
@@ -196,7 +196,7 @@ void aim_reflect(Tank *tank) {
         int xInt = x_intercept(&line, rY);
         uint8_t xT = COORD_TO_X_TILE(xInt);
         uint8_t yT = y - !up;
-        tile_t tile = tiles[yT][xT];
+        tile_t tile = game.tiles[yT][xT];
 #ifdef DBG_DRAW
         gfx_SetColor(COL_RED);
         drawLine(&line);
@@ -208,7 +208,7 @@ void aim_reflect(Tank *tank) {
             if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) return;
         //if so, check if pointing_at_target
         tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
-        if(pointing_at_target(tank, game.player, Tank::max_bounces[tank->type], false)) {
+        if(pointing_at_target(tank, game.player, tank->max_bounces(), false)) {
             //if so, fire
             tank->fire_shell();
         }
@@ -237,7 +237,7 @@ tile_t get_tile_at_offset(Tank *tank, angle_t angle_offset, int distance) {
     int8_t tile_y = COORD_TO_X_TILE(y);
     if(tile_x < 0 || tile_x >= LEVEL_SIZE_X) return 1;
     if(tile_y < 0 || tile_y >= LEVEL_SIZE_Y) return 1;
-    return tiles[COORD_TO_Y_TILE(y)][COORD_TO_X_TILE(x)];
+    return game.tiles[COORD_TO_Y_TILE(y)][COORD_TO_X_TILE(x)];
 }
 
 // todo: check tank's future position
@@ -247,7 +247,7 @@ bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, __
     angle_t angle = tank->barrel_rot;
     for(uint8_t bounces = 0; bounces <= max_bounces; bounces++) {
         bool reflectAxis;
-        line_seg_t line;
+        struct line_seg line;
         profiler_add(raycast);
         reflectAxis = raycast(posX, posY, angle, &line);
         profiler_end(raycast);

@@ -86,12 +86,8 @@ void init_graphics();
 
 void render(); //Render tilemap, tanks, and UI during the game loop
 
-void draw_line(line_seg_t *ls);
-
 void get_sprite_footprint(gfx_region_t *out, const PhysicsBody *phys, gfx_sprite_t **sprites, const uint8_t *offsets_x,
                           const uint8_t *offsets_y, uint8_t anim);
-
-void get_enemy_palette_map(uint8_t *out, tank_type_t type);
 
 extern bool needs_redraw; // set if the entire map should be redrawn
 

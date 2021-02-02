@@ -3,27 +3,26 @@
 #include <new>
 #include <debug.h>
 #include "objects/tank.h"
-#include "globals.h"
 #include "graphics/graphics.h"
-#include "graphics/gui.h"
 #include "input.h"
 #include "util/profiler.h"
 #include "graphics/tank_sprite.h"
+#include "gui/error.h"
+#include "gui/transition.h"
 
-bool start_mission(const serialized_tank_t *ser_tanks) {
+struct game game;
+
+bool start_mission(const struct serialized_tank *ser_tanks) {
     dbg_printf("starting mission\n");
 
-    for(auto & obj : PhysicsBody::objects) {
-        obj->active = false;
-    }
-    PhysicsBody::remove_inactive();
+    PhysicsBody::remove_all();
 
     game.num_tanks = 0;
 
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         if(!game.alive_tanks[i]) continue;
         //dbg_printf("tank created: %p\n", tank);
-        Tank *tank = new (std::nothrow) Tank(&ser_tanks[i], i);
+        Tank *tank = new(std::nothrow) Tank(&ser_tanks[i], i);
         if(!tank) {
             ERROR("Failed to allocate tank");
         }
@@ -31,8 +30,8 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
 
     for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
         for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
-            if(TILE_TYPE(tiles[y][x]) == DESTROYED)
-                tiles[y][x] = TILE_HEIGHT(tiles[y][x]) | DESTRUCTIBLE;
+            if(TILE_TYPE(game.tiles[y][x]) == DESTROYED)
+                game.tiles[y][x] = TILE_HEIGHT(game.tiles[y][x]) | DESTRUCTIBLE;
         }
     }
 
@@ -47,7 +46,7 @@ bool start_mission(const serialized_tank_t *ser_tanks) {
     return true;
 }
 
-uint8_t play_mission(const serialized_tank_t *ser_tanks) {
+uint8_t play_mission(const struct serialized_tank *ser_tanks) {
     start_mission(ser_tanks);
     while(true) {
         profiler_start(total);
@@ -64,7 +63,7 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
         profiler_start(pb_collision);
         process_collisions();
         profiler_end(pb_collision);
-        for(auto & object : PhysicsBody::objects) {
+        for(auto &object : PhysicsBody::objects) {
             object->tick();
         }
         PhysicsBody::remove_inactive();
@@ -98,10 +97,10 @@ uint8_t play_mission(const serialized_tank_t *ser_tanks) {
     }
 }
 
-uint8_t play_level(const void *comp_tiles, const serialized_tank_t *ser_tanks) {
+uint8_t play_level(const void *comp_tiles, const struct serialized_tank *ser_tanks) {
     decompress_tiles(comp_tiles);
 
-    for(uint8_t i = 0; i < game.level.num_tanks; i++){
+    for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         game.alive_tanks[i] = true;
     }
 

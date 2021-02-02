@@ -1,10 +1,10 @@
 #include <graphx.h>
 #include "tank_sprite.h"
 #include "dynamic_sprites.h"
-#include "gui.h"
 #include "graphics.h"
 #include "repalettize.h"
-#include "../globals.h"
+#include "../game.h"
+#include "../gui/error.h"
 
 #define MAX_SPRITES 30
 

@@ -1,14 +1,13 @@
 #include "graphics.h"
 
-#include <debug.h>
-
-#include "../globals.h"
 #include "../util/profiler.h"
 #include "partial_redraw.h"
 #include "dynamic_sprites.h"
-#include "gui.h"
 #include "../data/gfx/enemy_pal.h"
 #include "tiles.h"
+#include "../game.h"
+#include "../gui/banner.h"
+#include "../gui/aim_indicator.h"
 
 bool needs_redraw;
 
@@ -72,7 +71,7 @@ void render() {
     gfx_SetClipRegion(SCREEN_X_CONST(0), SCREEN_Y_CONST(-TILE_SIZE), SCREEN_X_CONST(LEVEL_SIZE_X * TILE_SIZE),
                       SCREEN_Y_CONST((LEVEL_SIZE_Y - 2) * TILE_SIZE));
     for(uint8_t layer = 0; layer < 3; layer++) {
-        for(auto *it: PhysicsBody::objects) {
+        for(auto it: PhysicsBody::objects) {
             it->render(layer);
         }
     }
@@ -86,8 +85,4 @@ void render() {
     profiler_end(swapdraw);
 
     profiler_end(graphics);
-}
-
-void draw_line(line_seg_t *ls) {
-    gfx_Line(SCREEN_X(ls->x1), SCREEN_Y(ls->y1), SCREEN_X(ls->x2), SCREEN_Y(ls->y2));
 }

@@ -5,41 +5,41 @@
 #include <cstdint>
 #include "../util/util.h"
 
-typedef struct {
+struct ai_fire_random_state {
     bool clockwise;
-} ai_fire_random_state_t;
+};
 
-typedef struct {} ai_fire_current_state_t;
+struct ai_fire_current_state {};
 
-typedef struct {
+struct ai_fire_reflect_state {
     uint8_t scan_dir; //0 = X, 1 = Y
     uint8_t scan_pos;
-} ai_fire_reflect_state_t;
+};
 
-typedef struct {} ai_fire_future_state_t;
+struct ai_fire_future_state {};
 
-typedef union {
-    ai_fire_random_state_t random;
-    ai_fire_current_state_t current;
-    ai_fire_reflect_state_t reflect;
-    ai_fire_future_state_t future;
-} ai_fire_state_t;
+union ai_fire_state {
+    struct ai_fire_random_state random;
+    struct ai_fire_current_state current;
+    struct ai_fire_reflect_state reflect;
+    struct ai_fire_future_state future;
+};
 
-typedef struct {
+struct ai_move_random_state {
     uint8_t cur_dir;
-} ai_move_random_state_t;
+};
 
-typedef struct {} ai_move_toward_state_t;
+struct ai_move_toward_state {};
 
-typedef struct {
+struct ai_move_away_state {
     uint target_x;
     uint target_y;
-} ai_move_away_state_t;
+};
 
-typedef union ai_move {
-    ai_move_random_state_t random;
-    ai_move_toward_state_t toward;
-    ai_move_away_state_t away;
-} ai_move_state_t;
+union ai_move_state {
+    struct ai_move_random_state random;
+    struct ai_move_toward_state toward;
+    struct ai_move_away_state away;
+};
 
 #endif //TANKS_AI_STATE_H

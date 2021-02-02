@@ -6,7 +6,7 @@
 #include "../util/profiler.h"
 
 bool pdraw_current_buffer = false;
-tinystl::vector<pdraw_sprite_t> pdraw_sprites[2];
+tinystl::vector<struct pdraw_sprite> pdraw_sprites[2];
 
 bool pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height) {
     profiler_add(store_bg);
@@ -48,7 +48,7 @@ void pdraw_TransparentSprite_NoClip(gfx_sprite_t *sprite, uint x, uint8_t y) {
 void pdraw_RemoveSprites() {
     pdraw_current_buffer = !pdraw_current_buffer;
     while(!pdraw_sprites[pdraw_current_buffer].empty()) {
-        pdraw_sprite_t & psprite = pdraw_sprites[pdraw_current_buffer].back();
+        struct pdraw_sprite & psprite = pdraw_sprites[pdraw_current_buffer].back();
         gfx_Sprite_NoClip(psprite.sprite, psprite.x, psprite.y);
         free(psprite.sprite);
         pdraw_sprites[pdraw_current_buffer].pop_back();
@@ -57,7 +57,7 @@ void pdraw_RemoveSprites() {
 
 void pdraw_FreeAll() {
     for(auto & pdraw_sprite : pdraw_sprites) {
-        for(pdraw_sprite_t & psprite : pdraw_sprite) {
+        for(struct pdraw_sprite & psprite : pdraw_sprite) {
             free(psprite.sprite);
         }
         pdraw_sprite.clear();

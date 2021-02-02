@@ -6,7 +6,6 @@
 #include <keypadc.h>
 
 #include "../ai/ai.h"
-#include "../globals.h"
 #include "../util/profiler.h"
 #include "../graphics/dynamic_sprites.h"
 #include "../graphics/graphics.h"
@@ -14,40 +13,34 @@
 #include "mine_detector.h"
 #include "../graphics/tiles.h"
 #include "../graphics/tank_sprite.h"
+#include "../game.h"
 
-const uint8_t Tank::max_shells[] = {5, 1, 1, 1, 1, 3, 2, 5, 5, 2};
-const uint8_t Tank::max_mines[] = {2, 0, 0, 0, 4, 0, 0, 2, 2, 2};
-const uint8_t Tank::max_bounces[] = {1, 1, 1, 0, 1, 1, 2, 1, 1, 0};
-const uint8_t Tank::velocities[] = {(uint8_t)TANK_SPEED_HIGH,
-                                    (uint8_t)0,
-                                    (uint8_t)TANK_SPEED_SLOW,
-                                    (uint8_t)TANK_SPEED_SLOW,
-                                    (uint8_t)TANK_SPEED_HIGH,
-                                    (uint8_t)TANK_SPEED_NORMAL,
-                                    (uint8_t)0,
-                                    (uint8_t)TANK_SPEED_HIGH,
-                                    (uint8_t)TANK_SPEED_NORMAL,
-                                    (uint8_t)TANK_SPEED_BLACK};
+const struct Tank::type_data Tank::types[NUM_TANK_TYPES] = {
+        {5, 2, 1, (uint8_t)TANK_SPEED_HIGH},
+        {1, 0, 1, (uint8_t)0},
+        {1, 0, 1, (uint8_t)TANK_SPEED_SLOW},
+        {1, 0, 0, (uint8_t)TANK_SPEED_SLOW},
+        {1, 4, 1, (uint8_t)TANK_SPEED_HIGH},
+        {3, 0, 1, (uint8_t)TANK_SPEED_NORMAL},
+        {2, 0, 2, (uint8_t)0},
+        {5, 2, 1, (uint8_t)TANK_SPEED_HIGH},
+        {5, 2, 1, (uint8_t)TANK_SPEED_NORMAL},
+        {2, 2, 0, (uint8_t)TANK_SPEED_BLACK},
+};
 
-Tank::Tank(const serialized_tank_t *ser_tank, uint8_t id) {
-    width = TANK_SIZE;
-    height = TANK_SIZE;
+Tank::Tank(const struct serialized_tank *ser_tank, uint8_t id):
+    PhysicsBody(TANK_SIZE, TANK_SIZE),
+    type(ser_tank->type),
+    id(id),
+    // add 1 because the level system uses coordinates from the first non-border block
+    start_x(ser_tank->start_x + 1),
+    start_y(ser_tank->start_y + 1) {
+
     tile_collisions = true;
     respect_holes = true;
 
-    type = ser_tank->type;
-    this->id = id;
-    // add 1 because the level system uses coordinates from the first non-border block
-    start_x = ser_tank->start_x + 1;
-    start_y = ser_tank->start_y + 1;
     position_x = TILE_TO_X_COORD(start_x);
     position_y = TILE_TO_Y_COORD(start_y);
-    barrel_rot = 0;
-    tread_rot = 0;
-    shot_cooldown = 0;
-    mine_cooldown = 0;
-    tread_distance = TREAD_DISTANCE;
-    draw_treads = false;
 
     if(id == 0) {
         game.player = this;
@@ -155,7 +148,7 @@ void Tank::fire_shell() {
 }
 
 bool Tank::can_shoot() const {
-    return !shot_cooldown && num_shells < max_shells[type];
+    return !shot_cooldown && num_shells < max_shells();
 }
 
 void Tank::lay_mine() {
@@ -171,7 +164,7 @@ void Tank::lay_mine() {
 }
 
 bool Tank::can_lay_mine() const {
-    return !mine_cooldown && num_mines < max_mines[type];
+    return !mine_cooldown && num_mines < max_mines();
 }
 
 void Tank::set_velocity(int velocity) {
@@ -240,10 +233,6 @@ void Tank::collide(Tank *tank) {
 
 void Tank::collide(Shell *shell) {
     shell->collide(this);
-}
-
-void Tank::collide(__attribute__((unused)) Mine *mine) {
-    // don't do anything
 }
 
 void Tank::collide(MineDetector *detector) {

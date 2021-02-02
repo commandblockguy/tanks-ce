@@ -3,12 +3,12 @@
 #include <limits.h>
 
 #include "../level.h"
-#include "../globals.h"
 #include "../util/profiler.h"
+#include "../game.h"
 
 //Check if a point is colliding with a tile
 bool check_tile_collision(uint x, uint y, bool respect_holes) {
-    tile_t tile = tiles[COORD_TO_Y_TILE(y)][COORD_TO_X_TILE(x)];
+    tile_t tile = game.tiles[COORD_TO_Y_TILE(y)][COORD_TO_X_TILE(x)];
     bool colliding = (TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) || (respect_holes && TILE_TYPE(tile) == HOLE);
     return colliding;
 }
@@ -17,7 +17,7 @@ bool check_tile_collision(uint x, uint y, bool respect_holes) {
 //credit: https://theshoemaker.de/2016/02/ray-casting-in-2d-grids/
 //though I've rewritten a lot of it
 //returns 0 if hits across x axis, non-zero if y axis
-uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
+uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result) {
     int dirX = fast_sec(angle);
     int dirY = fast_csc(angle);
 
@@ -27,7 +27,7 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
 
     int8_t tileX = COORD_TO_X_TILE(startX);
     int8_t tileY = COORD_TO_Y_TILE(startY);
-    tile_t *tile_ptr = &tiles[tileY][tileX];
+    tile_t *tile_ptr = &game.tiles[tileY][tileX];
     int t = 0;
 
     int dtX = (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) * dirX;
@@ -83,7 +83,7 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, line_seg_t *result) {
 }
 
 //todo: optimize?
-bool seg_collides_seg_(line_seg_t *l1, line_seg_t *l2, int *intercept_x, int *intercept_y) {
+bool seg_collides_seg_(struct line_seg *l1, struct line_seg *l2, int *intercept_x, int *intercept_y) {
     int p0_x = l1->x1, p1_x = l1->x2, p2_x = l2->x1, p3_x = l2->x2;
     int p0_y = l1->y1, p1_y = l1->y2, p2_y = l2->y1, p3_y = l2->y2;
     int s1_x = p1_x - p0_x;
@@ -107,30 +107,30 @@ bool seg_collides_seg_(line_seg_t *l1, line_seg_t *l2, int *intercept_x, int *in
     return false; // No collision
 }
 
-bool seg_collides_seg(line_seg_t *l1, line_seg_t *l2) {
+bool seg_collides_seg(struct line_seg *l1, struct line_seg *l2) {
     return seg_collides_seg(l1, l2, nullptr, nullptr);
 }
 
-bool seg_collides_seg(line_seg_t *l1, line_seg_t *l2, int *intercept_x, int *intercept_y) {
+bool seg_collides_seg(struct line_seg *l1, struct line_seg *l2, int *intercept_x, int *intercept_y) {
     profiler_add(seg_collision);
     bool x = seg_collides_seg_(l1, l2, intercept_x, intercept_y);
     profiler_end(seg_collision);
     return x;
 }
 
-int y_intercept(line_seg_t *line, int x_pos) {
+int y_intercept(struct line_seg *line, int x_pos) {
     return line->y1 + (line->y2 - line->y1) * (x_pos - line->x1) / (line->x2 - line->x1);
 }
 
-int x_intercept(line_seg_t *line, int y_pos) {
+int x_intercept(struct line_seg *line, int y_pos) {
     return line->x1 + (line->x2 - line->x1) * (y_pos - line->y1) / (line->y2 - line->y1);
 }
 
 void process_collisions() {
-    for(auto *it = PhysicsBody::objects.begin(); it < PhysicsBody::objects.end();) {
+    for(auto it = PhysicsBody::objects.begin(); it != PhysicsBody::objects.end();) {
         PhysicsBody *old_ptr = *it;
         int bottom_y = (**it).position_y + (int)(**it).height;
-        for(auto *other = it + 1; other < PhysicsBody::objects.end() && (**other).position_y <= bottom_y;) {
+        for(auto other = it + 1; other != PhysicsBody::objects.end() && (**other).position_y <= bottom_y;) {
             PhysicsBody *old_other_ptr = *other;
             if((**other).position_x < (**it).position_x + (int)(**it).width &&
                (**it).position_x < (**other).position_x + (int)(**other).width) {

@@ -1,9 +1,9 @@
-#include <keypadc.h>
-#include "input.h"
-#include "util/profiler.h"
+#include "game.h"
+#include "gui/pause.h"
 #include "objects/tank.h"
-#include "globals.h"
-#include "graphics/gui.h"
+#include "util/profiler.h"
+
+#include <keypadc.h>
 
 #define PLAYER_BARREL_ROTATION DEGREES_TO_ANGLE(5)
 //1/3 of a second for 90 degree rotation

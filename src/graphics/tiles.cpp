@@ -1,7 +1,7 @@
 #include "tiles.h"
 #include "graphics.h"
-#include "../globals.h"
 #include "../util/profiler.h"
+#include "../game.h"
 
 uint8_t tilemap[TILEMAP_HEIGHT][TILEMAP_WIDTH];
 // For each tilemap tile, the level Y of the block that it's representing
@@ -22,7 +22,7 @@ void generate_bg_tilemap() {
     for(int8_t y = 0; y < LEVEL_SIZE_Y; y++) {
         uint8_t x;
         for(x = 0; x < TILEMAP_WIDTH; x++) {
-            tile_t tile = tiles[y][x];
+            tile_t tile = game.tiles[y][x];
             uint8_t height = TILE_HEIGHT(tile);
             uint8_t type = TILE_TYPE(tile);
             bool tall = bottom_is_tall[height];

@@ -1,5 +1,5 @@
 #include <debug.h>
-#include "../graphics/gui.h"
+#include "../gui/error.h"
 
 #ifdef __EZ80__
 

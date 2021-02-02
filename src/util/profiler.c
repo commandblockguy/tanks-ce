@@ -5,9 +5,9 @@
 
 #if USE_PROFILER
 
-profiler_set_t current_profiler;
-profiler_set_t profiler_sum;
-profiler_set_t profiler_frames[256];
+union profiler_set current_profiler;
+union profiler_set profiler_sum;
+union profiler_set profiler_frames[256];
 
 uint8_t profiler_frame_index;
 
