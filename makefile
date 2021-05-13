@@ -38,11 +38,11 @@ clean_gfx:
 	rm -f src/data/gfx/*.{c,h,txt,bin}
 	rm -rf src/data/gfx/{rendered,trimmed,offsets}
 
-$(shell echo src/data/gfx/rendered/%_{0..8}.png) &: tank.blend
+$(shell echo src/data/gfx/rendered/%_{0..8}.png) : tank.blend
 	mkdir -p src/data/gfx/rendered
 	blender --background tank.blend --scene $* --engine BLENDER_EEVEE --render-output src/data/gfx/rendered/$*_#.png --render-anim
 
-src/data/gfx/trimmed/%.png src/data/gfx/offsets/%.h &: src/data/gfx/rendered/%.png
+src/data/gfx/trimmed/%.png src/data/gfx/offsets/%.h : src/data/gfx/rendered/%.png
 	mkdir -p src/data/gfx/{trimmed,offsets}
 	convert $< -background '#00ff00' -alpha remove -alpha off -fuzz 25% -trim -print "#define $*_offset_x %X\n#define $*_offset_y %Y\n" $@ | sed 's/\+//g' > src/data/gfx/offsets/$*.h
 
@@ -60,11 +60,11 @@ src/data/gfx/offsets/offsets.h: $(OFFSET_FILES)
 	echo \#endif >> src/data/gfx/offsets/offsets.h
 	echo \#endif >> src/data/gfx/offsets/offsets.h
 
-src/data/gfx/enemy_pal.c src/data/gfx/enemy_pal.h &: src/data/gfx/enemy_palette.bin src/data/gfx/generate_enemy_palette.py
+src/data/gfx/enemy_pal.c src/data/gfx/enemy_pal.h : src/data/gfx/enemy_palette.bin src/data/gfx/generate_enemy_palette.py
 	cd src/data/gfx/ && python3 generate_enemy_palette.py
 
 
-$(CONVIMG_OUTPUT) &: src/data/gfx/convimg.yaml $(CONVIMG_INPUT)
+$(CONVIMG_OUTPUT) : src/data/gfx/convimg.yaml $(CONVIMG_INPUT)
 	cd src/data/gfx && convimg
 
 all_gfx: $(CONVIMG_OUTPUT) src/data/gfx/offsets/offsets.h src/data/gfx/enemy_pal.c src/data/gfx/enemy_pal.h
