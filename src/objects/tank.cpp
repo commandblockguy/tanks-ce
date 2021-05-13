@@ -16,16 +16,16 @@
 #include "../game.h"
 
 const struct Tank::type_data Tank::types[NUM_TANK_TYPES] = {
-        {5, 2, 1, (uint8_t)TANK_SPEED_HIGH},
-        {1, 0, 1, (uint8_t)0},
-        {1, 0, 1, (uint8_t)TANK_SPEED_SLOW},
+        {5, 1, 2, (uint8_t)TANK_SPEED_HIGH},
+        {1, 1, 0, (uint8_t)0},
+        {1, 1, 0, (uint8_t)TANK_SPEED_SLOW},
         {1, 0, 0, (uint8_t)TANK_SPEED_SLOW},
-        {1, 4, 1, (uint8_t)TANK_SPEED_HIGH},
-        {3, 0, 1, (uint8_t)TANK_SPEED_NORMAL},
-        {2, 0, 2, (uint8_t)0},
-        {5, 2, 1, (uint8_t)TANK_SPEED_HIGH},
-        {5, 2, 1, (uint8_t)TANK_SPEED_NORMAL},
-        {2, 2, 0, (uint8_t)TANK_SPEED_BLACK},
+        {1, 1, 4, (uint8_t)TANK_SPEED_HIGH},
+        {3, 1, 0, (uint8_t)TANK_SPEED_NORMAL},
+        {2, 2, 0, (uint8_t)0},
+        {5, 1, 2, (uint8_t)TANK_SPEED_HIGH},
+        {5, 1, 2, (uint8_t)TANK_SPEED_NORMAL},
+        {2, 0, 2, (uint8_t)TANK_SPEED_BLACK},
 };
 
 Tank::Tank(const struct serialized_tank *ser_tank, uint8_t id):
