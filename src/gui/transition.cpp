@@ -219,10 +219,10 @@ void extra_life_screen(uint8_t old_lives) {
             break;
         }
 
-        if(timer_GetLow(1) > WAIT_TIME * 2 / 3) {
+        if(timer_Get(1) > WAIT_TIME * 2 / 3) {
             draw_tank_background(BANNER_START_Y, BANNER_START_Y + BANNER_HEIGHT + SHADOW_HEIGHT,
                                  old_lives, COL_LIVES_TXT, fg_tank_shadow);
-        } else if(timer_GetLow(1) > WAIT_TIME / 3) {
+        } else if(timer_Get(1) > WAIT_TIME / 3) {
             draw_tank_background(BANNER_START_Y, BANNER_START_Y + BANNER_HEIGHT + SHADOW_HEIGHT,
                                  old_lives + 1, COL_GOLD, fg_tank_shadow);
         } else {

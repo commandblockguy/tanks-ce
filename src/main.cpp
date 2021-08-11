@@ -26,7 +26,6 @@
 int main() {
     dbg_printf("\n\n[TANKS] Program started.\n");
 
-    ti_CloseAll();
     kb_SetMode(MODE_3_CONTINUOUS);
 
     srand(rtc_Time());
@@ -107,7 +106,7 @@ int main() {
     exit:
 
     gfx_End();
+    ti_Close(appVar);
 
-    ti_CloseAll();
     return 0;
 }

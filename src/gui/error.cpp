@@ -62,6 +62,5 @@
     asm("di");
 
     gfx_End();
-    ti_CloseAll();
     exit(1);
 }
