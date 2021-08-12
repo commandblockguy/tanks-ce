@@ -2,7 +2,7 @@
 #define TANKS_PHYSICSBODY_H
 
 #include <cstdint>
-#include <TINYSTL/vector.h>
+#include <ezSTL/vector.h>
 
 #include <stdbool.h>
 
@@ -29,7 +29,7 @@ public:
     bool respect_holes;
 
     // An array of physics objects, sorted from least to greatest Y position
-    static tinystl::vector<PhysicsBody*> objects;
+    static ezSTL::vector<PhysicsBody*> objects;
 
     uint center_x() const;
     uint center_y() const;

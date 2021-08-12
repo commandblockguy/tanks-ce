@@ -5,7 +5,7 @@
 #include "../graphics/partial_redraw.h"
 #include "../util/profiler.h"
 
-tinystl::vector<PhysicsBody*> PhysicsBody::objects;
+ezSTL::vector<PhysicsBody*> PhysicsBody::objects;
 
 uint PhysicsBody::center_x() const {
     return position_x + width / 2;

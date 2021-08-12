@@ -1,12 +1,12 @@
 #include "partial_redraw.h"
 
 #include <debug.h>
-#include <TINYSTL/vector.h>
+#include <ezSTL/vector.h>
 
 #include "../util/profiler.h"
 
 bool pdraw_current_buffer = false;
-tinystl::vector<struct pdraw_sprite> pdraw_sprites[2];
+ezSTL::vector<struct pdraw_sprite> pdraw_sprites[2];
 
 bool pdraw_RectRegion(uint x, uint8_t y, uint8_t width, uint8_t height) {
     profiler_add(store_bg);
