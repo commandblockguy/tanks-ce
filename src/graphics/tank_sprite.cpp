@@ -37,8 +37,8 @@ gfx_sprite_t *TankSpriteCache::get(tank_type_t type, uint8_t n) {
 
     if(n > 8) {
         const gfx_sprite_t *mirror = get(type, 16 - n);
-        if(!mirror) ERROR("Failed to allocate tank sprite");
         gfx_sprite_t *sprite = gfx_MallocSprite(mirror->width, mirror->height);
+        if(!sprite) ERROR("Failed to allocate tank sprite");
         gfx_FlipSpriteY(mirror, sprite);
         sprites[type][n] = sprite;
         allocated++;
