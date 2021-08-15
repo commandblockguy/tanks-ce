@@ -127,19 +127,13 @@ int x_intercept(struct line_seg *line, int y_pos) {
 }
 
 void process_collisions() {
-    for(auto it = PhysicsBody::objects.begin(); it != PhysicsBody::objects.end();) {
-        PhysicsBody *old_ptr = *it;
-        int bottom_y = (**it).position_y + (int)(**it).height;
-        for(auto other = it + 1; other != PhysicsBody::objects.end() && (**other).position_y <= bottom_y;) {
-            PhysicsBody *old_other_ptr = *other;
-            if((**other).position_x < (**it).position_x + (int)(**it).width &&
-               (**it).position_x < (**other).position_x + (int)(**other).width) {
-                (**it).handle_collision(*other);
-                if(old_ptr != *it) break;
+    for(auto & it : PhysicsBody::objects) {
+        int bottom_y = it->position_y + (int)it->height;
+        for(auto other = &it + 1; other != PhysicsBody::objects.end() && (**other).position_y <= bottom_y; other++) {
+            if((**other).position_x < it->position_x + (int)it->width &&
+               it->position_x < (**other).position_x + (int)(**other).width) {
+                it->handle_collision(*other);
             }
-            if(old_other_ptr == *other) other++;
         }
-        // Advance unless we deleted the current element
-        if(old_ptr == *it) it++;
     }
 }

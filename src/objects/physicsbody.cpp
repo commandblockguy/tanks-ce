@@ -72,7 +72,6 @@ bool PhysicsBody::is_point_inside(int x, int y) const {
            position_y + (int)height >= y;
 }
 
-// todo: remove duplicate code from this and collide_and_push
 direction_t PhysicsBody::process_tile_collision() {
     profiler_start(tile_collision);
 
