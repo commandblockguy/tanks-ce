@@ -22,7 +22,9 @@
 #include "gui/error.h"
 #include "gui/kill_counts.h"
 #include "gui/transition.h"
+#include "test/test.h"
 
+#ifndef TESTS_ENABLED
 int main() {
     dbg_printf("\n\n[TANKS] Program started.\n");
 
@@ -110,3 +112,5 @@ int main() {
 
     return 0;
 }
+
+#endif

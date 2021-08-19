@@ -14,7 +14,7 @@ void draw_aim_dots() {
     angle_t angle = game.player->barrel_rot;
 
     profiler_add(raycast);
-    raycast(game.player->center_x(), game.player->center_y(), angle, &line);
+    raycast(game.player->center_x(), game.player->center_y(), angle, game.tiles, &line);
     profiler_end(raycast);
 
     int dx = (line.x2 - line.x1) / (NUM_DOTS - 1);

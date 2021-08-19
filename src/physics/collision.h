@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "../util/trig.h"
+#include "../level.h"
 
 struct line_seg {
     int x1;
@@ -22,7 +23,7 @@ struct line_seg {
 
 void process_collisions();
 
-uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result);
+uint8_t raycast(uint startX, uint startY, angle_t angle, const tile_t tiles[][18], struct line_seg *result);
 
 bool check_tile_collision(uint x, uint y, bool respect_holes);
 

@@ -17,7 +17,7 @@ bool check_tile_collision(uint x, uint y, bool respect_holes) {
 //credit: https://theshoemaker.de/2016/02/ray-casting-in-2d-grids/
 //though I've rewritten a lot of it
 //returns 0 if hits across x axis, non-zero if y axis
-uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result) {
+uint8_t raycast(uint startX, uint startY, angle_t angle, const tile_t tiles[][18], struct line_seg *result) {
     int dirX = fast_sec(angle);
     int dirY = fast_csc(angle);
 
@@ -27,7 +27,7 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result
 
     int8_t tileX = COORD_TO_X_TILE(startX);
     int8_t tileY = COORD_TO_Y_TILE(startY);
-    tile_t *tile_ptr = &game.tiles[tileY][tileX];
+    const tile_t *tile_ptr = &tiles[tileY][tileX];
     int t = 0;
 
     int dtX = (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) * dirX;
@@ -35,8 +35,6 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result
 
     int dtXr = TILE_SIZE * dirSignX * dirX;
     int dtYr = TILE_SIZE * dirSignY * dirY;
-
-    //dbg_printf("%i,%i %u %i,%i %i,%i %i,%i %i,%i %i,%i\n", startX, startY, angle, dirX, dirY, dirSignX, dirSignY, tileX, tileY, dtX, dtY, dtXr, dtYr);
 
     if(dirX == INT_MAX || dirX == INT_MIN) {
         dtXr = INT_MAX;
@@ -76,7 +74,6 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, struct line_seg *result
         result->x2 = t / dirX + startX;
         result->y2 = t / dirY + startY;
     }
-    //dbg_printf("%i %i\n", result->x2, result->y2);
     if(angle == 0 || angle == 128) return AXIS_X; //return 0 if angle is horizontal - not sure why
     if(angle == 64 || angle == 192) return AXIS_Y;
     return dtX == dtXr ? AXIS_X : AXIS_Y; //if dtX == dtXr, last movement was X

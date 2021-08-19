@@ -249,7 +249,7 @@ bool pointing_at_target(Tank *tank, PhysicsBody *target, uint8_t max_bounces, __
         bool reflectAxis;
         struct line_seg line;
         profiler_add(raycast);
-        reflectAxis = raycast(posX, posY, angle, &line);
+        reflectAxis = raycast(posX, posY, angle, game.tiles, &line);
         profiler_end(raycast);
 #ifdef DBG_DRAW
         gfx_SetColor(COL_LIVES_TXT);
