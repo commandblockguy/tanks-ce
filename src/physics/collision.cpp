@@ -21,20 +21,43 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, const tile_t tiles[][18
     int dirX = fast_sec(angle);
     int dirY = fast_csc(angle);
 
-    int8_t dirSignX = dirX >= 0 ? 1 : -1;
-    int8_t dirSignY = dirY >= 0 ? 1 : -1;
-    int8_t row_offset = dirY >= 0 ? LEVEL_SIZE_X : -LEVEL_SIZE_X;
+    int8_t dirSignX;
+    int8_t row_offset;
 
     int8_t tileX = COORD_TO_X_TILE(startX);
     int8_t tileY = COORD_TO_Y_TILE(startY);
     const tile_t *tile_ptr = &tiles[tileY][tileX];
     int t = 0;
 
-    int dtX = (TILE_TO_X_COORD(tileX + (dirX >= 0)) - startX) * dirX;
-    int dtY = (TILE_TO_Y_COORD(tileY + (dirY >= 0)) - startY) * dirY;
+    int dtX;
+    int dtY;
 
-    int dtXr = TILE_SIZE * dirSignX * dirX;
-    int dtYr = TILE_SIZE * dirSignY * dirY;
+    int dtXr;
+    int dtYr;
+
+    if(dirX >= 0) {
+        dirSignX = 1;
+        tileX = COORD_TO_X_TILE(startX);
+        dtX = (TILE_TO_X_COORD(tileX + 1) - startX) * dirX;
+        dtXr = TILE_SIZE * dirX;
+    } else {
+        dirSignX = -1;
+        tileX = COORD_TO_X_TILE(startX);
+        dtX = (TILE_TO_X_COORD(tileX) - startX) * dirX;
+        dtXr = -TILE_SIZE * dirX;
+    }
+
+    if(dirY >= 0) {
+        row_offset = LEVEL_SIZE_X;
+        tileY = COORD_TO_Y_TILE(startY);
+        dtY = (TILE_TO_Y_COORD(tileY + 1) - startY) * dirY;
+        dtYr = TILE_SIZE * dirY;
+    } else {
+        row_offset = -LEVEL_SIZE_X;
+        tileY = COORD_TO_Y_TILE(startY);
+        dtY = (TILE_TO_Y_COORD(tileY) - startY) * dirY;
+        dtYr = -TILE_SIZE * dirY;
+    }
 
     if(dirX == INT_MAX || dirX == INT_MIN) {
         dtXr = INT_MAX;
