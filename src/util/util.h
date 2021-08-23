@@ -58,6 +58,20 @@ inline uint24_t div256_24(uint24_t num) {
     return result;
 }
 
+inline uint24_t div256_i24(uint24_t num) {
+    int24_t result;
+    uint8_t buf[4];
+    asm("ld\t(%2),hl\n"
+        "\tadd\thl,hl\n"
+        "\tsbc\ta,a\n"
+        "\tld\t(%2 + 3),a\n"
+        "\tld\thl,(%2 + 1)"
+        : "+l" (result)
+        : "l" (num), "iyl" (buf)
+        : "a");
+    return result;
+}
+
 inline uint min(uint a, uint b) { return (a > b) ? b : a; }
 
 inline uint max(uint a, uint b) { return (a > b) ? a : b; }

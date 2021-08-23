@@ -73,7 +73,7 @@ bool run_test(bool func(), const char *name) {
 
 int main() {
     gen_lookups();
-    RUN_TEST(raycast);
+    RUN_TEST(raycast); // 799.037903 ms
     return 0;
 }
 #endif

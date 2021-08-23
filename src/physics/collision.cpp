@@ -94,8 +94,8 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, const tile_t tiles[][18
     if(result != nullptr) {
         result->x1 = startX;
         result->y1 = startY;
-        result->x2 = t / dirX + startX;
-        result->y2 = t / dirY + startY;
+        result->x2 = div256_i24(div256_i24(t) * fast_cos(angle)) + startX;
+        result->y2 = div256_i24(div256_i24(t) * fast_sin(angle)) + startY;
     }
     if(angle == 0 || angle == 128) return AXIS_X; //return 0 if angle is horizontal - not sure why
     if(angle == 64 || angle == 192) return AXIS_Y;
