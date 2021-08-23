@@ -100,7 +100,7 @@ void Mine::detonate() {
         for(uint8_t k = COORD_TO_Y_TILE(center_y() - MINE_EXPLOSION_RADIUS);
             k <= COORD_TO_Y_TILE(center_y() + MINE_EXPLOSION_RADIUS); k++) {
             if(k < 0 || k >= LEVEL_SIZE_Y) continue;
-            if(TILE_TYPE(game.tiles[k][j]) == DESTRUCTIBLE) game.tiles[k][j] |= DESTROYED;
+            if(TILE_TYPE(game.tiles[k][j]) == DESTRUCTIBLE) game.tiles[k][j] = 0;
             needs_redraw = true;
         }
     }

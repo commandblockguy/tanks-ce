@@ -159,7 +159,7 @@ void aim_reflect(Tank *tank) {
 #endif
 
         if(xT != 0 && xT < LEVEL_SIZE_X && yT != 0 && yT < LEVEL_SIZE_Y)
-            if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) {
+            if(!TILE_HEIGHT(tile)) {
                 //dbg_printf("No tile at intersect point (%u, %u) (is %X)\n", xT, yT, tile);
                 return;
             }
@@ -205,7 +205,7 @@ void aim_reflect(Tank *tank) {
         gfx_VertLine(xInt, 0, LCD_HEIGHT);
 #endif
         if(xT != 0 && xT < LEVEL_SIZE_X && yT != 0 && yT < LEVEL_SIZE_Y)
-            if(!TILE_HEIGHT(tile) || TILE_TYPE(tile) == DESTROYED) return;
+            if(!TILE_HEIGHT(tile)) return;
         //if so, check if pointing_at_target
         tank->barrel_rot = fast_atan2(line.y2 - line.y1, line.x2 - line.x1);
         if(pointing_at_target(tank, game.player, tank->max_bounces(), false)) {

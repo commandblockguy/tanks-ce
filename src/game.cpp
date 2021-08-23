@@ -12,7 +12,7 @@
 
 struct game game;
 
-bool start_mission(const struct serialized_tank *ser_tanks) {
+bool start_mission(const void *comp_tiles, const struct serialized_tank *ser_tanks) {
     dbg_printf("starting mission\n");
 
     PhysicsBody::remove_all();
@@ -28,12 +28,7 @@ bool start_mission(const struct serialized_tank *ser_tanks) {
         }
     }
 
-    for(uint8_t x = 1; x < LEVEL_SIZE_X - 1; x++) {
-        for(uint8_t y = 1; y < LEVEL_SIZE_Y - 1; y++) {
-            if(TILE_TYPE(game.tiles[y][x]) == DESTROYED)
-                game.tiles[y][x] = TILE_HEIGHT(game.tiles[y][x]) | DESTRUCTIBLE;
-        }
-    }
+    decompress_tiles(comp_tiles);
 
     game.tick = 0;
 
@@ -46,8 +41,8 @@ bool start_mission(const struct serialized_tank *ser_tanks) {
     return true;
 }
 
-uint8_t play_mission(const struct serialized_tank *ser_tanks) {
-    start_mission(ser_tanks);
+uint8_t play_mission(const void *comp_tiles, const struct serialized_tank *ser_tanks) {
+    start_mission(comp_tiles, ser_tanks);
     while(true) {
         profiler_start(total);
 
@@ -98,14 +93,12 @@ uint8_t play_mission(const struct serialized_tank *ser_tanks) {
 }
 
 uint8_t play_level(const void *comp_tiles, const struct serialized_tank *ser_tanks) {
-    decompress_tiles(comp_tiles);
-
     for(uint8_t i = 0; i < game.level.num_tanks; i++) {
         game.alive_tanks[i] = true;
     }
 
     uint8_t status;
-    do status = play_mission(ser_tanks);
+    do status = play_mission(comp_tiles, ser_tanks);
     while(status == RETRY);
 
     return status;

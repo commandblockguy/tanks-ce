@@ -23,8 +23,8 @@ struct game {
 
 extern struct game game;
 
-bool start_mission(const struct serialized_tank *ser_tanks); //Start a mission and reset various tank things.
+bool start_mission(const void *comp_tiles, const struct serialized_tank *ser_tanks); //Start a mission and reset various tank things.
 uint8_t play_level(const void *comp_tiles, const struct serialized_tank *ser_tanks);
-uint8_t play_mission(const struct serialized_tank *ser_tanks);
+uint8_t play_mission(const void *comp_tiles, const struct serialized_tank *ser_tanks);
 
 #endif //TANKS_GAME_H

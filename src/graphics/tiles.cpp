@@ -32,10 +32,6 @@ void generate_bg_tilemap() {
             switch(type) {
                 default:
                     break;
-                case DESTROYED:
-                    tilemap[tm_y][x] = TS_NONE;
-                    tilemap[tm_y + 1][x] = TS_NONE;
-                    break;
                 case HOLE:
                     tilemap[tm_y][x] = TS_HOLE_TOP;
                     tilemap[tm_y + 1][x] = TS_HOLE_BOT;

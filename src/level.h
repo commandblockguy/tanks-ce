@@ -19,7 +19,6 @@ enum {
     BLOCK = 0 << 3, //Block that can be neither shot nor moved through
     DESTRUCTIBLE = 1 << 3, //Blocks that can be exploded with mines
     HOLE = 2 << 3, //Hole that can be shot over but not moved through
-    DESTROYED = 3 << 3, //DESTRUCTIBLE blocks that have been removed using mines
     TYPE_MASK = 3 << 3
 };
 

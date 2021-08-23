@@ -9,7 +9,7 @@
 //Check if a point is colliding with a tile
 bool check_tile_collision(uint x, uint y, bool respect_holes) {
     tile_t tile = game.tiles[COORD_TO_Y_TILE(y)][COORD_TO_X_TILE(x)];
-    bool colliding = (TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) || (respect_holes && TILE_TYPE(tile) == HOLE);
+    bool colliding = (TILE_HEIGHT(tile)) || (respect_holes && TILE_TYPE(tile) == HOLE);
     return colliding;
 }
 
@@ -49,7 +49,7 @@ uint8_t raycast(uint startX, uint startY, angle_t angle, const tile_t tiles[][18
     while(true) {
         tile_t tile = *tile_ptr;
 
-        if(TILE_HEIGHT(tile) && TILE_TYPE(tile) != DESTROYED) {
+        if(TILE_HEIGHT(tile)) {
             break;
         }
 
