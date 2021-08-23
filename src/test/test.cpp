@@ -8,6 +8,10 @@
 
 #define RUN_TEST(name) if(!run_test(test_##name, #name)) return 1
 
+void test_print_line(const struct line_seg *line) {
+    dbg_printf("(%i, %i), (%i, %i)\n", line->x1, line->y1, line->x2, line->y2);
+}
+
 bool test_raycast() {
     const static tile_t tiles[LEVEL_SIZE_Y][LEVEL_SIZE_X] = {
             {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
@@ -37,8 +41,18 @@ bool test_raycast() {
         timer_Enable(1, TIMER_CPU, TIMER_NOINT, TIMER_UP);
         bool axis = raycast(TILE_TO_X_COORD(7), TILE_TO_X_COORD(7), angle << 16, tiles, &line);
         timer_Disable(1);
-        if(axis != expected_axes[angle] || memcmp(&expected_lines[angle], &line, sizeof line) != 0) {
+        const struct line_seg *expected_line = &expected_lines[angle];
+        bool lines_match = line.x1 == expected_line->x1 &&
+                line.y1 == expected_line->y1 &&
+                abs(line.x2 - expected_line->x2) < 16 &&
+                abs(line.y2 - expected_line->y2) < 16;
+        if(axis != expected_axes[angle] || !lines_match) {
             dbg_printf("Failed for angle %x\n", angle << 16);
+            dbg_printf("Expected axis %u, actual %u\n", expected_axes[angle], axis);
+            dbg_printf("Expected ");
+            test_print_line(expected_line);
+            dbg_printf("Actual   ");
+            test_print_line(&line);
             return false;
         }
     }
