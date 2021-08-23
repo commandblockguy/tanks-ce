@@ -60,6 +60,7 @@ bool test_raycast() {
 }
 
 bool run_test(bool func(), const char *name) {
+    timer_Disable(1);
     timer_Set(1, 0);
     if(func()) {
         dbg_printf("Test `%s` passed, total %f ms\n", name, timer_Get(1) / 8388.608);
