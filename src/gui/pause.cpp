@@ -3,7 +3,6 @@
 #include "../graphics/graphics.h"
 #include <graphx.h>
 #include <keypadc.h>
-#include <tice.h>
 
 void rounded_rectangle(uint24_t x, uint8_t y, uint24_t width, uint8_t height, uint8_t radius) {
     gfx_FillCircle_NoClip(x + radius + 1, y + radius + 1, radius);

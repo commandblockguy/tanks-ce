@@ -2,6 +2,7 @@
 #include "game.h"
 
 #include <compression.h>
+#include <cstring>
 
 void decompress_tiles(const void *comp_tiles) {
     //Decompress tile data

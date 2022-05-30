@@ -1,0 +1,3 @@
+[submodule "ezSTL"]
+	path = ezSTL
+	url = https://github.com/cjc12/ezSTL.git

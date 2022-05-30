@@ -5,7 +5,7 @@
 #include "../graphics/graphics.h"
 #include <graphx.h>
 #include <keypadc.h>
-#include <tice.h>
+#include <sys/timers.h>
 
 #define MISSION_START_TIME 3000
 #define MISSION_NUMBER_TEXT 3

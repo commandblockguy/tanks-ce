@@ -1,5 +1,7 @@
 #include "ai.h"
 
+#include <sys/util.h>
+
 #include "../util/profiler.h"
 #include "../game.h"
 

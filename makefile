@@ -11,19 +11,13 @@ OUTPUT_MAP ?= YES
 COMMIT = \"$(shell git rev-parse --short HEAD || echo non-git)$(shell git diff --quiet || echo \*)\"
 
 CFLAGS ?= -Wall -Wextra -O3 -DCOMMIT=$(COMMIT)
-CXXFLAGS ?= -Wall -Wextra -O3 -DCOMMIT=$(COMMIT)
+CXXFLAGS ?= -Wall -Wextra -O3 -DCOMMIT=$(COMMIT) -IezSTL/include
+
+EXTRA_USERHEADERS = ezSTL/include/*.h
 
 # ----------------------------
 
-ifndef CEDEV
-$(error CEDEV environment path variable is not set)
-endif
-
-include $(CEDEV)/meta/makefile.mk
-
-ifdef CEMSCRIPTEN
-include $(CEMSCRIPTEN)/makefile.mk
-endif
+include $(shell cedev-config --makefile)
 
 # ----------------------------
 

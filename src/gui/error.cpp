@@ -1,10 +1,9 @@
 #include "error.h"
 
-#include <debug.h>
-#include <fileioc.h>
 #include <graphx.h>
 #include <keypadc.h>
-#include <tice.h>
+#include <sys/lcd.h>
+#include <sys/util.h>
 
 #ifndef COMMIT
 #define COMMIT "non-git"

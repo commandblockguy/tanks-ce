@@ -9,11 +9,11 @@
 #include <cstdint>
 
 #include <debug.h>
-#include <graphx.h>
 #include <fileioc.h>
-
-#include <string.h>
+#include <graphx.h>
 #include <keypadc.h>
+#include <string.h>
+#include <sys/rtc.h>
 
 #include "level.h"
 #include "graphics/graphics.h"

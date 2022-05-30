@@ -1,6 +1,4 @@
 #include "../game.h"
-#include <tice.h>
-#include <keypadc.h>
 #include <graphx.h>
 #include "banner.h"
 #include "../graphics/graphics.h"

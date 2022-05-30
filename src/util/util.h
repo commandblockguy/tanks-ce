@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <cstddef>
 #include <cstdint>
-#include <tice.h>
 
 #ifndef H_UTIL
 #define H_UTIL

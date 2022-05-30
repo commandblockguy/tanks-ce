@@ -4,12 +4,6 @@
 #include <stdbool.h>
 #include <cstddef>
 #include <cstdint>
-#include <tice.h>
-
-#include <math.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <string.h>
 
 typedef uint8_t tile_t;
 //Bits 2-0: Block height in half-blocks, skipping height 0.5

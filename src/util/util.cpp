@@ -1,9 +1,7 @@
 #include "util.h"
+#include <sys/timers.h>
+#include "physics/physics.h"
 
-#include <math.h>
-
-#include <limits.h>
-#include "../graphics/graphics.h"
 
 void init_timer() {
     timer_Disable(1);

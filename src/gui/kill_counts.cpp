@@ -1,12 +1,13 @@
 #include "kill_counts.h"
 
+#include <graphx.h>
+#include <keypadc.h>
+#include <sys/timers.h>
+
 #include "../game.h"
 #include "../graphics/repalettize.h"
 #include "../graphics/partial_redraw.h"
 #include "../graphics/graphics.h"
-#include <graphx.h>
-#include <keypadc.h>
-#include <tice.h>
 
 // todo: improve
 void display_kill_counts() {

@@ -1,7 +1,7 @@
 #include "partial_redraw.h"
 
 #include <debug.h>
-#include <ezSTL/vector.h>
+#include <vector.h>
 
 #include "../util/profiler.h"
 

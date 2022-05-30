@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <tice.h>
 
 #ifndef NDEBUG
 #define USE_PROFILER 1

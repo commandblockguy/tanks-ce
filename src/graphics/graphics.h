@@ -4,12 +4,8 @@
 #include <stdbool.h>
 #include <cstddef>
 #include <cstdint>
-#include <tice.h>
 
-#include <math.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <string.h>
+#include <sys/lcd.h>
 
 #include <graphx.h>
 

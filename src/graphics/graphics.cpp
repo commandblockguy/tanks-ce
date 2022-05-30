@@ -1,5 +1,7 @@
 #include "graphics.h"
 
+#include <sys/lcd.h>
+
 #include "../util/profiler.h"
 #include "partial_redraw.h"
 #include "dynamic_sprites.h"
