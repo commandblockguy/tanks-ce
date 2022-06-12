@@ -5,8 +5,7 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <sys/timers.h>
+#include <time.h>
 
 #ifndef NDEBUG
 #define USE_PROFILER 1
@@ -14,50 +13,51 @@ extern "C" {
 
 #if USE_PROFILER
 
+#define PROFILER_ENTRIES(f) \
+    f(total, 0) \
+    f(  graphics, 1) \
+    f(    gfx_wait, 2) \
+    f(    tilemap, 2) \
+    f(    render_pbs, 2) \
+    f(      render_tanks, 3) \
+    f(      render_shells, 3) \
+    f(      render_mines, 3) \
+    f(    sprite_footprint, 2) \
+    f(    redraw_tile, 2) \
+    f(    aim_indicator, 2) \
+    f(    swapdraw, 2) \
+    f(    undraw, 2) \
+    f(    store_bg, 2) \
+    f(  physics, 1) \
+    f(    ai, 2) \
+    f(      ai_move, 3) \
+    f(        ai_move_random, 4) \
+    f(      ai_aim, 3) \
+    f(        ai_aim_random, 4) \
+    f(        ai_aim_reflect, 4) \
+    f(        raycast, 4) \
+    f(        seg_collision, 4) \
+    f(    tile_collision, 2) \
+    f(    pb_collision, 2) \
+    f(    tanks, 2) \
+    f(    shells, 2) \
+    f(    mines, 2) \
+    f(  input, 1) \
+    f(frame_wait, 0) \
+
+#define PROFILER_STRUCT_MEMBER(name, depth) unsigned int name;
 union profiler_set {
     struct {
-        unsigned int total;
-        unsigned int graphics;
-        unsigned int gfx_wait;
-        unsigned int tilemap;
-        unsigned int render_tanks;
-        unsigned int render_pbs;
-        unsigned int render_shells;
-        unsigned int render_mines;
-        unsigned int sprite_footprint;
-        unsigned int redraw_tile;
-        unsigned int aim_indicator;
-        unsigned int swapdraw;
-        unsigned int store_bg;
-        unsigned int undraw;
-        unsigned int physics;
-        unsigned int ai;
-        unsigned int ai_move;
-        unsigned int ai_move_random;
-        unsigned int ai_aim;
-        unsigned int ai_aim_random;
-        unsigned int ai_aim_reflect;
-        unsigned int raycast;
-        unsigned int seg_collision;
-        unsigned int tile_collision;
-        unsigned int pb_collision;
-        unsigned int tanks;
-        unsigned int shells;
-        unsigned int mines;
-        unsigned int input;
-        unsigned int frame_wait;
-        unsigned int temp;
-        unsigned int temp2;
-        unsigned int temp3;
+        PROFILER_ENTRIES(PROFILER_STRUCT_MEMBER)
     };
-    unsigned int array[0];
+    clock_t array[0];
 };
 
-#define NUM_PROFILER_FIELDS (sizeof(union profiler_set) / sizeof(unsigned int))
+#define NUM_PROFILER_FIELDS (sizeof(union profiler_set) / sizeof(clock_t))
 
-#define profiler_start(name) current_profiler.name = (unsigned int)timer_2_Counter
-#define profiler_add(name) (current_profiler.name = (unsigned int)timer_2_Counter - current_profiler.name)
-#define profiler_end(name) (current_profiler.name = (unsigned int)timer_2_Counter - current_profiler.name)
+#define profiler_start(name) current_profiler.name = clock()
+#define profiler_add(name) (current_profiler.name = clock() - current_profiler.name)
+#define profiler_end(name) (current_profiler.name = clock() - current_profiler.name)
 
 void profiler_init(void);
 
