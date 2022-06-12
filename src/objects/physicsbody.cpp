@@ -18,11 +18,7 @@ uint PhysicsBody::center_y() const {
 PhysicsBody::PhysicsBody(uint width, uint height):
     width(width),
     height(height) {
-    // todo: compiler bug triggers if this line is the only thing in here
     objects.push_back(this);
-
-    static PhysicsBody *dummy;
-    dummy = this;
 }
 
 PhysicsBody::~PhysicsBody() = default;

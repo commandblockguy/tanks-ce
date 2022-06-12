@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <sys/timers.h>
 
 #ifndef NDEBUG
 #define USE_PROFILER 1

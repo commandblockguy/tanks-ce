@@ -4,6 +4,7 @@
 #include <keypadc.h>
 #include <sys/lcd.h>
 #include <sys/util.h>
+#include <debug.h>
 
 #ifndef COMMIT
 #define COMMIT "non-git"
