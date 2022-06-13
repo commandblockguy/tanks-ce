@@ -39,8 +39,8 @@ void decompress_tiles(const void *comp_tiles);
 #define TILE_TO_X_COORD(x) ((x) * TILE_SIZE)
 #define TILE_TO_Y_COORD(y) ((y) * TILE_SIZE)
 
-#define COORD_TO_X_TILE(x) (div256_8(x))
-#define COORD_TO_Y_TILE(y) (div256_8(y))
+#define COORD_TO_X_TILE(x) ((uint8_t)((uint16_t)(x) / TILE_SIZE))
+#define COORD_TO_Y_TILE(y) ((uint8_t)((uint16_t)(y) / TILE_SIZE))
 
 //Size of the gameplay area in tiles
 #define LEVEL_SIZE_X 18

@@ -34,14 +34,6 @@ inline uint8_t fast_div(uint24_t num, uint24_t den) {
     return result;
 }
 
-inline uint8_t div256_8(uint24_t num) {
-    uint8_t result;
-    asm(""
-    : "+b,+d,+h,+ixh,+iyh" (result)
-    : "c,e,l,ixl,iyl" (num):);
-    return result;
-}
-
 extern uint8_t div256_24_buf[4];
 inline uint24_t div256_24(uint24_t num) {
     uint24_t result;
