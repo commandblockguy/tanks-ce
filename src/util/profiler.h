@@ -45,7 +45,7 @@ extern "C" {
     f(  input, 1) \
     f(frame_wait, 0) \
 
-#define PROFILER_STRUCT_MEMBER(name, depth) unsigned int name;
+#define PROFILER_STRUCT_MEMBER(name, depth) clock_t name;
 union profiler_set {
     struct {
         PROFILER_ENTRIES(PROFILER_STRUCT_MEMBER)

@@ -11,6 +11,7 @@ union profiler_set profiler_sum;
 union profiler_set profiler_frames[256];
 
 uint8_t profiler_frame_index;
+int considered_frames = 0;
 
 void profiler_init() {
     profiler_frame_index = 0;
@@ -26,22 +27,26 @@ void profiler_tick() {
         current_profiler.array[i] = 0;
     }
     profiler_frame_index++;
+    if(considered_frames < 256) {
+        considered_frames++;
+    }
 }
 
 #define profiler_field_last(name, depth) \
     dbg_printf("%.*s%s: %.3f ms\n",   \
                2*(1+(depth)), "                    ", \
-               #name, profiler_frames[(uint8_t)(profiler_frame_index - 1)].name / (CLOCKS_PER_SEC / 1000.0));
+               #name, profiler_frames[last_frame].name / (CLOCKS_PER_SEC / 1000.0));
 
 #define profiler_field_average(name, depth) \
     dbg_printf("%.*s%s: %.3f ms\n",      \
                2*(1+(depth)), "                    ", \
-               #name, profiler_sum.name / (CLOCKS_PER_SEC / 1000.0));
+               #name, profiler_sum.name / (CLOCKS_PER_SEC / 1000.0) / considered_frames);
 
 void profiler_print() {
-    dbg_printf("Last frame (%u): %u FPS\n", profiler_frame_index - 1, CLOCKS_PER_SEC / profiler_frames[profiler_frame_index - 1].total);
+    uint8_t last_frame = profiler_frame_index - 1;
+    dbg_printf("Last frame (%u): %u FPS\n", last_frame, (uint24_t) (CLOCKS_PER_SEC / profiler_frames[last_frame].total));
     PROFILER_ENTRIES(profiler_field_last)
-    dbg_printf("Average of last 256 frames: %u FPS\n", (unsigned int)8388608 / profiler_sum.total);
+    dbg_printf("Average of last %u frames: %u FPS\n", considered_frames, (uint24_t) (CLOCKS_PER_SEC * considered_frames / profiler_sum.total));
     PROFILER_ENTRIES(profiler_field_average)
 }
 
