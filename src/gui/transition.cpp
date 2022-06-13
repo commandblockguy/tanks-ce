@@ -5,9 +5,9 @@
 #include "../graphics/graphics.h"
 #include <graphx.h>
 #include <keypadc.h>
-#include <sys/timers.h>
+#include <time.h>
 
-#define MISSION_START_TIME 3000
+#define MISSION_START_TIME (3 * CLOCKS_PER_SEC)
 #define MISSION_NUMBER_TEXT 3
 #define ENEMY_TANK_TEXT 2
 
@@ -73,11 +73,7 @@ void draw_tank_background(uint8_t min_y, uint8_t max_y, uint8_t lives, uint8_t l
 //Text shadow (134,36,37) has 8px (3px) offset
 //# of lives text (70,127,111) - centered between bottom or ribbon and bottom of screen
 void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
-    timer_Disable(1);
-    timer_Set(1, 33 * MISSION_START_TIME);
-    timer_SetReload(1, 33 * MISSION_START_TIME);
-    timer_AckInterrupt(1, TIMER_RELOADED);
-    timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
+    clock_t finished_time = clock() + MISSION_START_TIME;
 
     gfx_FillScreen(COL_BG);
 
@@ -133,11 +129,7 @@ void mission_start_screen(uint8_t mission, uint8_t lives, uint8_t num_tanks) {
     gfx_UninitedSprite(fg_tank_shadow, fg_tank_width, fg_tank_height);
     get_sprite_shadow(fg_tank_shadow, fg_tank, COL_RIB_SHADOW);
 
-    while(true) {
-        if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
-            timer_AckInterrupt(1, TIMER_RELOADED);
-            break;
-        }
+    while(clock() < finished_time) {
         if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
             while(kb_Data[1] || kb_Data[6]);
             break;
@@ -164,13 +156,7 @@ void extra_life_screen(uint8_t old_lives) {
     const uint BANNER_END_X = BANNER_START_X + BANNER_WIDTH;
     const uint8_t BANNER_END_Y = BANNER_START_Y + BANNER_HEIGHT;
 
-    const uint WAIT_TIME = 33 * MISSION_START_TIME;
-
-    timer_Disable(1);
-    timer_Set(1, WAIT_TIME);
-    timer_SetReload(1, WAIT_TIME);
-    timer_AckInterrupt(1, TIMER_RELOADED);
-    timer_Enable(1, TIMER_32K, TIMER_0INT, TIMER_DOWN);
+    clock_t start_time = clock();
 
     gfx_FillScreen(COL_BG);
 
@@ -210,8 +196,8 @@ void extra_life_screen(uint8_t old_lives) {
     get_sprite_shadow(fg_tank_shadow, fg_tank, COL_RIB_SHADOW);
 
     while(true) {
-        if(timer_ChkInterrupt(1, TIMER_RELOADED)) {
-            timer_AckInterrupt(1, TIMER_RELOADED);
+        clock_t c = clock();
+        if(c > start_time + MISSION_START_TIME) {
             break;
         }
         if(kb_Data[1] & kb_2nd || kb_Data[1] & kb_Del || kb_Data[6] & kb_Clear) {
@@ -219,15 +205,15 @@ void extra_life_screen(uint8_t old_lives) {
             break;
         }
 
-        if(timer_Get(1) > WAIT_TIME * 2 / 3) {
+        if(c > start_time + MISSION_START_TIME * 2 / 3) {
             draw_tank_background(BANNER_START_Y, BANNER_START_Y + BANNER_HEIGHT + SHADOW_HEIGHT,
-                                 old_lives, COL_LIVES_TXT, fg_tank_shadow);
-        } else if(timer_Get(1) > WAIT_TIME / 3) {
+                                 old_lives + 1, COL_LIVES_TXT, fg_tank_shadow);
+        } else if(c > start_time + MISSION_START_TIME / 3) {
             draw_tank_background(BANNER_START_Y, BANNER_START_Y + BANNER_HEIGHT + SHADOW_HEIGHT,
                                  old_lives + 1, COL_GOLD, fg_tank_shadow);
         } else {
             draw_tank_background(BANNER_START_Y, BANNER_START_Y + BANNER_HEIGHT + SHADOW_HEIGHT,
-                                 old_lives + 1, COL_LIVES_TXT, fg_tank_shadow);
+                                 old_lives, COL_LIVES_TXT, fg_tank_shadow);
         }
 
         gfx_SwapDraw();

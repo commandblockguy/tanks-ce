@@ -36,7 +36,6 @@ bool start_mission(const void *comp_tiles, const struct serialized_tank *ser_tan
 
     mission_start_screen(game.mission, game.lives, game.num_tanks - 1);
 
-    init_timer();
     needs_redraw = true;
     return true;
 }
@@ -86,7 +85,10 @@ uint8_t play_mission(const void *comp_tiles, const struct serialized_tank *ser_t
 
         profiler_end(total);
         profiler_start(frame_wait);
-        limit_framerate();
+        static clock_t last_frame_time = 0;
+        clock_t c;
+        while((c = clock()) < last_frame_time + CLOCKS_PER_SEC / TARGET_TICK_RATE);
+        last_frame_time = c;
         profiler_end(frame_wait);
         profiler_tick();
     }

@@ -17,10 +17,6 @@ enum {
     AXIS_Y
 };
 
-void init_timer();
-
-void limit_framerate();
-
 // Division-by-repeated-subtraction
 // Faster than regular division when the result is less than about 150
 // About 10x faster than regular division when the result is 1, and 5x faster when the result is 20
